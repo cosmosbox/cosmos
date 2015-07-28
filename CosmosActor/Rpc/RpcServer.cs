@@ -78,7 +78,6 @@ namespace Cosmos.Rpc
 
         async void ProcessRequest(RpcRequestProto requestProto)
         {
-            Console.WriteLine("From Client: {0}", requestProto.RequestId);
             var method = RpcInstace.GetType().GetMethod(requestProto.FuncName);
 
             var arguments = new object[requestProto.Arguments.Length];

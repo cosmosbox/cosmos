@@ -37,7 +37,7 @@ namespace Cosmos.Test
             var stream = new MemoryStream();
             //var serializer = SerializationContext.Default.GetSerializer<TestStruct>();
             // Pack obj to stream.
-            
+
             serializer.Pack(stream, new TestStruct
             {
                 A = "Abc",
@@ -62,7 +62,7 @@ namespace Cosmos.Test
             }
         }
         [Test()]
-        public async void TestCreateAServer()
+        public void TestCreateAServer()
         {
             using (var server = new RpcServer(new TestRpcCaller()))
             {
@@ -76,16 +76,20 @@ namespace Cosmos.Test
                 //Assert.AreEqual(server.Port, 5506);
                 using (var client = new RpcClient("127.0.0.1", server.Port))
                 {
-                    var result = await client.Call<string>("TestFunc", "ABC", "DEFG");
-                    Assert.AreEqual(result, "ABCDEFG");
+                    var result = client.Call<string>("TestFunc", "ABC", "DEFG");
+                    result.Wait();
+                    Assert.AreEqual(result.Result, "ABCDEFG");
 
-                    var result2 = await client.Call<string>("TestFunc2", "ABC", 123);
-                    Assert.AreEqual(result2, "ABC123");
+                    var result2 = client.Call<string>("TestFunc2", "ABC", 123);
+                    result2.Wait();
+                    Assert.AreEqual(result2.Result, "ABC123");
 
-                    Assert.Pass("Success async rpc");
+                    Console.WriteLine("Async Rpc Server Done!");
+
                 }
             }
-
+            //Assert.Pass();
+            //Assert.Pass("Success async rpc");
         }
     }
 }
