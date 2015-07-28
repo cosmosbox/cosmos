@@ -13,8 +13,9 @@ using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Sockets;
 
-namespace Cosmos.Actor
+namespace Cosmos.Rpc
 {
+
     /// <summary>
     /// 使用ZeroMQ进行RPC
     /// </summary>
@@ -24,10 +25,14 @@ namespace Cosmos.Actor
         private ResponseSocket _server;
         public int Port { get; private set; }
         public string Host { get; private set; }
-        public Poller Poller;
-        public RpcServer(string host = "0.0.0.0")
-        {
 
+        object RpcInstace;
+
+
+        public Poller Poller;
+        public RpcServer(object rpcInstance, string host = "0.0.0.0")
+        {
+            RpcInstace = rpcInstance;
             Poller = new Poller();
             Host = host;
 
@@ -66,9 +71,37 @@ namespace Cosmos.Actor
         private void OnReceiveReady(object sender, NetMQSocketEventArgs e)
         {
             var data = _server.Receive();
-            var ret = Encoding.UTF8.GetString(data);
-            _server.Send(ret);
-            Console.WriteLine("From Client: {0}", ret);
+            var req = RpcShare.RequestSerializer.UnpackSingleObject(data);
+
+            ProcessRequest(req);
+        }
+
+        async void ProcessRequest(RpcRequestProto requestProto)
+        {
+            Console.WriteLine("From Client: {0}", requestProto.RequestId);
+            var method = RpcInstace.GetType().GetMethod(requestProto.FuncName);
+
+            var arguments = new object[requestProto.Arguments.Length];
+            for (var i = 0; i < arguments.Length; i++) // MsgPack.MessagePackObject arg in requestProto.Arguments)
+            {
+                MsgPack.MessagePackObject arg = (MsgPack.MessagePackObject)requestProto.Arguments[i];
+                arguments[i] = arg.ToObject();
+            }
+            var result = method.Invoke(RpcInstace, arguments);
+            object executeResult;
+            if (result is Task)
+            {
+                executeResult = await(result as Task<object>);
+            } else
+            {
+                executeResult = result;
+            }
+
+            var data = RpcShare._responseSerializer.PackSingleObject(new RpcResponseProto {
+                RequestId = requestProto.RequestId,
+                Result = executeResult,
+            });
+            _server.Send(data);
         }
 
         //private void OnReceive(object sender, NetMQSocketEventArgs e)

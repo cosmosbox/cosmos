@@ -7,11 +7,16 @@ using System.Text;
 using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Sockets;
+using MsgPack.Serialization;
+using System.IO;
 
-namespace CosmosActor.Rpc
+namespace Cosmos.Rpc
 {
     public class RpcClient : IDisposable
     {
+        static int ReqId = 0;
+        public Dictionary<int, RpcResponseProto> _responses = new Dictionary<int, RpcResponseProto>();
+
         internal NetMQContext _context;
         private RequestSocket _client;
         public string Host { get; private set; }
@@ -24,6 +29,7 @@ namespace CosmosActor.Rpc
         {
             get { return string.Format("{0}://{1}:{2}", Protocol, Host, Port); }
         }
+
         Poller _poller;
         public RpcClient(string host, int port, string protocol = "tcp")
         {
@@ -44,30 +50,12 @@ namespace CosmosActor.Rpc
                 _poller.Start();
             });
         }
-        bool waitResponse = false;
         private void OnReceiveReady(object sender, NetMQSocketEventArgs e)
         {
-            var recvData = _client.ReceiveString();
+            var recvData = _client.Receive();
+            var response = RpcShare._responseSerializer.UnpackSingleObject(recvData);
 
-            Console.WriteLine("Recv from request: " + recvData);
-
-            result[ReqId - 1] = recvData;
-        }
-        static int ReqId = 0;
-        public Dictionary<int, string> result = new Dictionary<int, string>();
-        public async Task<string> Request(string str)
-        {
-            var reqId = ReqId++;
-            _client.Send(str);
-            await Task.Run(() =>
-            {
-                while (!result.ContainsKey(reqId))
-                {
-                }
-            });
-
-            return result[reqId];
-
+            _responses[response.RequestId] = response;
         }
         public void Dispose()
         {
@@ -76,6 +64,32 @@ namespace CosmosActor.Rpc
             _context.Dispose();
 
             _poller.Dispose();
+
+        }
+
+        public async Task<T> Call<T>(string funcName, params object[] arguments)
+        {
+            var proto = new RpcRequestProto
+            {
+                RequestId = ReqId++,
+                FuncName = funcName,
+                Arguments = arguments,
+            };
+            var bytes = RpcShare.RequestSerializer.PackSingleObject(proto);
+
+            _client.Send(bytes);
+
+            var waitResponse = Task<RpcResponseProto>.Run<RpcResponseProto>(() => {
+                RpcResponseProto response2;
+                while (!_responses.TryGetValue(proto.RequestId, out response2)) { }; // thread blocking
+                return response2;
+            });
+            var response = await waitResponse;
+
+            _responses.Remove(proto.RequestId); // must true!
+
+            var msgObj = (MsgPack.MessagePackObject)response.Result;
+            return (T)msgObj.ToObject();
 
         }
     }

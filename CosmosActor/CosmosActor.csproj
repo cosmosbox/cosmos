@@ -30,6 +30,9 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MsgPack">
+      <HintPath>..\MsgPack\MsgPack.dll</HintPath>
+    </Reference>
     <Reference Include="NetMQ">
       <HintPath>..\packages\NetMQ.3.3.0.11\lib\net40\NetMQ.dll</HintPath>
     </Reference>
@@ -39,6 +42,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Rpc\RpcClient.cs" />
+    <Compile Include="Rpc\RpcDef.cs" />
     <Compile Include="Rpc\RpcServer.cs" />
   </ItemGroup>
   <ItemGroup>
