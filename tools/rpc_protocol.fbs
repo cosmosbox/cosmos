@@ -1,0 +1,6 @@
+namespace CosmosActor.Rpc;
+
+table RpcProtocol {
+  name:string;
+  data:[byte];
+}

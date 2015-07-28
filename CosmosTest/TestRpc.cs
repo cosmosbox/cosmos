@@ -4,6 +4,7 @@ using System;
 using Cosmos;
 using Cosmos.Actor;
 using CosmosActor.Rpc;
+using System.Threading.Tasks;
 
 namespace Cosmos.Test
 {
@@ -20,7 +21,7 @@ namespace Cosmos.Test
         }
 
         [Test()]
-        public void TestCreateAServer()
+        public async void  TestCreateAServer()
         {
             using (var server = new RpcServer())
             {
@@ -31,13 +32,23 @@ namespace Cosmos.Test
                 using (var server2 = new RpcServer("127.0.0.1"))
                     Assert.AreEqual(server2.Host, "127.0.0.1");
 
+                Console.Write("HERE NOW");
                 //Assert.AreEqual(server.Port, 5506);
                 using (var client = new RpcClient("127.0.0.1", server.Port))
                 {
 
 
-                    var resp = client.Request("ABCDEFG");
-                    Assert.AreEqual(resp, "ABCDEFG");
+                    Console.Write("HERE NOW");
+                    var request = client.Request("ABCDEFG");
+                    await Task.Run(() =>
+                    {
+                        while (!request.IsCompleted) { }
+
+                        Assert.AreEqual(request.Result, "ABCDEFG");
+
+                        Assert.Pass("Success async rpc");
+                    });
+                    
 
                 }
             }

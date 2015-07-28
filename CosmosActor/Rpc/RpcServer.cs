@@ -24,18 +24,19 @@ namespace Cosmos.Actor
         private ResponseSocket _server;
         public int Port { get; private set; }
         public string Host { get; private set; }
-
+        public Poller Poller;
         public RpcServer(string host = "0.0.0.0")
         {
 
-            
+            Poller = new Poller();
             Host = host;
 
             _context = NetMQContext.Create();
             _server = _context.CreateResponseSocket();
 
-            Port = _server.BindRandomPort("tcp://" + host);
+            Poller.AddSocket(_server);
 
+            Port = _server.BindRandomPort("tcp://" + host);
             //_server.ReceiveReady += OnReceive;
             // Bind the server to a local TCP address
             //_server.Bind(uri);
@@ -52,8 +53,7 @@ namespace Cosmos.Actor
             //Console.WriteLine("From Client: {0}", m1);
 
             _server.ReceiveReady += OnReceiveReady;
-            //Response();
-
+            Response();
 
             // Send a response back from the server
             //_server.Send("Hi Back");
@@ -73,29 +73,37 @@ namespace Cosmos.Actor
 
         //private void OnReceive(object sender, NetMQSocketEventArgs e)
         //{
-        
+
         //}
 
         //public RpcServer(int port, string host = "0.0.0.0") : this(string.Format("tcp://{0}:{1}", host, port))
         //{
-            
+
 
         //}
 
-        //async void Response()
-        //{
-        //    await Task.Run(() =>
-        //    {
-        //        while (true)
-        //        {
-        //        }
-        //    });
-        //}
+        async void Response()
+        {
+            await Task.Run(() =>
+            {
+
+                Poller.Start();
+
+                while (true)
+                {
+                    //var recv = _server.ReceiveString();
+                    //int i;
+                    //i = 0;
+                }
+            });
+        }
 
         public void Dispose()
         {
+            Poller.RemoveSocket(_server);
             _server.Close();
             _context.Dispose();
+            Poller.Dispose();
         }
     }
 }
