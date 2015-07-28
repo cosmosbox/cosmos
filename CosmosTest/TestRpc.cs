@@ -11,7 +11,7 @@ namespace Cosmos.Test
     public class TestRpc
     {
         [Test()]
-        public void TestCase()
+        public void TestAdd()
         {
             int a = 1;
             int b = 2;
