@@ -1,6 +1,0 @@
-D:\LocalCode\cosmos-net\CosmosApp\bin\Debug\CosmosApp.dll
-D:\LocalCode\cosmos-net\CosmosApp\bin\Debug\CosmosApp.pdb
-D:\LocalCode\cosmos-net\CosmosApp\obj\Debug\CosmosApp.csprojResolveAssemblyReference.cache
-D:\LocalCode\cosmos-net\CosmosApp\obj\Debug\CosmosApp.dll
-D:\LocalCode\cosmos-net\CosmosApp\obj\Debug\CosmosApp.pdb
-D:\LocalCode\cosmos-net\CosmosApp\bin\Debug\NLog.config
