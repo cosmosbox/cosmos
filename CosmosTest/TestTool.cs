@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cosmos.Tool;
+using NLog;
 using NUnit.Framework;
 
 namespace CosmosTest
@@ -12,6 +13,7 @@ namespace CosmosTest
     [TestFixture()]
     class TestTool
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         [Test()]
         public async void TestCoroutine()
@@ -30,13 +32,15 @@ namespace CosmosTest
                 // 堵塞，等待协程完成
                 while (!co.IsFinished)
                 {
+                    // Blocking
                 }
             });
         }
 
         IEnumerator CoTester()
         {
-            for (var i = 0; i < 100; i++)
+			// 25 tick for 1 seconds
+            for (var i = 0; i < 25; i++)
             {
                 yield return i;
             }

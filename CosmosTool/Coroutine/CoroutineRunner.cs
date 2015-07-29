@@ -11,31 +11,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Cosmos.Tool
 {
-    public class Coroutine
-    {
-        public Action<object> OnYield;
-        public IEnumerator Enumtor { get; private set; }
-        public bool IsFinished { get; internal set; }
-
-        private Coroutine()
-        {
-        }
-
-        internal Coroutine(IEnumerator enumtor)
-        {
-            Enumtor = enumtor;
-        }
-
-        public static Coroutine Start(IEnumerator em)
-        {
-            return CoroutineRunner.Start(em);
-        }
-    }
-    public class CoroutineRunner
+    internal class CoroutineRunner
     {
         /// <summary>
         /// 25 frame every seconds
@@ -63,7 +42,7 @@ namespace Cosmos.Tool
                         do
                         {
                             var co = node.Value;
-                            if (!co.Enumtor.MoveNext())
+                            if (!co.MoveNext())
                             {
                                 co.IsFinished = true;
                                 var lastNode = node;
@@ -73,7 +52,7 @@ namespace Cosmos.Tool
                             else
                             {
                                 if (co.OnYield != null)
-                                    co.OnYield(co.Enumtor.Current);
+                                    co.OnYield(co.Current);
 
                                 node = node.Next;
                             }
@@ -88,6 +67,12 @@ namespace Cosmos.Tool
             t.Start();
         }
 
+        /// <summary>
+        /// Setup every yield interval time
+        /// For examples,
+        /// 25 times in 1s = 1000ms / 25 = 40ms (Default)
+        /// </summary>
+        /// <param name="ms"></param>
         public static void SetupHeartbeatMilliseconds(int ms)
         {
             HeartbeatMilliseconds = ms;
@@ -95,7 +80,7 @@ namespace Cosmos.Tool
 
         public static Coroutine Start(IEnumerator enumtor)
         {
-            var co = new Coroutine(enumtor);
+            var co = new EnumtorCoroutine(enumtor);
             _coroutines.AddLast(co);
             return co;
         }
