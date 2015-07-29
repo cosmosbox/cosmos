@@ -67,6 +67,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="TestEtcd.cs" />
     <Compile Include="TestRpc.cs" />
+    <Compile Include="TestScript.cs" />
     <Compile Include="TestTool.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +89,10 @@
     <ProjectReference Include="..\CosmosRpc\CosmosRpc.csproj">
       <Project>{7341E7EA-168C-4688-8B8C-4E697540FBAA}</Project>
       <Name>CosmosRpc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CosmosScript\CosmosScript.csproj">
+      <Project>{60511790-088e-449e-a4e2-6485a976a20c}</Project>
+      <Name>CosmosScript</Name>
     </ProjectReference>
     <ProjectReference Include="..\CosmosTool\CosmosTool.csproj">
       <Project>{9B9946EE-BEE2-4B04-9392-652545039D11}</Project>
