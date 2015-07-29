@@ -1,0 +1,17 @@
+D:\LocalCode\cosmos-net\CosmosActor\bin\Debug\CosmosActor.dll
+D:\LocalCode\cosmos-net\CosmosActor\bin\Debug\CosmosActor.pdb
+D:\LocalCode\cosmos-net\CosmosActor\obj\Debug\CosmosActor.csprojResolveAssemblyReference.cache
+D:\LocalCode\cosmos-net\CosmosActor\obj\Debug\CosmosActor.dll
+D:\LocalCode\cosmos-net\CosmosActor\obj\Debug\CosmosActor.pdb
+D:\LocalCode\cosmos-net\CosmosActor\bin\Debug\NetMQ.dll
+D:\LocalCode\cosmos-net\CosmosActor\bin\Debug\MsgPack.dll
+D:\LocalCode\cosmos-net\CosmosActor\bin\Debug\MsgPack.pdb
+D:\LocalCode\cosmos-net\CosmosActor\bin\Debug\MsgPack.xml
+D:\LocalCode\cosmos-net\CosmosActor\bin\Debug\etcetera.dll
+D:\LocalCode\cosmos-net\CosmosActor\bin\Debug\RestSharp.dll
+D:\LocalCode\cosmos-net\CosmosActor\bin\Debug\RestSharp.xml
+D:\LocalCode\cosmos-net\CosmosActor\bin\Debug\Newtonsoft.Json.dll
+D:\LocalCode\cosmos-net\CosmosActor\bin\Debug\Newtonsoft.Json.xml
+D:\LocalCode\cosmos-net\CosmosActor\bin\Debug\NLog.dll
+D:\LocalCode\cosmos-net\CosmosActor\bin\Debug\NLog.xml
+D:\LocalCode\cosmos-net\CosmosActor\bin\Debug\NLog.config

@@ -1,0 +1,13 @@
+D:\LocalCode\cosmos-net\cosmos\bin\Debug\cosmos.exe
+D:\LocalCode\cosmos-net\cosmos\bin\Debug\cosmos.pdb
+D:\LocalCode\cosmos-net\cosmos\obj\x86\Debug\cosmos.exe
+D:\LocalCode\cosmos-net\cosmos\obj\x86\Debug\cosmos.pdb
+D:\LocalCode\cosmos-net\cosmos\obj\x86\Debug\Cosmos.csprojResolveAssemblyReference.cache
+D:\LocalCode\cosmos-net\cosmos\bin\Debug\NetMQ.dll
+D:\LocalCode\cosmos-net\cosmos\bin\Debug\CosmosActor.dll
+D:\LocalCode\cosmos-net\cosmos\bin\Debug\CosmosApp.dll
+D:\LocalCode\cosmos-net\cosmos\bin\Debug\CosmosActor.pdb
+D:\LocalCode\cosmos-net\cosmos\bin\Debug\CosmosApp.pdb
+D:\LocalCode\cosmos-net\cosmos\bin\Debug\NLog.config
+D:\LocalCode\cosmos-net\src\cosmos\obj\x86\Debug\cosmos.exe
+D:\LocalCode\cosmos-net\src\cosmos\obj\x86\Debug\cosmos.pdb

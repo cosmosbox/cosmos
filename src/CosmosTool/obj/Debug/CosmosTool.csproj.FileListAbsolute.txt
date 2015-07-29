@@ -1,0 +1,5 @@
+D:\LocalCode\cosmos-net\CosmosTool\obj\Debug\CosmosTool.csprojResolveAssemblyReference.cache
+D:\LocalCode\cosmos-net\CosmosTool\bin\Debug\CosmosTool.dll
+D:\LocalCode\cosmos-net\CosmosTool\bin\Debug\CosmosTool.pdb
+D:\LocalCode\cosmos-net\CosmosTool\obj\Debug\CosmosTool.dll
+D:\LocalCode\cosmos-net\CosmosTool\obj\Debug\CosmosTool.pdb
