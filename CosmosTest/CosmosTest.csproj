@@ -33,10 +33,6 @@
     <Reference Include="MsgPack">
       <HintPath>..\MsgPack\MsgPack.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NLog.4.0.1\lib\net45\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.core">
       <HintPath>..\packages\NUnitTestAdapter.2.0.0\lib\nunit.core.dll</HintPath>
       <Private>False</Private>
@@ -57,11 +53,15 @@
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.4.0.1\lib\net45\NLog.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="TestEtcd.cs" />
     <Compile Include="TestRpc.cs" />
+    <Compile Include="TestTool.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\cosmos\NLog.config">
@@ -80,8 +80,12 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\CosmosRpc\CosmosRpc.csproj">
-      <Project>{7341e7ea-168c-4688-8b8c-4e697540fbaa}</Project>
+      <Project>{7341E7EA-168C-4688-8B8C-4E697540FBAA}</Project>
       <Name>CosmosRpc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CosmosTool\CosmosTool.csproj">
+      <Project>{9b9946ee-bee2-4b04-9392-652545039d11}</Project>
+      <Name>CosmosTool</Name>
     </ProjectReference>
     <ProjectReference Include="..\cosmos\Cosmos.csproj">
       <Project>{362E1B17-169A-4324-A1C1-CE7C1142AC75}</Project>

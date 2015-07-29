@@ -33,7 +33,6 @@ namespace Cosmos.Test
         {
             // Creates serializer.
             var serializer = MessagePackSerializer.Get<TestStruct>();
-
             var stream = new MemoryStream();
             //var serializer = SerializationContext.Default.GetSerializer<TestStruct>();
             // Pack obj to stream.
@@ -63,7 +62,7 @@ namespace Cosmos.Test
         }
 
         [Test()]
-        public void TestCreateAServer()
+        public void TestCallRpc()
         {
             using (var server = new RpcServer(new TestRpcCaller()))
             {

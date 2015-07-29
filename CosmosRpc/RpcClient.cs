@@ -88,7 +88,7 @@ namespace Cosmos.Rpc
 
             _client.Send(bytes);
 
-            var waitResponse = Task<ResponseMsg>.Run<ResponseMsg>(() =>
+            var waitResponse = Task.Run(() =>
             {
                 ResponseMsg response2;
                 while (!_responses.TryGetValue(proto.RequestId, out response2)) { }; // thread blocking
