@@ -30,6 +30,9 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="etcetera">
+      <HintPath>..\packages\etcetera.0.6.0\lib\net40\etcetera.dll</HintPath>
+    </Reference>
     <Reference Include="MsgPack">
       <HintPath>..\MsgPack\MsgPack.dll</HintPath>
     </Reference>
@@ -48,6 +51,9 @@
     <Reference Include="NUnit.VisualStudio.TestAdapter">
       <HintPath>..\packages\NUnitTestAdapter.2.0.0\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="nunit.framework">

@@ -4,3 +4,4 @@
 *.userprefs
 
 *.user
+/tools/etcd-v2.0.13-windows-amd64/default.etcd
