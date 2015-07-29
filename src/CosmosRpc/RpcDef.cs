@@ -16,13 +16,49 @@ namespace Cosmos.Rpc
     public struct ResponseMsg
     {
         public int RequestId;
-        public object Result;
+        public object Value;
+        public bool IsError;
+        public string ErrorMessage;
     }
     public struct RequestMsg
     {
         public int RequestId;
         public string FuncName;
         public object[] Arguments;  // will be MsgPackObject
+    }
+
+    public class RpcCallResult<T>
+    {
+        public bool IsError { get { return Msg.IsError; } }
+
+        public string ErrorMessage
+        {
+            get
+            {
+                if (IsError)
+                    return Msg.ErrorMessage;
+                return null;
+            }
+        }
+
+        public T Value;
+        public ResponseMsg Msg;
+        public RpcCallResult(ResponseMsg response)
+        {
+            Msg = response;
+            if (response.IsError)
+            {
+
+            }
+            if (response.Value == null)
+                Value = default(T);
+            else
+            {
+                var msgObj = (MsgPack.MessagePackObject)response.Value;
+                Value = (T)msgObj.ToObject();
+            }
+
+        }
     }
 
 }

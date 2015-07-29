@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="TestActor.cs" />
     <Compile Include="TestEtcd.cs" />
     <Compile Include="TestRpc.cs" />
     <Compile Include="TestScript.cs" />

@@ -80,9 +80,9 @@ namespace Cosmos.Test
                     result.Wait();
                     Assert.AreEqual(result.Result, "ABCDEFG");
 
-                    var result2 = client.Call<string>("TestFunc2", "ABC", 123);
+                    var result2 = client.CallResult<string>("TestFunc2", "ABC", 123);
                     result2.Wait();
-                    Assert.AreEqual(result2.Result, "ABC123");
+                    Assert.AreEqual(result2.Result.Value, "ABC123");
 
                     var result3 = client.Call<string>("TestFunc3");
                     result3.Wait();

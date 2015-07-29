@@ -74,9 +74,10 @@ namespace Cosmos.Rpc
 
             _responses[response.RequestId] = response;
         }
-        public async Task<T> Call<T>(string funcName, params object[] arguments)
+
+        public async Task<RpcCallResult<T>> CallResult<T>(string funcName, params object[] arguments)
         {
-            Logger.Trace("RpcClient Call Function: {0}, Arguments: {1}", funcName, arguments);
+            Logger.Trace("RpcClient CallResult Function: {0}, Arguments: {1}", funcName, arguments);
 
             var proto = new RequestMsg
             {
@@ -97,11 +98,14 @@ namespace Cosmos.Rpc
             var response = await waitResponse;
 
             _responses.Remove(proto.RequestId); // must true!
-            if (response.Result == null)
-                return default(T);
-            var msgObj = (MsgPack.MessagePackObject)response.Result;
-            return (T)msgObj.ToObject();
+            return new RpcCallResult<T>(response);
 
+        }
+        public async Task<T> Call<T>(string funcName, params object[] arguments)
+        {
+            var result = await CallResult<T>(funcName, arguments);
+
+            return result.Value;
         }
     }
 }
