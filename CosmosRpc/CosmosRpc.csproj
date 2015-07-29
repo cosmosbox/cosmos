@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>12.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{FDF38829-3003-4A00-A8E0-24E76FCAE727}</ProjectGuid>
+    <ProjectGuid>{7341E7EA-168C-4688-8B8C-4E697540FBAA}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CosmosActor</RootNamespace>
-    <AssemblyName>CosmosActor</AssemblyName>
+    <RootNamespace>Cosmos.Rpc</RootNamespace>
+    <AssemblyName>CosmosRpc</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -30,20 +30,33 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MsgPack">
+      <HintPath>..\MsgPack\MsgPack.dll</HintPath>
+    </Reference>
     <Reference Include="NetMQ">
       <HintPath>..\packages\NetMQ.3.3.0.11\lib\net40\NetMQ.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.4.0.1\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Rpc\RpcServer.cs" />
+    <Compile Include="RpcClient.cs" />
+    <Compile Include="RpcDef.cs" />
+    <Compile Include="RpcServer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\cosmos\NLog.config">
+      <Link>NLog.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="..\cosmos\NLog.xsd">
+      <Link>NLog.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="Rpc\" />
-  </ItemGroup>
 </Project>

@@ -9,18 +9,29 @@
 //------------------------------------------------------------------------------
 using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Sockets;
+using NLog;
 
 namespace Cosmos.Rpc
 {
+    /// <summary>
+    /// Any call RPC Fucntion must in this class
+    /// </summary>
+    public abstract class RpcCaller
+    {
+        
+    }
 
     /// <summary>
     /// 使用ZeroMQ进行RPC
     /// </summary>
     public class RpcServer : IDisposable
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         internal NetMQContext _context;
         private ResponseSocket _server;
         public int Port { get; private set; }
@@ -30,7 +41,7 @@ namespace Cosmos.Rpc
 
 
         public Poller Poller;
-        public RpcServer(object rpcInstance, string host = "0.0.0.0")
+        public RpcServer(RpcCaller rpcInstance, string host = "0.0.0.0")
         {
             RpcInstace = rpcInstance;
             Poller = new Poller();
@@ -58,7 +69,7 @@ namespace Cosmos.Rpc
             //Console.WriteLine("From Client: {0}", m1);
 
             _server.ReceiveReady += OnReceiveReady;
-            Response();
+            DoPollerAsync();
 
             // Send a response back from the server
             //_server.Send("Hi Back");
@@ -76,57 +87,49 @@ namespace Cosmos.Rpc
             ProcessRequest(req);
         }
 
-        async void ProcessRequest(RpcRequestProto requestProto)
+        async void ProcessRequest(RequestMsg requestMsg)
         {
-            var method = RpcInstace.GetType().GetMethod(requestProto.FuncName);
+            var method = RpcInstace.GetType().GetMethod(requestMsg.FuncName);
+            object executeResult = null;
 
-            var arguments = new object[requestProto.Arguments.Length];
-            for (var i = 0; i < arguments.Length; i++) // MsgPack.MessagePackObject arg in requestProto.Arguments)
+            if (method != null)
             {
-                MsgPack.MessagePackObject arg = (MsgPack.MessagePackObject)requestProto.Arguments[i];
-                arguments[i] = arg.ToObject();
+                var arguments = new object[requestMsg.Arguments.Length];
+                for (var i = 0; i < arguments.Length; i++) // MsgPack.MessagePackObject arg in requestProto.Arguments)
+                {
+                    MsgPack.MessagePackObject arg = (MsgPack.MessagePackObject)requestMsg.Arguments[i];
+                    arguments[i] = arg.ToObject();
+                }
+                var result = method.Invoke(RpcInstace, arguments);
+
+                if (result is Task)
+                {
+                    executeResult = await (result as Task<object>);
+                }
+                else
+                {
+                    executeResult = result;
+                }
+
             }
-            var result = method.Invoke(RpcInstace, arguments);
-            object executeResult;
-            if (result is Task)
+            else
             {
-                executeResult = await(result as Task<object>);
-            } else
-            {
-                executeResult = result;
+                Logger.Error("[ERROR]Not found method: {0}", requestMsg.FuncName);
+                Thread.Sleep(1);
             }
 
-            var data = RpcShare._responseSerializer.PackSingleObject(new RpcResponseProto {
-                RequestId = requestProto.RequestId,
+            var data = RpcShare.ResponseSerializer.PackSingleObject(new ResponseMsg {
+                RequestId = requestMsg.RequestId,
                 Result = executeResult,
             });
             _server.Send(data);
         }
 
-        //private void OnReceive(object sender, NetMQSocketEventArgs e)
-        //{
-
-        //}
-
-        //public RpcServer(int port, string host = "0.0.0.0") : this(string.Format("tcp://{0}:{1}", host, port))
-        //{
-
-
-        //}
-
-        async void Response()
+        async void DoPollerAsync()
         {
             await Task.Run(() =>
             {
-
                 Poller.Start();
-
-                while (true)
-                {
-                    //var recv = _server.ReceiveString();
-                    //int i;
-                    //i = 0;
-                }
             });
         }
 
@@ -135,6 +138,8 @@ namespace Cosmos.Rpc
             Poller.RemoveSocket(_server);
             _server.Close();
             _context.Dispose();
+
+            Poller.Stop();
             Poller.Dispose();
         }
     }

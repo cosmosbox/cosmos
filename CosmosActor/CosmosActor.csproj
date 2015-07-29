@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{FDF38829-3003-4A00-A8E0-24E76FCAE727}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CosmosActor</RootNamespace>
+    <RootNamespace>Cosmos.Actor</RootNamespace>
     <AssemblyName>CosmosActor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -30,22 +30,39 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="etcetera">
+      <HintPath>..\packages\etcetera.0.6.0\lib\net40\etcetera.dll</HintPath>
+    </Reference>
     <Reference Include="MsgPack">
       <HintPath>..\MsgPack\MsgPack.dll</HintPath>
     </Reference>
     <Reference Include="NetMQ">
       <HintPath>..\packages\NetMQ.3.3.0.11\lib\net40\NetMQ.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.4.0.1\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Runtime.Remoting" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Rpc\RpcClient.cs" />
-    <Compile Include="Rpc\RpcDef.cs" />
-    <Compile Include="Rpc\RpcServer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\cosmos\NLog.config">
+      <Link>NLog.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="..\cosmos\NLog.xsd">
+      <Link>NLog.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

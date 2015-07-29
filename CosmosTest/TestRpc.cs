@@ -50,7 +50,7 @@ namespace Cosmos.Test
             Assert.AreEqual(unpackedObject.B, 123123);
         }
 
-        public class TestRpcCaller
+        public class TestRpcCaller : RpcCaller
         {
             public string TestFunc(string arg1, string arg2)
             {
@@ -61,13 +61,14 @@ namespace Cosmos.Test
                 return string.Format("{0}{1}", arg1, arg2);
             }
         }
+
         [Test()]
         public void TestCreateAServer()
         {
             using (var server = new RpcServer(new TestRpcCaller()))
             {
                 Assert.AreEqual(server.Port.GetType(), typeof(int));
-                Assert.GreaterOrEqual(server.Port, 10000);
+                Assert.GreaterOrEqual(server.Port, 0);
                 Assert.AreEqual(server.Host, "0.0.0.0");
 
                 using (var server2 = new RpcServer(new TestRpcCaller(), "127.0.0.1"))
@@ -83,6 +84,12 @@ namespace Cosmos.Test
                     var result2 = client.Call<string>("TestFunc2", "ABC", 123);
                     result2.Wait();
                     Assert.AreEqual(result2.Result, "ABC123");
+
+                    var result3 = client.Call<string>("TestFunc3");
+                    result3.Wait();
+                    Assert.AreEqual(result3.IsCanceled, false);
+                    Assert.AreEqual(result3.IsFaulted, false);
+                    Assert.AreEqual(result3.Result, null);
 
                     Console.WriteLine("Async Rpc Server Done!");
 
