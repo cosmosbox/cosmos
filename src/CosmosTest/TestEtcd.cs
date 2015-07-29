@@ -62,7 +62,6 @@ namespace Cosmos.Test
             Assert.AreEqual(respGet.Node.Value, "123");
         }
         [Test]
-
         public void TestEtcdDirSetAndAdd()
         {
             if (!CheckEtcdRunning())
@@ -70,10 +69,30 @@ namespace Cosmos.Test
                 Assert.Ignore();
                 return;
             }
-            var respSet = etcd.Set("csharp-etcetera-test", "123");
+            
+            var respSet = etcd.Set("csharp-etcetera-test-dir/sample-key", "123");
             Assert.AreEqual(respSet.Node.Value, "123");
-            var respGet = etcd.Get("csharp-etcetera-test");
+            var respGet = etcd.Get("csharp-etcetera-test-dir/sample-key");
             Assert.AreEqual(respGet.Node.Value, "123");
+
+            var respGetDir = etcd.Get("csharp-etcetera-test-dir");
+            Assert.True(respGetDir.Node.Dir);
+
+            var deleteDir = etcd.DeleteDir("csharp-etcetera-test-dir");
+            Assert.AreEqual(deleteDir.ErrorCode, 108); // not empty dir cannot delete
+
+            var deleteDirAll = etcd.DeleteDir("csharp-etcetera-test-dir", true);
+            Assert.AreEqual(deleteDirAll.ErrorCode, null);
+
+            var respGetDir2 = etcd.Get("csharp-etcetera-test-dir");
+            Assert.AreEqual(respGetDir2.Node, null);
+
+        }
+
+        [Test]
+        public void TestWatch()
+        {
+            
         }
     }
 }
