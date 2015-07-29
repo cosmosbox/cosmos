@@ -16,13 +16,13 @@ namespace Cosmos.Actor
         public Dictionary<string, RpcClient> RpcClients = new Dictionary<string, RpcClient>();
         public Dictionary<Type, List<RpcClient>> RpcClientsOfTypes = new Dictionary<Type, List<RpcClient>>();
         public RpcServer RpcServer;
-        public Discovery DiscoveryService;
+        private Discovery _discovery;
 
         internal void Init(ActorConf conf)
         {
             Conf = conf;
             RpcServer = new RpcServer(NewRpcCaller());
-            DiscoveryService = new Discovery(Conf.AppToken, Conf.DiscoverServers);
+            _discovery = new Discovery(Conf.AppToken, Conf.DiscoverServers);
         }
 
         public bool IsActive { get; set; } = true;

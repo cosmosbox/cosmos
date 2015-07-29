@@ -55,6 +55,9 @@
     <Reference Include="RestSharp">
       <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
     </Reference>
+    <Reference Include="StackExchange.Redis">
+      <HintPath>..\packages\StackExchange.Redis.1.0.481\lib\net45\StackExchange.Redis.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
@@ -67,6 +70,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="TestActor.cs" />
     <Compile Include="TestEtcd.cs" />
+    <Compile Include="TestMemoryData.cs" />
     <Compile Include="TestRpc.cs" />
     <Compile Include="TestScript.cs" />
     <Compile Include="TestTool.cs" />

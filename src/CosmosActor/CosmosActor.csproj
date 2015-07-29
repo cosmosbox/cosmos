@@ -57,6 +57,7 @@
     <Compile Include="ActorRunner.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CoroutineAwaiter.cs" />
+    <Compile Include="Discovery.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\cosmos\NLog.config">
@@ -69,9 +70,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Discover\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\CosmosRpc\CosmosRpc.csproj">
       <Project>{7341e7ea-168c-4688-8b8c-4e697540fbaa}</Project>
