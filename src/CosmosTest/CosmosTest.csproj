@@ -84,7 +84,7 @@
       <Name>CosmosRpc</Name>
     </ProjectReference>
     <ProjectReference Include="..\CosmosTool\CosmosTool.csproj">
-      <Project>{9b9946ee-bee2-4b04-9392-652545039d11}</Project>
+      <Project>{9B9946EE-BEE2-4B04-9392-652545039D11}</Project>
       <Name>CosmosTool</Name>
     </ProjectReference>
     <ProjectReference Include="..\cosmos\Cosmos.csproj">
