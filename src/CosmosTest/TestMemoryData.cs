@@ -32,7 +32,7 @@ namespace CosmosTest
         
         public Dictionary<string, string> Mems = new Dictionary<string, string>();
         [Test]
-        public void SimpleMem()
+        public void SimpleMemoryAsync()
         {
             var taskA = Task.Run(() =>
             {
@@ -63,7 +63,7 @@ namespace CosmosTest
         }
 
         [Test]
-        public void SimpleMemData()
+        public void SimpleRedisAsync()
         {
             var taskA = Task.Run(() =>
             {
