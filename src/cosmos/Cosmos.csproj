@@ -46,12 +46,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\CosmosActor\CosmosActor.csproj">
-      <Project>{FDF38829-3003-4A00-A8E0-24E76FCAE727}</Project>
-      <Name>CosmosActor</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

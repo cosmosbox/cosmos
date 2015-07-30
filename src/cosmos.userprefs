@@ -1,6 +1,12 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workbench ActiveDocument="d:\LocalCode\cosmos-net\src\CosmosTest\TestActor.cs">
+    <Files>
+      <File FileName="d:\LocalCode\cosmos-net\src\CosmosActor\Actor.cs" Line="15" Column="36" />
+      <File FileName="d:\LocalCode\cosmos-net\src\CosmosActor\Discovery.cs" Line="15" Column="6" />
+      <File FileName="d:\LocalCode\cosmos-net\src\CosmosTest\TestActor.cs" Line="62" Column="15" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Breakpoint file="d:\LocalCode\cosmos-net\cosmos\cosmos\Main.cs" line="31" />

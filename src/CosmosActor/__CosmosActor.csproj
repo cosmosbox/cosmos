@@ -1,15 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>12.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{501DEEC1-5738-465F-9AB2-4A9FF95A34E9}</ProjectGuid>
+    <ProjectGuid>{FDF38829-3003-4A00-A8E0-24E76FCAE727}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CosmosActor</RootNamespace>
+    <RootNamespace>Cosmos.Actor</RootNamespace>
     <AssemblyName>CosmosActor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -30,45 +31,56 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="NLog">
-      <HintPath>..\packages\NLog.4.0.1\lib\net45\NLog.dll</HintPath>
+    <Reference Include="etcetera">
+      <HintPath>..\packages\etcetera.0.6.0\lib\net40\etcetera.dll</HintPath>
+    </Reference>
+    <Reference Include="MsgPack">
+      <HintPath>..\MsgPack\MsgPack.dll</HintPath>
+    </Reference>
+    <Reference Include="NetMQ">
+      <HintPath>..\packages\NetMQ.3.3.0.11\lib\net40\NetMQ.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="etcetera">
-      <HintPath>..\packages\etcetera.0.6.0\lib\net40\etcetera.dll</HintPath>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.4.0.1\lib\net45\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Runtime.Remoting" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Actor.cs" />
     <Compile Include="ActorFactory.cs" />
     <Compile Include="ActorRunner.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CoroutineAwaiter.cs" />
     <Compile Include="Discovery.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\cosmos\Cosmos.csproj">
-      <Project>{362E1B17-169A-4324-A1C1-CE7C1142AC75}</Project>
-      <Name>Cosmos</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CosmosFramework\CosmosFramework.csproj">
-      <Project>{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}</Project>
-      <Name>CosmosFramework</Name>
-    </ProjectReference>
+    <Content Include="..\cosmos\NLog.config">
+      <Link>NLog.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="..\cosmos\NLog.xsd">
+      <Link>NLog.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
     <ProjectReference Include="..\CosmosRpc\CosmosRpc.csproj">
       <Project>{7341E7EA-168C-4688-8B8C-4E697540FBAA}</Project>
       <Name>CosmosRpc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CosmosScript\CosmosScript.csproj">
-      <Project>{60511790-088E-449E-A4E2-6485A976A20C}</Project>
-      <Name>CosmosScript</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CosmosTool_DotNet45\CosmosTool_DotNet45.csproj">
-      <Project>{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}</Project>
-      <Name>CosmosTool_DotNet45</Name>
+    <ProjectReference Include="..\CosmosTool\CosmosTool_DotNet20.csproj">
+      <Project>{9B9946EE-BEE2-4B04-9392-652545039D11}</Project>
+      <Name>CosmosTool</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -52,10 +52,6 @@
       <HintPath>..\packages\NUnitTestAdapter.2.0.0\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Redlock.CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\redlock-cs.1.0.0.1\lib\net45\Redlock.CSharp.dll</HintPath>
-    </Reference>
     <Reference Include="RestSharp">
       <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
     </Reference>
@@ -68,6 +64,9 @@
     </Reference>
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.4.0.1\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Redlock.CSharp">
+      <HintPath>..\packages\redlock-cs.1.0.0.1\lib\net45\Redlock.CSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -96,7 +95,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\CosmosFramework\CosmosFramework.csproj">
-      <Project>{6de61dc4-0243-4a7f-b0bb-753ea850d3c8}</Project>
+      <Project>{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}</Project>
       <Name>CosmosFramework</Name>
     </ProjectReference>
     <ProjectReference Include="..\CosmosRpc\CosmosRpc.csproj">
@@ -107,17 +106,17 @@
       <Project>{60511790-088E-449E-A4E2-6485A976A20C}</Project>
       <Name>CosmosScript</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CosmosTool\CosmosTool.csproj">
-      <Project>{9B9946EE-BEE2-4B04-9392-652545039D11}</Project>
-      <Name>CosmosTool</Name>
-    </ProjectReference>
     <ProjectReference Include="..\cosmos\Cosmos.csproj">
       <Project>{362E1B17-169A-4324-A1C1-CE7C1142AC75}</Project>
       <Name>Cosmos</Name>
     </ProjectReference>
     <ProjectReference Include="..\CosmosActor\CosmosActor.csproj">
-      <Project>{FDF38829-3003-4A00-A8E0-24E76FCAE727}</Project>
+      <Project>{501DEEC1-5738-465F-9AB2-4A9FF95A34E9}</Project>
       <Name>CosmosActor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CosmosTool_DotNet45\CosmosTool_DotNet45.csproj">
+      <Project>{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}</Project>
+      <Name>CosmosTool_DotNet45</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
