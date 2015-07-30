@@ -29,20 +29,20 @@ namespace CosmosTest
             }
         }
 
-        
+
         public Dictionary<string, string> Mems = new Dictionary<string, string>();
         [Test]
-        public void SimpleMemoryAsync()
+        public void MemoryAsync1000()
         {
             var taskA = Task.Run(() =>
             {
-                for (var i = 0; i < 100; i++)
+                for (var i = 0; i < AsyncCount; i++)
                     DoMem("FromTaskAA" + i);
             });
 
             var taskB = Task.Run(() =>
             {
-                for (var i = 0; i < 100; i++)
+                for (var i = 0; i < AsyncCount; i++)
                     DoMem("FromTaskBB" + i);
             });
 
@@ -61,19 +61,19 @@ namespace CosmosTest
                 Assert.AreEqual(get, val);
             }
         }
-
+        const int AsyncCount = 1000;
         [Test]
-        public void SimpleRedisAsync()
+        public void RedisAsyncLock1000()
         {
             var taskA = Task.Run(() =>
             {
-                for (var i = 0; i < 100; i++)
+                for (var i = 0; i < AsyncCount; i++)
                     DoMemDataAsync("FromTaskAA" + i);
             });
 
             var taskB = Task.Run(() =>
             {
-                for (var i = 0; i < 100; i++)
+                for (var i = 0; i < AsyncCount; i++)
                     DoMemDataAsync("FromTaskBB" + i);
             });
 
@@ -85,15 +85,13 @@ namespace CosmosTest
 
         async void DoMemDataAsync(string val)
         {
-            Lock locker = _memDataModule.Lock("TestMemData");
-
-            var set = await _memDataModule.Set("TestMemData", val);
-            Assert.AreEqual(set, true);
-            var get = await _memDataModule.Get("TestMemData");
-            Assert.AreEqual(get, val);
-
-            _memDataModule.UnLock(locker);
-
+            using (var data = _memDataModule.GetData("TestMemData"))
+            {
+                var set = await data.SetValue(val);
+                Assert.AreEqual(set, true);
+                var get = await data.GetValue();
+                Assert.AreEqual(get, val);
+            }
         }
 
     }

@@ -9,46 +9,24 @@ using StackExchange.Redis;
 
 namespace Cosmos
 {
-    public class MemoryData
+    public class MemoryData : IDisposable
     {
-        private ConnectionMultiplexer _redis;
-
-        internal MemoryData(ConnectionMultiplexer redis)
-        {
-            _redis = redis;
-        }
-    }
-    public class MemoryDataModule
-    {
-        private ConnectionMultiplexer redis;
         public IDatabase Db;
-        private Redlock.CSharp.Redlock _redlock;
-        public MemoryDataModule()
+        private readonly Redlock.CSharp.Redlock _redlock;
+        readonly Lock _locker;
+        private string _key;
+        internal MemoryData(string key, IDatabase db, Redlock.CSharp.Redlock redlock)
         {
-            redis = ConnectionMultiplexer.Connect("127.0.0.1");
-            _redlock = new Redlock.CSharp.Redlock(redis);
-            Db = redis.GetDatabase();
-        }
+            _key = key;
+            Db = db;
+            _redlock = redlock;
 
-        public void UsingLock(string key, Action action)
-        {
-            Lock locker;
-            while (!CheckLock(key, out locker))
+            while (!CheckLock(key, out _locker))
             {
                 // blocking
             }
-
-            try
-            {
-                action();
-
-            }
-            finally
-            {
-                _redlock.Unlock(locker);
-            }
-            
         }
+
         public string GetLockToken(string key)
         {
             return "LOCKOLOCKOLOCO_" + key;
@@ -60,53 +38,71 @@ namespace Cosmos
             return _redlock.Lock(lockKey, new TimeSpan(0, 0, 10), out locker);
         }
 
-        public async Task<bool> Set(string key, string value)
+        public void Dispose()
+        {
+            _redlock.Unlock(_locker);
+        }
+
+        public async Task<bool> SetValue(string value)
         {
             lock (_cache)
             {
-                _cache.Remove(key);    
+                _cache.Remove(_key);
             }
-            
-            var rValue = await Db.StringSetAsync(key, value);
+
+            var rValue = await Db.StringSetAsync(_key, value);
+
             lock (_cache)
             {
-                if (_cache.ContainsKey(key))
-                    _cache[key] = value;
+                if (_cache.ContainsKey(_key))
+                    _cache[_key] = value;
             }
             return rValue;
         }
         public Dictionary<string, RedisValue> _cache = new Dictionary<string, RedisValue>();
 
-        public async Task<RedisValue> Get(string key)
+        public async Task<RedisValue> GetValue()
         {
             RedisValue rValue;
             lock (_cache)
             {
-                if (_cache.TryGetValue(key, out rValue))
+                if (_cache.TryGetValue(_key, out rValue))
                 {
                     return rValue;
                 }
             }
 
-            rValue = await Db.StringGetAsync(key);
-            _cache[key] = rValue;
+            rValue = await Db.StringGetAsync(_key);
+
+            lock (_cache)
+            {
+                _cache[_key] = rValue;
+            }
 
             return rValue;
+        }
+    }
 
+    public class MemoryDataModule : IDisposable
+    {
+        private readonly ConnectionMultiplexer _redis;
+        public IDatabase Db;
+        private readonly Redlock.CSharp.Redlock _redlock;
+        public MemoryDataModule()
+        {
+            _redis = ConnectionMultiplexer.Connect("127.0.0.1");
+            _redlock = new Redlock.CSharp.Redlock(_redis);
+            Db = _redis.GetDatabase();
         }
 
-        public Lock Lock(string key)
+        public MemoryData GetData(string key)
         {
-            Lock locker;
-            while (!CheckLock(key, out locker))
-            {
-                // blocking
-            }
-            return locker;
+            return new MemoryData(key, Db, _redlock);
         }
-        public void UnLock(Lock locker)
+
+        public void Dispose()
         {
-            _redlock.Unlock(locker);
+            _redis.Dispose();
         }
     }
 }
