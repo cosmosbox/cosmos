@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MsgPack.Serialization;
 using Redlock.CSharp;
 using StackExchange.Redis;
 
@@ -29,7 +30,7 @@ namespace Cosmos
 
         public string GetLockToken(string key)
         {
-            return "LOCKOLOCKOLOCO_" + key;
+            return "LOCKOLOKCO_" + key;
         }
 
         public bool CheckLock(string key, out Lock locker)
@@ -43,7 +44,19 @@ namespace Cosmos
             _redlock.Unlock(_locker);
         }
 
-        public async Task<bool> SetValue(string value)
+        public async Task<bool> SetValue<T>(T value)
+        {
+            var serializer = MessagePackSerializer.Get<T>();
+            var msgBytes = serializer.PackSingleObject(value);
+            return await SetBytes(msgBytes);
+        }
+
+        //public async Task<bool> SetString(string toBase64String)
+        //{
+        //    return await SetBytes(Encoding.UTF8.GetBytes(toBase64String));
+        //}
+
+        async Task<bool> SetBytes(byte[] value)
         {
             lock (_cache)
             {
@@ -61,7 +74,23 @@ namespace Cosmos
         }
         public Dictionary<string, RedisValue> _cache = new Dictionary<string, RedisValue>();
 
-        public async Task<RedisValue> GetValue()
+        public async Task<T> GetValue<T>()
+        {
+            var value = await GetBytes();
+
+            var serializer = MessagePackSerializer.Get<T>();
+            var getMsg = serializer.UnpackSingleObject(value);
+
+            return getMsg;
+        }
+
+        //public async Task<string> GetString()
+        //{
+        //    var bytes = await GetBytes();
+        //    return Encoding.UTF8.GetString(bytes);
+        //}
+
+        async Task<byte[]> GetBytes()
         {
             RedisValue rValue;
             lock (_cache)
@@ -79,7 +108,7 @@ namespace Cosmos
                 _cache[_key] = rValue;
             }
 
-            return rValue;
+            return (byte[])rValue;
         }
     }
 
