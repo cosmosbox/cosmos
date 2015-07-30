@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using StackExchange.Redis;
 using Cosmos;
+using Redlock.CSharp;
+
 namespace CosmosTest
 {
     [TestFixture]
     class TestMemoryData
     {
 
-        MemoryData MemData = new MemoryData();
+        MemoryDataModule _memDataModule = new MemoryDataModule();
         [Test]
         public async void SimpleGetSetRedis()
         {
@@ -26,19 +28,53 @@ namespace CosmosTest
                 // ^^^ store and re-use this!!!
             }
         }
+
+        
+        public Dictionary<string, string> Mems = new Dictionary<string, string>();
         [Test]
-        public async void SimpleMemData()
+        public void SimpleMem()
         {
             var taskA = Task.Run(() =>
             {
                 for (var i = 0; i < 100; i++)
-                    DoTask("FromTaskA" + i);
+                    DoMem("FromTaskAA" + i);
             });
 
             var taskB = Task.Run(() =>
             {
                 for (var i = 0; i < 100; i++)
-                    DoTask("FromTaskB" + i);
+                    DoMem("FromTaskBB" + i);
+            });
+
+            taskA.Wait();
+            taskB.Wait();
+
+            //Assert.Pass();
+        }
+        void DoMem(string val)
+        {
+            lock (Mems)
+            {
+                var set = Mems["TestMemData"] = val;
+                Assert.AreEqual(set, val);
+                var get = Mems["TestMemData"];
+                Assert.AreEqual(get, val);
+            }
+        }
+
+        [Test]
+        public void SimpleMemData()
+        {
+            var taskA = Task.Run(() =>
+            {
+                for (var i = 0; i < 100; i++)
+                    DoMemDataAsync("FromTaskAA" + i);
+            });
+
+            var taskB = Task.Run(() =>
+            {
+                for (var i = 0; i < 100; i++)
+                    DoMemDataAsync("FromTaskBB" + i);
             });
 
             taskA.Wait();
@@ -47,12 +83,17 @@ namespace CosmosTest
             //Assert.Pass();
         }
 
-        async void DoTask(string val)
+        async void DoMemDataAsync(string val)
         {
-            var set = await MemData.Set("TestMemData", val);
+            Lock locker = _memDataModule.Lock("TestMemData");
+
+            var set = await _memDataModule.Set("TestMemData", val);
             Assert.AreEqual(set, true);
-            var get = await MemData.Get("TestMemData");
+            var get = await _memDataModule.Get("TestMemData");
             Assert.AreEqual(get, val);
+
+            _memDataModule.UnLock(locker);
+
         }
 
     }

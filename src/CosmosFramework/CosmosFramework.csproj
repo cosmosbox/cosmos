@@ -30,6 +30,9 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Redlock.CSharp">
+      <HintPath>..\packages\redlock-cs.1.0.0.1\lib\net45\Redlock.CSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="StackExchange.Redis, Version=1.0.316.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\StackExchange.Redis.1.0.481\lib\net45\StackExchange.Redis.dll</HintPath>
@@ -37,7 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MemoryData.cs" />
+    <Compile Include="MemoryDataModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\cosmos\NLog.config">
