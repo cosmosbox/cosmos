@@ -30,10 +30,12 @@ namespace CosmosTest
             }
         }
 
+        const int AsyncCount = 1000;
 
         public Dictionary<string, string> Mems = new Dictionary<string, string>();
+
         [Test]
-        public void MemoryAsync1000()
+        public void MemoryAsync100()
         {
             var taskA = Task.Run(() =>
             {
@@ -62,10 +64,9 @@ namespace CosmosTest
                 Assert.AreEqual(get, val);
             }
         }
-        const int AsyncCount = 1000;
 
         [Test]
-        public void RedisAsyncLock1000()
+        public void RedisAsyncLock100()
         {
             var taskA = Task.Run(() =>
             {
