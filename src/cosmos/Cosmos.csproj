@@ -50,10 +50,6 @@
       <Project>{FDF38829-3003-4A00-A8E0-24E76FCAE727}</Project>
       <Name>CosmosActor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CosmosApp\CosmosApp.csproj">
-      <Project>{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}</Project>
-      <Name>CosmosApp</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="NLog.config">

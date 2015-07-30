@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,6 +10,7 @@
     <RootNamespace>Cosmos.Actor</RootNamespace>
     <AssemblyName>CosmosActor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -73,11 +74,11 @@
   <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\CosmosRpc\CosmosRpc.csproj">
-      <Project>{7341e7ea-168c-4688-8b8c-4e697540fbaa}</Project>
+      <Project>{7341E7EA-168C-4688-8B8C-4E697540FBAA}</Project>
       <Name>CosmosRpc</Name>
     </ProjectReference>
     <ProjectReference Include="..\CosmosTool\CosmosTool.csproj">
-      <Project>{9b9946ee-bee2-4b04-9392-652545039d11}</Project>
+      <Project>{9B9946EE-BEE2-4B04-9392-652545039D11}</Project>
       <Name>CosmosTool</Name>
     </ProjectReference>
   </ItemGroup>

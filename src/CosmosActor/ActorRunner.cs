@@ -38,7 +38,10 @@ namespace Cosmos.Actor
         private ActorConf Conf;
         public Actor Actor;
 
-        public object ActorName => Conf.Name;
+        public object ActorName
+        {
+            get { return Conf.Name; }
+        }
 
         private ActorRunner(ActorConf conf)
         {

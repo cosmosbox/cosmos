@@ -27,7 +27,7 @@ namespace Cosmos.Actor
         {
             foreach (var etcdUrl in discoveryServers)
             {
-                var etcdClient = new EtcdClient(new Uri($"{etcdUrl}/v2/keys"));
+                var etcdClient = new EtcdClient(new Uri(string.Format("{0}/v2/keys", etcdUrl)));
                 try
                 {
                     etcdClient.Statistics.Leader();

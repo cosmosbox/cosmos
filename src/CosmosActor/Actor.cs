@@ -18,14 +18,15 @@ namespace Cosmos.Actor
         public RpcServer RpcServer;
         private Discovery _discovery;
 
+        public bool IsActive { get; set; }
+
         internal void Init(ActorConf conf)
         {
+            IsActive = true;
             Conf = conf;
             RpcServer = new RpcServer(NewRpcCaller());
             _discovery = new Discovery(Conf.AppToken, Conf.DiscoverServers);
         }
-
-        public bool IsActive { get; set; } = true;
 
         public async Task<T> Call<T>(string actorName, string funcName, params object[] arguments)
         {

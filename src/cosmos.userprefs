@@ -1,11 +1,6 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="CosmosTool\AssemblyInfo.cs">
-    <Files>
-      <File FileName="CosmosTool\AssemblyInfo.cs" Line="6" Column="1" />
-      <File FileName="..\examples\ExampleProject\Main.cs" Line="1" Column="1" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Breakpoint file="d:\LocalCode\cosmos-net\cosmos\cosmos\Main.cs" line="31" />

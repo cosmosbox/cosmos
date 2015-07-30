@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos", "cosmos\Cosmos.csproj", "{362E1B17-169A-4324-A1C1-CE7C1142AC75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosApp", "CosmosApp\CosmosApp.csproj", "{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosActor", "CosmosActor\CosmosActor.csproj", "{FDF38829-3003-4A00-A8E0-24E76FCAE727}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosTest", "CosmosTest\CosmosTest.csproj", "{CCE2BDCD-B04B-4F58-A5CA-47271B002885}"
@@ -18,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleProjectLib", "..\examples\ExampleProjectLib\ExampleProjectLib.csproj", "{BFF6FB3E-E2F1-494B-963C-C5A5C0DB5B08}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosScript", "CosmosScript\CosmosScript.csproj", "{60511790-088E-449E-A4E2-6485A976A20C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosFramework", "CosmosFramework\CosmosFramework.csproj", "{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,7 +91,9 @@ Global
 		{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}.Default|Any CPU.ActiveCfg = Debug|Any CPU
 		{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}.Default|Any CPU.Build.0 = Debug|Any CPU
 		{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}.Default|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}.Default|Mixed Platforms.Build.0 = Debug|Any CPU
 		{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}.Default|x86.ActiveCfg = Debug|Any CPU
+		{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}.Default|x86.Build.0 = Debug|Any CPU
 		{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
