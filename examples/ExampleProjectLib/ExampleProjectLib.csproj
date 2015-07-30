@@ -30,10 +30,21 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Nancy, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\Nancy.1.2.0\lib\net40\Nancy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nancy.Hosting.Self, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\Nancy.Hosting.Self.1.2.0\lib\net40\Nancy.Hosting.Self.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyClass.cs" />
+    <Compile Include="actors\chatActor\ChatActor.cs" />
+    <Compile Include="actors\httpActor\HttpActor.cs" />
+    <Compile Include="actors\httpActor\HttpHandler.cs" />
+    <Compile Include="ExampleApp.cs" />
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -45,6 +56,22 @@
       <Link>NLog.xsd</Link>
       <SubType>Designer</SubType>
     </None>
+    <None Include="config\actors.json" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CosmosActor\CosmosActor.csproj">
+      <Project>{501deec1-5738-465f-9ab2-4a9ff95a34e9}</Project>
+      <Name>CosmosActor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\CosmosFramework\CosmosFramework.csproj">
+      <Project>{6de61dc4-0243-4a7f-b0bb-753ea850d3c8}</Project>
+      <Name>CosmosFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\CosmosRpc\CosmosRpc.csproj">
+      <Project>{7341e7ea-168c-4688-8b8c-4e697540fbaa}</Project>
+      <Name>CosmosRpc</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

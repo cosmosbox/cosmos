@@ -40,9 +40,16 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\..\src\CosmosFramework\CosmosFramework.csproj">
+      <Project>{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}</Project>
+      <Name>CosmosFramework</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ExampleProjectLib\ExampleProjectLib.csproj">
       <Project>{BFF6FB3E-E2F1-494B-963C-C5A5C0DB5B08}</Project>
       <Name>ExampleProjectLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

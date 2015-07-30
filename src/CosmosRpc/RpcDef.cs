@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MsgPack;
 using MsgPack.Serialization;
+
 namespace Cosmos.Rpc
 {
     public class RpcShare

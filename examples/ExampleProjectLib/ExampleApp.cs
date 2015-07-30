@@ -8,13 +8,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Threading.Tasks;
+using Cosmos.Framework;
 namespace ExampleProject
 {
-	public class MyClass
-	{
-		public MyClass ()
-		{
-		}
-	}
+    public class ExampleApp : CosmosApp
+    {
+        public ExampleApp()
+        {
+            new HttpActor();
+        }
+    }
 }
 

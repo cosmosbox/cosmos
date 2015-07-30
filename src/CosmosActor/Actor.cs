@@ -13,7 +13,8 @@ namespace Cosmos.Actor
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public ActorConf Conf { get; private set; }
-        public Dictionary<string, RpcClient> RpcClients = new Dictionary<string, RpcClient>();
+        public Dictionary<string, RpcClient> RpcClients = new Dictionary<string, RpcClient>();  // every actor know each other
+
         public Dictionary<Type, List<RpcClient>> RpcClientsOfTypes = new Dictionary<Type, List<RpcClient>>();
         public RpcServer RpcServer;
         private Discovery _discovery;
@@ -27,6 +28,51 @@ namespace Cosmos.Actor
             RpcServer = new RpcServer(NewRpcCaller());
             _discovery = new Discovery(Conf.AppToken, Conf.DiscoverServers);
         }
+
+        #region Boardcast, Event listen
+
+        public delegate void ActorEventListenver();
+
+        /// <summary>
+        /// Send all actor a event
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <param name="data"></param>
+        public void Boardcast(Enum eventName, object data)
+        {
+            
+        }
+
+        /// <summary>
+        /// Listen
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <param name="listener"></param>
+        public void BindEvent(Enum eventName, ActorEventListenver listener)
+        {
+            
+        }
+
+        /// <summary>
+        /// Listen Once and UnBind
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <param name="listener"></param>
+        public void OnceEvent(Enum eventName, ActorEventListenver listener)
+        {
+            
+        }
+
+        /// <summary>
+        /// Stop Listen
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <param name="listener"></param>
+        public void UnBindEvent(Enum eventName, ActorEventListenver listener)
+        {
+            
+        }
+        #endregion
 
         public async Task<T> Call<T>(string actorName, string funcName, params object[] arguments)
         {

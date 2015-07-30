@@ -22,7 +22,6 @@ namespace Cosmos.Rpc
     /// </summary>
     public abstract class RpcCaller
     {
-        
     }
 
     /// <summary>

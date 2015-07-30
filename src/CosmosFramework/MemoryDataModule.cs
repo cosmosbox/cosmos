@@ -8,7 +8,7 @@ using MsgPack.Serialization;
 using Redlock.CSharp;
 using StackExchange.Redis;
 
-namespace Cosmos
+namespace Cosmos.Framework
 {
     public class MemoryData : IDisposable
     {
@@ -50,11 +50,6 @@ namespace Cosmos
             var msgBytes = serializer.PackSingleObject(value);
             return await SetBytes(msgBytes);
         }
-
-        //public async Task<bool> SetString(string toBase64String)
-        //{
-        //    return await SetBytes(Encoding.UTF8.GetBytes(toBase64String));
-        //}
 
         async Task<bool> SetBytes(byte[] value)
         {
