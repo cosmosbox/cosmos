@@ -1,12 +1,11 @@
-﻿
-using System;
+﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
+
 #if DOTNET45
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 #endif
+
 namespace Cosmos.Tool
 {
     /// <summary>
@@ -19,7 +18,7 @@ namespace Cosmos.Tool
         // ```
         // await co;
         // ```
- : INotifyCompletion
+        : INotifyCompletion
 #endif
 
     {
@@ -38,7 +37,8 @@ namespace Cosmos.Tool
             return CoroutineRunner.Start(em);
         }
 
-#if DOTNET45
+#if DOTNET45  // async/await support,      await coroutine
+        
         public bool IsCompleted { get; private set; }
 
         public Coroutine GetAwaiter()
