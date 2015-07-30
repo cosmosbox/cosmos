@@ -40,7 +40,6 @@
       <Link>Coroutine\CoroutineRunner.cs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="CoroutineAwaiter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -69,7 +69,7 @@ namespace CosmosTest
         public async void CreateActorByCode()
         {
             var co = Coroutine.Start(WaitRunner());
-            await new CoroutineAwaiter(co);
+            await co;
             
             Assert.AreEqual(1, 1);
         }

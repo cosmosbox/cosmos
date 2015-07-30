@@ -1,14 +1,27 @@
-﻿using System;
+﻿
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-
+#if DOTNET45
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+#endif
 namespace Cosmos.Tool
 {
     /// <summary>
     /// TODO: yield return 一个协程，本协程挂起等待
     /// </summary>
     public abstract class Coroutine
+#if DOTNET45
+        // Make Coroutine can be with async/await 
+        //
+        // ```
+        // await co;
+        // ```
+ : INotifyCompletion
+#endif
+
     {
         public Action<object> OnYield;
 
@@ -24,6 +37,29 @@ namespace Cosmos.Tool
         {
             return CoroutineRunner.Start(em);
         }
+
+#if DOTNET45
+        public bool IsCompleted { get; private set; }
+
+        public Coroutine GetAwaiter()
+        {
+            Task.Run(() =>
+            {
+                while (!IsFinished)
+                {
+                }
+                IsCompleted = true;
+            });
+            return this;
+        }
+        // TResult can also be void
+        public void OnCompleted(Action continuation)
+        {
+            continuation();
+        }
+
+        public void GetResult() { }
+#endif
     }
 
     /// <summary>
