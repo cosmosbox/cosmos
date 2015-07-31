@@ -16,14 +16,12 @@ namespace Cosmos.Rpc
 
     public struct ResponseMsg
     {
-        public int RequestId;
         public object Value;
         public bool IsError;
         public string ErrorMessage;
     }
     public struct RequestMsg
     {
-        public int RequestId;
         public string FuncName;
         public object[] Arguments;  // will be MsgPackObject
     }

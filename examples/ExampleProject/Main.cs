@@ -6,7 +6,7 @@ namespace ExampleProject
 	{
 		public static void Main (string[] args)
 		{
-		    var project = new ExampleApp();
+		    var project = new ExampleServer();
             project.StartAll();
 		}
 	}

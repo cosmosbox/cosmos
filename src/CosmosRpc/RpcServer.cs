@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,78 +18,24 @@ using NLog;
 
 namespace Cosmos.Rpc
 {
-    /// <summary>
-    /// Any call RPC Fucntion must in this class
-    /// </summary>
-    public abstract class RpcCaller
-    {
-    }
-
-    /// <summary>
-    /// 使用ZeroMQ进行RPC
-    /// </summary>
-    public class RpcServer : IDisposable
+    public class RpcServer : BaseNetMqServer
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        internal NetMQContext _context;
-        private ResponseSocket _server;
-        public int Port { get; private set; }
-        public string Host { get; private set; }
-
-        object RpcInstace;
-
-
-        public Poller Poller;
-        public RpcServer(RpcCaller rpcInstance, string host = "0.0.0.0")
+        private RpcCaller _rpcCaller;
+        public RpcServer(RpcCaller rpcCaller, string host = "0.0.0.0") : base(-1, host)
         {
-            RpcInstace = rpcInstance;
-            Poller = new Poller();
-            Host = host;
-
-            _context = NetMQContext.Create();
-            _server = _context.CreateResponseSocket();
-
-            Poller.AddSocket(_server);
-
-            Port = _server.BindRandomPort("tcp://" + host);
-            //_server.ReceiveReady += OnReceive;
-            // Bind the server to a local TCP address
-            //_server.Bind(uri);
-
-
-            // Connect the client to the server
-            //client.Connect("tcp://localhost:5556");
-
-            //// Send a message from the client socket
-            //client.Send("Hello");
-
-            //// Receive the message from the server socket
-            //string m1 = _server.re();
-            //Console.WriteLine("From Client: {0}", m1);
-
-            _server.ReceiveReady += OnReceiveReady;
-            DoPollerAsync();
-
-            // Send a response back from the server
-            //_server.Send("Hi Back");
-
-            // Receive the response from the client socket
-            //string m2 = client.ReceiveString();
-            //Console.WriteLine("From Server: {0}", m2);
+            _rpcCaller = rpcCaller;
         }
 
-        private void OnReceiveReady(object sender, NetMQSocketEventArgs e)
+        protected override async Task<byte[]> ProcessRequest(byte[] reqData)
         {
-            var data = _server.Receive();
-            var req = RpcShare.RequestSerializer.UnpackSingleObject(data);
+            var requestMsg = MsgPackTool.GetMsg<RequestMsg>(reqData);
 
-            ProcessRequest(req);
-        }
+            var resMsg = new ResponseMsg();
+            resMsg.IsError = false;
 
-        async void ProcessRequest(RequestMsg requestMsg)
-        {
-            var method = RpcInstace.GetType().GetMethod(requestMsg.FuncName);
+            var method = _rpcCaller.GetType().GetMethod(requestMsg.FuncName);
             object executeResult = null;
 
             if (method != null)
@@ -99,48 +46,140 @@ namespace Cosmos.Rpc
                     MsgPack.MessagePackObject arg = (MsgPack.MessagePackObject)requestMsg.Arguments[i];
                     arguments[i] = arg.ToObject();
                 }
-                var result = method.Invoke(RpcInstace, arguments);
-
-                if (result is Task)
+                try
                 {
-                    executeResult = await (result as Task<object>);
-                }
-                else
-                {
-                    executeResult = result;
-                }
+                    var result = method.Invoke(_rpcCaller, arguments);
 
+                    if (result is Task)
+                    {
+                        executeResult = await (result as Task<object>);
+                    }
+                    else
+                    {
+                        executeResult = result;
+                    }
+                }
+                catch (Exception e)
+                {
+                    resMsg.IsError = true;
+                    resMsg.ErrorMessage = string.Format("[ERROR]Method '{0}' Exception: {1}", requestMsg.FuncName, e);
+                    Logger.Error(resMsg.ErrorMessage);
+                }
             }
             else
             {
-                Logger.Error("[ERROR]Not found method: {0}", requestMsg.FuncName);
+                resMsg.IsError = true;
+                resMsg.ErrorMessage = string.Format("[ERROR]Not found method: {0}", requestMsg.FuncName);
+                Logger.Error(resMsg.ErrorMessage);
                 Thread.Sleep(1);
             }
 
-            var data = RpcShare.ResponseSerializer.PackSingleObject(new ResponseMsg {
-                RequestId = requestMsg.RequestId,
-                Value = executeResult,
-            });
-            _server.Send(data);
+            resMsg.Value = executeResult;
+            return MsgPackTool.GetBytes(resMsg);
         }
 
-        async void DoPollerAsync()
-        {
-            await Task.Run(() =>
-            {
-                Poller.Start();
-            });
-        }
-
-        public void Dispose()
-        {
-            Poller.RemoveSocket(_server);
-            _server.Close();
-            _context.Dispose();
-
-            Poller.Stop();
-            Poller.Dispose();
-        }
     }
+    /// <summary>
+    /// Any call RPC Fucntion must in this class
+    /// </summary>
+    public abstract class RpcCaller
+    {
+    }
+
+    /// <summary>
+    /// 使用ZeroMQ进行RPC
+    /// </summary>
+    //public class RpcServer : IDisposable
+    //{
+    //    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+    //    public Poller Poller;
+    //    private Task _pollerTask;
+
+    //    internal NetMQContext _context;
+    //    private ResponseSocket _server;
+    //    public int Port { get; private set; }
+    //    public string Host { get; private set; }
+
+    //    object RpcInstace;
+
+    //    public RpcServer(RpcCaller rpcInstance, string host = "0.0.0.0")
+    //    {
+    //        RpcInstace = rpcInstance;
+    //        Poller = new Poller();
+    //        Host = host;
+
+    //        _context = NetMQContext.Create();
+    //        _server = _context.CreateResponseSocket();
+
+    //        Poller.AddSocket(_server);
+
+    //        Port = _server.BindRandomPort("tcp://" + host);
+    //        _server.ReceiveReady += OnReceiveReady;
+
+    //        _pollerTask = Task.Run(() =>
+    //        {
+    //            Poller.Start();
+    //        });
+    //    }
+
+    //    private void OnReceiveReady(object sender, NetMQSocketEventArgs e)
+    //    {
+    //        var data = _server.Receive();
+    //        var req = RpcShare.RequestSerializer.UnpackSingleObject(data);
+
+    //        ProcessRequest(req);
+    //    }
+
+    //    async void ProcessRequest(RequestMsg requestMsg)
+    //    {
+    //        var method = RpcInstace.GetType().GetMethod(requestMsg.FuncName);
+    //        object executeResult = null;
+
+    //        if (method != null)
+    //        {
+    //            var arguments = new object[requestMsg.Arguments.Length];
+    //            for (var i = 0; i < arguments.Length; i++) // MsgPack.MessagePackObject arg in requestProto.Arguments)
+    //            {
+    //                MsgPack.MessagePackObject arg = (MsgPack.MessagePackObject)requestMsg.Arguments[i];
+    //                arguments[i] = arg.ToObject();
+    //            }
+    //            var result = method.Invoke(RpcInstace, arguments);
+
+    //            if (result is Task)
+    //            {
+    //                executeResult = await (result as Task<object>);
+    //            }
+    //            else
+    //            {
+    //                executeResult = result;
+    //            }
+
+    //        }
+    //        else
+    //        {
+    //            Logger.Error("[ERROR]Not found method: {0}", requestMsg.FuncName);
+    //            Thread.Sleep(1);
+    //        }
+
+    //        var data = RpcShare.ResponseSerializer.PackSingleObject(new ResponseMsg {
+    //            RequestId = requestMsg.RequestId,
+    //            Value = executeResult,
+    //        });
+    //        _server.Send(data);
+    //    }
+
+
+    //    public void Dispose()
+    //    {
+    //        Poller.RemoveSocket(_server);
+    //        _server.Close();
+    //        _context.Dispose();
+
+    //        Poller.Stop();
+    //        Poller.Dispose();
+    //        _pollerTask.Dispose();
+    //    }
+    //}
 }
 

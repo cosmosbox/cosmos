@@ -537,7 +537,7 @@
         </xs:attribute>
         <xs:attribute name="errorStream" type="xs:boolean">
           <xs:annotation>
-            <xs:documentation>Indicates whether the error stream (stderr) should be used instead of the output stream (stdout).</xs:documentation>
+            <xs:documentation>Indicates whether the error recvStream (stderr) should be used instead of the output recvStream (stdout).</xs:documentation>
           </xs:annotation>
         </xs:attribute>
       </xs:extension>
@@ -1049,7 +1049,7 @@
         </xs:attribute>
         <xs:attribute name="forceManaged" type="xs:boolean">
           <xs:annotation>
-            <xs:documentation>Gets ors set a value indicating whether a managed file stream is forced, instead of used the native implementation.</xs:documentation>
+            <xs:documentation>Gets ors set a value indicating whether a managed file recvStream is forced, instead of used the native implementation.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="fileAttributes" type="NLog.Targets.Win32FileAttributes">

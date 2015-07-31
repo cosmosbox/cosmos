@@ -44,7 +44,7 @@
     <Compile Include="actors\chatActor\ChatActor.cs" />
     <Compile Include="actors\httpActor\HttpActor.cs" />
     <Compile Include="actors\httpActor\HttpHandler.cs" />
-    <Compile Include="ExampleApp.cs" />
+    <Compile Include="ExampleServer.cs" />
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
