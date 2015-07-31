@@ -10,6 +10,7 @@ using Nancy.ModelBinding;
 
 namespace ExampleProject
 {
+
     internal class HttpActorRpcCaller : RpcCaller
     {
         public int Add(int a, int b)
