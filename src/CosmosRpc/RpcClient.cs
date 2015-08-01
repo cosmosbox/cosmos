@@ -16,7 +16,6 @@ namespace Cosmos.Rpc
 {
     public class RpcClient : BaseNetMqClient
     {
-
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public RpcClient(string host, int port, string protocol = "tcp") : base(host, port, protocol)

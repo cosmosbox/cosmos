@@ -23,7 +23,8 @@ namespace Cosmos.Rpc
     public abstract class BaseNetMqClient : IDisposable
     {
         internal NetMQContext _context;
-        private RequestSocket _client;
+        private RequestSocket _requestClient;
+        private SubscriberSocket _subSocket;
         Poller _poller;
         private Task _pollerTask;
 
@@ -39,23 +40,52 @@ namespace Cosmos.Rpc
         }
         private Dictionary<string, BaseResponseMsg> _responses = new Dictionary<string, BaseResponseMsg>();
 
-        public BaseNetMqClient(string host, int port, string protocol = "tcp")
+        protected BaseNetMqClient(string host, int port, string protocol = "tcp")
         {
             Host = host;
             Port = port;
             Protocol = protocol;
 
-            _context = NetMQContext.Create();
-            _client = _context.CreateRequestSocket();
-            _client.Connect(Address);
-            _client.ReceiveReady += OnReceiveReady;
-
             _poller = new Poller();
-            _poller.AddSocket(_client);
+
+            _context = NetMQContext.Create();
+
+            _subSocket = _context.CreateSubscriberSocket();
+            _subSocket.Options.ReceiveHighWatermark = 1000;
+            _subSocket.Connect(Address);
+            _subSocket.ReceiveReady += OnSubscriberReceiveReady;
+            _poller.AddSocket(_subSocket);
+
+            _requestClient = _context.CreateRequestSocket();
+            _requestClient.Connect(Address);
+            _requestClient.ReceiveReady += OnRequestReceiveReady;
+
+            _poller.AddSocket(_requestClient);
             _pollerTask = Task.Run(() =>
             {
                 _poller.Start();
             });
+        }
+
+        private void OnSubscriberReceiveReady(object sender, NetMQSocketEventArgs e)
+        {
+            string messageTopicReceived = _subSocket.ReceiveString();
+            string messageReceived = _subSocket.ReceiveString();
+
+            Console.WriteLine("Topic: {0}", messageTopicReceived);
+            Console.WriteLine("Message: {0}", messageReceived);
+        }
+
+        public void Dispose()
+        {
+            _subSocket.Close();
+            _poller.RemoveSocket(_requestClient);
+            _requestClient.Close();
+            _context.Dispose();
+
+            _poller.Stop();
+            _poller.Dispose();
+            _pollerTask.Dispose(); // until release poller
         }
 
         protected async Task<TResponse> Request<TRequest, TResponse>(TRequest obj)
@@ -71,12 +101,12 @@ namespace Cosmos.Rpc
             var requestMsg = new BaseRequestMsg()
             {
                 RequestToken = Path.GetRandomFileName(),
-                Data = ProcessRequest(obj),
+                Data = obj,
             };
 
             var bytes = MsgPackTool.GetBytes(requestMsg);
 
-            _client.Send(bytes);
+            _requestClient.Send(bytes);
 
             var waitResponse = Task.Run(() =>
             {
@@ -86,36 +116,61 @@ namespace Cosmos.Rpc
             });
             var responseData = await waitResponse;
             _responses.Remove(requestMsg.RequestToken); // must true!
-            return OnResponse(responseData.Data);
+            return responseData.Data;
         }
 
-        private void OnReceiveReady(object sender, NetMQSocketEventArgs e)
+        private void OnRequestReceiveReady(object sender, NetMQSocketEventArgs e)
         {
-            var recvData = _client.Receive();
+            var recvData = _requestClient.Receive();
             var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvData);
             _responses[recvMsg.RequestToken] = recvMsg;
         }
 
-        protected byte[] OnResponse(byte[] data)
+        #region Boardcast, Event listen
+
+        public delegate void ActorEventListenver();
+
+        /// <summary>
+        /// Send all actor a event
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <param name="data"></param>
+        public void Boardcast(Enum eventName, object data)
         {
-            return data;
+            
         }
 
-        protected virtual byte[] ProcessRequest(byte[] obj)
+        /// <summary>
+        /// Listen
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <param name="listener"></param>
+        public void BindEvent(Enum eventName, ActorEventListenver listener)
         {
-            return obj;
+
         }
 
-        public void Dispose()
+        /// <summary>
+        /// Listen Once and UnBind
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <param name="listener"></param>
+        public void OnceEvent(Enum eventName, ActorEventListenver listener)
         {
-            _poller.RemoveSocket(_client);
-            _client.Close();
-            _context.Dispose();
 
-            _poller.Stop();
-            _poller.Dispose();
-            _pollerTask.Dispose(); // until release poller
         }
+
+        /// <summary>
+        /// Stop Listen
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <param name="listener"></param>
+        public void UnBindEvent(Enum eventName, ActorEventListenver listener)
+        {
+
+        }
+        #endregion
+
     }
 
 }

@@ -10,32 +10,6 @@ using NetMQ.Sockets;
 
 namespace Cosmos.Rpc
 {
-    public class MsgPackTool
-    {
-        public static void WriteStream<T>(MemoryStream stream, T responseMsg)
-        {
-            var serializer = MessagePackSerializer.Get<T>();
-            serializer.Pack(stream, responseMsg);
-        }
-        public static T ReadStream<T>(MemoryStream stream)
-        {
-            var serializer = MessagePackSerializer.Get<T>();
-            return serializer.Unpack(stream);
-        }
-
-        public static byte[] GetBytes<T>(T msg)
-        {
-            var serializer = MessagePackSerializer.Get<T>();
-            return serializer.PackSingleObject(msg);
-        }
-        public static T GetMsg<T>(byte[] data)
-        {
-            var serializer = MessagePackSerializer.Get<T>();
-            return serializer.UnpackSingleObject(data);
-        }
-
-    }
-
     /// <summary>
     /// Mutable
     /// </summary>
@@ -49,7 +23,8 @@ namespace Cosmos.Rpc
     public abstract class BaseNetMqServer : IDisposable
     {
         internal NetMQContext _context;
-        private ResponseSocket _server;
+        private ResponseSocket _responseSocket;
+        private PublisherSocket _pubSocket;
         public int Port { get; private set; }
         public string Host { get; private set; }
 
@@ -63,30 +38,44 @@ namespace Cosmos.Rpc
             Host = host;
 
             _context = NetMQContext.Create();
-            _server = _context.CreateResponseSocket();
-
-            Poller.AddSocket(_server);
+            _responseSocket = _context.CreateResponseSocket();
+            Poller.AddSocket(_responseSocket);
 
             if (port == -1)
             {
-                Port = _server.BindRandomPort("tcp://" + host);
+                Port = _responseSocket.BindRandomPort("tcp://" + host);
             }
             else
             {
                 Port = port;
-                _server.Bind(string.Format("tcp://{0}:{1}", host, Port));
+                _responseSocket.Bind(string.Format("tcp://{0}:{1}", host, Port));
             }
-            
-            _server.ReceiveReady += OnReceiveReady;
+
+            _pubSocket = _context.CreatePublisherSocket();
+            _pubSocket.Options.SendHighWatermark = 1000;
+            _pubSocket.Bind(string.Format("tcp://{0}:{1}", host, Port));
+            //Poller.AddSocket(_pubSocket);
+
+            _responseSocket.ReceiveReady += OnResponseReceiveReady;
             _pollerTask = Task.Run(() =>
             {
                 Poller.Start();
             });
         }
 
-        private async void OnReceiveReady(object sender, NetMQSocketEventArgs e)
+        /// <summary>
+        /// Do Publisher
+        /// </summary>
+        /// <param name="topicName"></param>
+        /// <param name="data"></param>
+        public void Publish(string topicName, byte[] data)
         {
-            var recvData = _server.Receive();
+            _pubSocket.SendMore(topicName).Send(data);
+        }
+
+        private async void OnResponseReceiveReady(object sender, NetMQSocketEventArgs e)
+        {
+            var recvData = _responseSocket.Receive();
             var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(recvData);
             var requestDataMsg = baseRequestMsg.Data;
 
@@ -99,21 +88,15 @@ namespace Cosmos.Rpc
 
             var sendData = MsgPackTool.GetBytes(baseResponseMsg);
 
-            _server.Send(sendData);
+            _responseSocket.Send(sendData);
         }
 
-        protected virtual async Task<byte[]> ProcessRequest(byte[] requestDataMsg)
-        {
-            Console.WriteLine("[ERROR]Null Response Msg!");
-
-            return null;
-        }
-        
+        protected abstract Task<byte[]> ProcessRequest(byte[] requestDataMsg);
 
         public void Dispose()
         {
-            Poller.RemoveSocket(_server);
-            _server.Close();
+            Poller.RemoveSocket(_responseSocket);
+            _responseSocket.Close();
             _context.Dispose();
 
             Poller.Stop();
