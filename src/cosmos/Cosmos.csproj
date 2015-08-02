@@ -38,6 +38,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppBootstrap.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
@@ -54,5 +55,11 @@
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CosmosFramework\CosmosFramework.csproj">
+      <Project>{6de61dc4-0243-4a7f-b0bb-753ea850d3c8}</Project>
+      <Name>CosmosFramework</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

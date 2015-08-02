@@ -23,7 +23,7 @@ namespace Cosmos.Rpc
     public abstract class BaseNetMqServer : IDisposable
     {
         internal NetMQContext _context;
-        private ResponseSocket _responseSocket;
+        private NetMQSocket _responseSocket;
         private PublisherSocket _pubSocket;
         public int Port { get; private set; }
         public string Host { get; private set; }
@@ -51,12 +51,16 @@ namespace Cosmos.Rpc
                 _responseSocket.Bind(string.Format("tcp://{0}:{1}", host, Port));
             }
 
-            _pubSocket = _context.CreatePublisherSocket();
-            _pubSocket.Options.SendHighWatermark = 1000;
-            _pubSocket.Bind(string.Format("tcp://{0}:{1}", host, Port));
+            _responseSocket.ReceiveReady += OnResponseReceiveReady;
+
+
+            //_pubSocket = _context.CreatePublisherSocket();
+            //_pubSocket.Options.SendHighWatermark = 1000;
+            //// Bind ? Connect? 
+            //_pubSocket.Bind(string.Format("tcp://{0}:{1}", "*", Port));
+            
             //Poller.AddSocket(_pubSocket);
 
-            _responseSocket.ReceiveReady += OnResponseReceiveReady;
             _pollerTask = Task.Run(() =>
             {
                 Poller.Start();

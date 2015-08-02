@@ -4,9 +4,9 @@ using Cosmos.Framework;
 
 namespace ExampleProject
 {
-    public class ExampleServer : CosmosApp
+    public class ExampleServerApp : AppDirector
     {
-        public ExampleServer()
+        public ExampleServerApp()
         {
             new HttpActor();
         }

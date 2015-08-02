@@ -41,10 +41,10 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="actors\chatActor\ChatActor.cs" />
-    <Compile Include="actors\httpActor\HttpActor.cs" />
-    <Compile Include="actors\httpActor\HttpHandler.cs" />
-    <Compile Include="ExampleServer.cs" />
+    <Compile Include="app\actors\chatActor\ChatActor.cs" />
+    <Compile Include="app\actors\httpActor\HttpActor.cs" />
+    <Compile Include="app\actors\httpActor\HttpHandler.cs" />
+    <Compile Include="ExampleServerApp.cs" />
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -56,7 +56,8 @@
       <Link>NLog.xsd</Link>
       <SubType>Designer</SubType>
     </None>
-    <None Include="config\actors.json" />
+    <None Include="app\config\actors.json" />
+    <None Include="app\config\base.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -73,5 +74,6 @@
       <Name>CosmosRpc</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

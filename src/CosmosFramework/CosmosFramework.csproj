@@ -57,7 +57,7 @@
     <Compile Include="AppContainer.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="FrameworkDef.cs" />
-    <Compile Include="CosmosApp.cs" />
+    <Compile Include="AppDirector.cs" />
     <Compile Include="MemoryDataModule.cs" />
     <Compile Include="ProjectConfModule.cs" />
   </ItemGroup>

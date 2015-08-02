@@ -23,7 +23,7 @@ namespace Cosmos.Rpc
     public abstract class BaseNetMqClient : IDisposable
     {
         internal NetMQContext _context;
-        private RequestSocket _requestClient;
+        private NetMQSocket _requestClient;
         private SubscriberSocket _subSocket;
         Poller _poller;
         private Task _pollerTask;
@@ -70,7 +70,7 @@ namespace Cosmos.Rpc
         private void OnSubscriberReceiveReady(object sender, NetMQSocketEventArgs e)
         {
             string messageTopicReceived = _subSocket.ReceiveString();
-            string messageReceived = _subSocket.ReceiveString();
+            byte[] messageReceived = _subSocket.Receive();
 
             Console.WriteLine("Topic: {0}", messageTopicReceived);
             Console.WriteLine("Message: {0}", messageReceived);

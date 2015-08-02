@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Cosmos.Framework
 {
-    public abstract class CosmosApp
+    public abstract class AppDirector
     {
 
         public virtual void StartAll()

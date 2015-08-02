@@ -1,4 +1,5 @@
 using System;
+using Cosmos;
 
 namespace ExampleProject
 {
@@ -6,8 +7,7 @@ namespace ExampleProject
 	{
 		public static void Main (string[] args)
 		{
-		    var project = new ExampleServer();
-            project.StartAll();
+		    AppBootstrap.Start(new ExampleServerApp());
 		}
 	}
 }

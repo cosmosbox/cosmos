@@ -45,6 +45,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseNetMqClient.cs" />
     <Compile Include="BaseNetMqServer.cs" />
+    <Compile Include="MsgPackTool.cs" />
     <Compile Include="RpcClient.cs" />
     <Compile Include="RpcDef.cs" />
     <Compile Include="RpcServer.cs" />
