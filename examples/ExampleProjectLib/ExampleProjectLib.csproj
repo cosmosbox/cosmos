@@ -41,10 +41,10 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="app\actors\chatActor\ChatActor.cs" />
-    <Compile Include="app\actors\gameActor\GameActor.cs" />
-    <Compile Include="app\actors\httpActor\HttpActor.cs" />
-    <Compile Include="app\actors\httpActor\HttpHandler.cs" />
+    <Compile Include="actors\chatActor\ChatActor.cs" />
+    <Compile Include="actors\gameActor\GameActor.cs" />
+    <Compile Include="actors\httpActor\HttpActor.cs" />
+    <Compile Include="actors\httpActor\HttpHandler.cs" />
     <Compile Include="ExampleServerApp.cs" />
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
@@ -57,10 +57,12 @@
       <Link>NLog.xsd</Link>
       <SubType>Designer</SubType>
     </None>
-    <None Include="app\config\actors.json">
+    <None Include="..\ExampleProject\config\actors.json">
+      <Link>config\actors.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="app\config\base.json">
+    <None Include="..\ExampleProject\config\base.json">
+      <Link>config\base.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
@@ -79,6 +81,8 @@
       <Name>CosmosRpc</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
