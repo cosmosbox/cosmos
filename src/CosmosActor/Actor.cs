@@ -8,6 +8,10 @@ using NLog;
 
 namespace Cosmos.Actor
 {
+    public interface IActorRpcer : IRpcCaller
+    {
+    }
+
     public abstract class Actor
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -49,6 +53,6 @@ namespace Cosmos.Actor
 
             return default(T);
         }
-        abstract public RpcCaller NewRpcCaller();
+        abstract public IActorRpcer NewRpcCaller();
     }
 }

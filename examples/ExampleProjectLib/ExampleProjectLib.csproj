@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="app\actors\chatActor\ChatActor.cs" />
+    <Compile Include="app\actors\gameActor\GameActor.cs" />
     <Compile Include="app\actors\httpActor\HttpActor.cs" />
     <Compile Include="app\actors\httpActor\HttpHandler.cs" />
     <Compile Include="ExampleServerApp.cs" />

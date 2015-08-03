@@ -11,7 +11,7 @@ using Nancy.ModelBinding;
 namespace ExampleProject
 {
 
-    internal class HttpActorRpcCaller : RpcCaller
+    internal class HttpActorActorRpcer : IActorRpcer
     {
         public int Add(int a, int b)
         {
@@ -27,9 +27,9 @@ namespace ExampleProject
             httpHandler.Start();
 
         }
-        public override RpcCaller NewRpcCaller()
+        public override IActorRpcer NewRpcCaller()
         {
-            return new HttpActorRpcCaller();
+            return new HttpActorActorRpcer();
         }
     }
 
