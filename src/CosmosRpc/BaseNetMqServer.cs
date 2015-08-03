@@ -25,14 +25,14 @@ namespace Cosmos.Rpc
         internal NetMQContext _context;
         private NetMQSocket _responseSocket;
         private PublisherSocket _pubSocket;
-        public int Port { get; private set; }
+        public int ResponsePort { get; private set; }
         public string Host { get; private set; }
 
         private Task _pollerTask;
 
         public Poller Poller;
 
-        public BaseNetMqServer(int port = -1, string host = "0.0.0.0")
+        public BaseNetMqServer(int responsePort = -1, string host = "0.0.0.0")
         {
             Poller = new Poller();
             Host = host;
@@ -41,14 +41,14 @@ namespace Cosmos.Rpc
             _responseSocket = _context.CreateResponseSocket();
             Poller.AddSocket(_responseSocket);
 
-            if (port == -1)
+            if (responsePort == -1)
             {
-                Port = _responseSocket.BindRandomPort("tcp://" + host);
+                ResponsePort = _responseSocket.BindRandomPort("tcp://" + host);
             }
             else
             {
-                Port = port;
-                _responseSocket.Bind(string.Format("tcp://{0}:{1}", host, Port));
+                ResponsePort = responsePort;
+                _responseSocket.Bind(string.Format("tcp://{0}:{1}", host, ResponsePort));
             }
 
             _responseSocket.ReceiveReady += OnResponseReceiveReady;
@@ -57,7 +57,7 @@ namespace Cosmos.Rpc
             //_pubSocket = _context.CreatePublisherSocket();
             //_pubSocket.Options.SendHighWatermark = 1000;
             //// Bind ? Connect? 
-            //_pubSocket.Bind(string.Format("tcp://{0}:{1}", "*", Port));
+            //_pubSocket.Bind(string.Format("tcp://{0}:{1}", "*", requestPort));
             
             //Poller.AddSocket(_pubSocket);
 
@@ -79,7 +79,9 @@ namespace Cosmos.Rpc
 
         private async void OnResponseReceiveReady(object sender, NetMQSocketEventArgs e)
         {
+            //var recvMsg = _responseSocket.ReceiveMessage();
             var recvData = _responseSocket.Receive();
+            //var recvData2 = _responseSocket.Receive();
             var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(recvData);
             var requestDataMsg = baseRequestMsg.Data;
 

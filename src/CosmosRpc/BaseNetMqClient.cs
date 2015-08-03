@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MsgPack.Serialization;
 using NetMQ;
@@ -30,20 +31,20 @@ namespace Cosmos.Rpc
 
         public string Host { get; private set; }
 
-        public int Port { get; private set; }
+        public int RequestPort { get; private set; }
 
         public string Protocol { get; private set; }
 
         public string Address
         {
-            get { return string.Format("{0}://{1}:{2}", Protocol, Host, Port); }
+            get { return string.Format("{0}://{1}:{2}", Protocol, Host, RequestPort); }
         }
         private Dictionary<string, BaseResponseMsg> _responses = new Dictionary<string, BaseResponseMsg>();
 
-        protected BaseNetMqClient(string host, int port, string protocol = "tcp")
+        protected BaseNetMqClient(string host, int requestPort, string protocol = "tcp")
         {
             Host = host;
-            Port = port;
+            RequestPort = requestPort;
             Protocol = protocol;
 
             _poller = new Poller();
@@ -111,7 +112,10 @@ namespace Cosmos.Rpc
             var waitResponse = Task.Run(() =>
             {
                 BaseResponseMsg waitResponseMsg;
-                while (!_responses.TryGetValue(requestMsg.RequestToken, out waitResponseMsg)) { }; // thread blocking
+                while (!_responses.TryGetValue(requestMsg.RequestToken, out waitResponseMsg))
+                {
+                    Thread.Sleep(1);
+                }; // thread blocking
                 return waitResponseMsg;
             });
             var responseData = await waitResponse;

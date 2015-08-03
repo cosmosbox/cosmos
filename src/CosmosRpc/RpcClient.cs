@@ -18,7 +18,7 @@ namespace Cosmos.Rpc
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public RpcClient(string host, int port, string protocol = "tcp") : base(host, port, protocol)
+        public RpcClient(string host, int requestPort, string protocol = "tcp") : base(host, requestPort, protocol)
         {
         }
 
@@ -54,22 +54,22 @@ namespace Cosmos.Rpc
     //    private RequestSocket _client;
     //    public string Host { get; private set; }
 
-    //    public int Port { get; private set; }
+    //    public int requestPort { get; private set; }
 
     //    public string Protocol { get; private set; }
 
     //    public string Address
     //    {
-    //        get { return string.Format("{0}://{1}:{2}", Protocol, Host, Port); }
+    //        get { return string.Format("{0}://{1}:{2}", Protocol, Host, requestPort); }
     //    }
 
     //    Poller _poller;
     //    private Task _pollerTask;
     //    //private CancellationTokenSource _pollerTaskCancelSource;
-    //    public RpcClient(string host, int port, string protocol = "tcp")
+    //    public RpcClient(string host, int requestPort, string protocol = "tcp")
     //    {
     //        Host = host;
-    //        Port = port;
+    //        requestPort = requestPort;
     //        Protocol = protocol;
 
     //        _context = NetMQContext.Create();

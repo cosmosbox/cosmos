@@ -66,15 +66,15 @@ namespace Cosmos.Test
         {
             using (var server = new RpcServer(new TestRpcCaller()))
             {
-                Assert.AreEqual(server.Port.GetType(), typeof(int));
-                Assert.GreaterOrEqual(server.Port, 0);
+                Assert.AreEqual(server.ResponsePort.GetType(), typeof(int));
+                Assert.GreaterOrEqual(server.ResponsePort, 0);
                 Assert.AreEqual(server.Host, "0.0.0.0");
 
                 using (var server2 = new RpcServer(new TestRpcCaller(), "127.0.0.1"))
                     Assert.AreEqual(server2.Host, "127.0.0.1");
 
-                //Assert.AreEqual(server.Port, 5506);
-                using (var client = new RpcClient("127.0.0.1", server.Port))
+                //Assert.AreEqual(server.requestPort, 5506);
+                using (var client = new RpcClient("127.0.0.1", server.ResponsePort))
                 {
                     var result = client.Call<string>("TestFunc", "ABC", "DEFG");
                     result.Wait();

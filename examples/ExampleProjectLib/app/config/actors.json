@@ -1,5 +1,8 @@
 ﻿{
   "actor-1": {
-    "actorClass" : "ExampleProject.HttpActor"
+    "actorClass": "ExampleProject.HttpActor",
+    "host": "*",
+    "responsePort": -1,
+    "subcriberPort": 0
   }
 }

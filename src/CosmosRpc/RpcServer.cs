@@ -98,7 +98,7 @@ namespace Cosmos.Rpc
 
     //    internal NetMQContext _context;
     //    private ResponseSocket _server;
-    //    public int Port { get; private set; }
+    //    public int requestPort { get; private set; }
     //    public string Host { get; private set; }
 
     //    object RpcInstace;
@@ -114,7 +114,7 @@ namespace Cosmos.Rpc
 
     //        Poller.AddSocket(_server);
 
-    //        Port = _server.BindRandomPort("tcp://" + host);
+    //        requestPort = _server.BindRandomPort("tcp://" + host);
     //        _server.ReceiveReady += OnReceiveReady;
 
     //        _pollerTask = Task.Run(() =>

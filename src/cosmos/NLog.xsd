@@ -1380,7 +1380,7 @@
           <xs:element name="smtpUserName" minOccurs="0" maxOccurs="1" type="Layout" />
           <xs:element name="smtpPassword" minOccurs="0" maxOccurs="1" type="Layout" />
           <xs:element name="enableSsl" minOccurs="0" maxOccurs="1" type="xs:boolean" />
-          <xs:element name="smtpPort" minOccurs="0" maxOccurs="1" type="xs:integer" />
+          <xs:element name="smtprequestPort" minOccurs="0" maxOccurs="1" type="xs:integer" />
           <xs:element name="useSystemNetMailSettings" minOccurs="0" maxOccurs="1" type="xs:boolean" />
         </xs:choice>
         <xs:attribute name="name" type="xs:string">
@@ -1488,9 +1488,9 @@
             <xs:documentation>Indicates whether SSL (secure sockets layer) should be used when communicating with SMTP server.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="smtpPort" type="xs:integer">
+        <xs:attribute name="smtprequestPort" type="xs:integer">
           <xs:annotation>
-            <xs:documentation>Port number that SMTP Server is listening on.</xs:documentation>
+            <xs:documentation>requestPort number that SMTP Server is listening on.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="useSystemNetMailSettings" type="xs:boolean">
