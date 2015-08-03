@@ -16,5 +16,8 @@ namespace Cosmos.Actor
         public string Host;
         public int ResponsePort;
         public int PublisherPort;
+
+        public string DiscoveryMode;
+        public string DiscoveryUri;
     }
 }
