@@ -57,8 +57,12 @@
       <Link>NLog.xsd</Link>
       <SubType>Designer</SubType>
     </None>
-    <None Include="app\config\actors.json" />
-    <None Include="app\config\base.json" />
+    <None Include="app\config\actors.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="app\config\base.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
