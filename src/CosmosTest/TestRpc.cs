@@ -4,6 +4,7 @@ using System;
 using Cosmos.Rpc;
 using System.Threading.Tasks;
 using System.IO;
+using Cosmos.Actor;
 using MsgPack.Serialization;
 namespace Cosmos.Test
 {
@@ -49,7 +50,7 @@ namespace Cosmos.Test
             Assert.AreEqual(unpackedObject.B, 123123);
         }
 
-        public class TestRpcCaller : RpcCaller
+        public class TestActorRpcer : IActorRpcer
         {
             public string TestFunc(string arg1, string arg2)
             {
@@ -64,13 +65,13 @@ namespace Cosmos.Test
         [Test()]
         public void TestCallRpc()
         {
-            using (var server = new RpcServer(new TestRpcCaller()))
+            using (var server = new RpcServer(new TestActorRpcer()))
             {
                 Assert.AreEqual(server.ResponsePort.GetType(), typeof(int));
                 Assert.GreaterOrEqual(server.ResponsePort, 0);
                 Assert.AreEqual(server.Host, "0.0.0.0");
 
-                using (var server2 = new RpcServer(new TestRpcCaller(), "127.0.0.1"))
+                using (var server2 = new RpcServer(new TestActorRpcer(), "127.0.0.1"))
                     Assert.AreEqual(server2.Host, "127.0.0.1");
 
                 //Assert.AreEqual(server.requestPort, 5506);

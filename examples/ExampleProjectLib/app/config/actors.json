@@ -1,8 +1,14 @@
-﻿{
-  "actor-1": {
-    "actorClass": "ExampleProject.HttpActor",
-    "host": "*",
-    "responsePort": -1,
-    "subcriberPort": 0
-  }
-}
+﻿[
+    {
+        "Name": "http-fronend-actor",
+        "ActorClass": "ExampleProject.HttpActor",
+        "RpcPort": 13010,
+        "ResponsePort": 13000
+    },
+    {
+        "Name": "game-actor-1",
+        "ActorClass": "ExampleProject.GameActor",
+        "RpcPort": 13011,
+        "ResponsePort": 13001
+    }
+]

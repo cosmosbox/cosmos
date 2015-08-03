@@ -12,7 +12,7 @@ using NUnit.Framework;
 
 namespace CosmosTest
 {
-    public class SampleRpcCaller : RpcCaller
+    public class SampleRpcCaller : IActorRpcer
     {
         public int Add(int a, int b)
         {
@@ -22,7 +22,7 @@ namespace CosmosTest
 
     public class SampleActor : Actor
     {
-        public override RpcCaller NewRpcCaller()
+        public override IActorRpcer NewRpcCaller()
         {
             return new SampleRpcCaller();
         }
@@ -65,6 +65,7 @@ namespace CosmosTest
             //var addResult = await _actorA.Actor.Call<int>("Actor-Test-B", "Add", 1, 2);
             //Assert.AreEqual(addResult, 3);
         }
+
         [Test]
         public async void CreateActorByCode()
         {

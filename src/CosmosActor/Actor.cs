@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,17 +9,30 @@ using NLog;
 
 namespace Cosmos.Actor
 {
-    public abstract class Actor
+    public interface IActorRpcer : IRpcCaller
+    {
+    }
+
+    public abstract partial class Actor
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public ActorConf Conf { get; private set; }
+
+        public List<ActorNodeConfig> FriendActors = new List<ActorNodeConfig>(); 
         public Dictionary<string, RpcClient> RpcClients = new Dictionary<string, RpcClient>();  // every actor know each other
 
+        // TODO:
         public Dictionary<Type, List<RpcClient>> RpcClientsOfTypes = new Dictionary<Type, List<RpcClient>>();
+
+        public delegate ActorNodeConfig? ActorClassFilterRouteFunc(IList<ActorNodeConfig> classActors);
+
+        private Dictionary<Type, ActorClassFilterRouteFunc> FilterRoutes = new Dictionary<Type, ActorClassFilterRouteFunc>();
+
         public RpcServer RpcServer;
         private Discovery _discovery;
 
+        
         public bool IsActive { get; set; }
 
         internal void Init(ActorConf conf)
@@ -28,6 +42,40 @@ namespace Cosmos.Actor
             RpcServer = new RpcServer(NewRpcCaller());
             _discovery = new Discovery(Conf.AppToken, Conf.DiscoverServers);
         }
+
+
+        #region Router Call RPC
+
+        public async Task<TReturn> CallByClass<TActor, TReturn>(string funcName, params object[] arguments) where TActor : Actor
+        {
+            ActorClassFilterRouteFunc routeFunc;
+            if (!FilterRoutes.TryGetValue(typeof (TActor), out routeFunc))
+            {
+                Logger.Error("Not yet set the Route Rule of actor type: {0}", typeof(TActor));
+                return default(TReturn);
+            }
+
+            var actorConfig = routeFunc(FriendActors);
+            if (actorConfig == null)
+            {
+                Logger.Error("Router get actor config is Null of actor type: {0}", typeof(TActor));
+                return default(TReturn);
+            }
+            return await Call<TReturn>(actorConfig.Value.Name, funcName, arguments);
+        }
+
+        public ActorNodeConfig? SetRouteRule<T>(ActorClassFilterRouteFunc route) where T : Actor
+        {
+            var t = typeof (T);
+            if (FilterRoutes.ContainsKey(t))
+            {
+                Logger.Warn("Override a Route Rule of Actor Type: {0}", t);
+            }
+
+            FilterRoutes[t] = route;
+            return null;
+        }
+        #endregion
 
         public async Task<T> Call<T>(string actorName, string funcName, params object[] arguments)
         {
@@ -49,6 +97,6 @@ namespace Cosmos.Actor
 
             return default(T);
         }
-        abstract public RpcCaller NewRpcCaller();
+        abstract public IActorRpcer NewRpcCaller();
     }
 }

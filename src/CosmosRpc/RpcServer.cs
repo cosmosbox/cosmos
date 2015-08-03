@@ -22,8 +22,8 @@ namespace Cosmos.Rpc
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private RpcCaller _rpcCaller;
-        public RpcServer(RpcCaller rpcCaller, string host = "0.0.0.0") : base(-1, host)
+        private IRpcCaller _rpcCaller;
+        public RpcServer(IRpcCaller rpcCaller, string host = "0.0.0.0") : base(-1, host)
         {
             _rpcCaller = rpcCaller;
         }
@@ -82,7 +82,7 @@ namespace Cosmos.Rpc
     /// <summary>
     /// Any call RPC Fucntion must in this class
     /// </summary>
-    public abstract class RpcCaller
+    public interface IRpcCaller
     {
     }
 

@@ -5,21 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Cosmos.Actor;
 using Cosmos.Rpc;
-namespace ExampleProject
-{
-    class ChatRpcCaller : IActorRpcer
-    {
-        public void SendChat()
-        {
-            
-        }
-    }
 
-    class ChatActor : Actor
+namespace ExampleProjectLib
+{
+    class GameActorRpcer : IActorRpcer
+    {
+        
+    }
+    class GameActor : Actor
     {
         public override IActorRpcer NewRpcCaller()
         {
-            return new ChatRpcCaller();
+            return new GameActorRpcer();
         }
     }
 }
