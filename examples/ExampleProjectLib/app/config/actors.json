@@ -1,5 +1,6 @@
-﻿{
-  "actor-1": {
-    "actorClass" : "ExampleProject.HttpActor"
-  }
-}
+﻿[
+    {
+        "Name" : "actor-1",
+        "ActorClass": "ExampleProject.HttpActor"
+    }
+]

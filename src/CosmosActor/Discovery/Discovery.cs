@@ -6,21 +6,18 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using etcetera;
 using NLog;
+using System.IO;
 
 namespace Cosmos.Actor
 {
-    public struct ActorNodeJson
-    {
-        
-    }
     /// <summary>
     /// Etcd Manager
     /// </summary>
     public class Discovery
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public event Action<ActorNodeJson> AddNodeEvent;
-        public event Action<ActorNodeJson> RemoveNodeEvent;
+        public event Action<ActorNodeConfig> AddNodeEvent;
+        public event Action<ActorNodeConfig> RemoveNodeEvent;
 
         private EtcdClient _etcdClient;
         public Discovery(string appToken, string[] discoveryServers)
@@ -50,7 +47,7 @@ namespace Cosmos.Actor
             
         }
 
-        public ActorNodeJson[] GetActorNodes()
+        public ActorNodeConfig[] GetActorNodes()
         {
             return null;
         }
@@ -60,7 +57,7 @@ namespace Cosmos.Actor
             
         }
 
-        void OnActorNodesChanged(ActorNodeJson[] nodes)
+        void OnActorNodesChanged(ActorNodeConfig[] nodes)
         {
             
         }
