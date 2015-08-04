@@ -10,6 +10,20 @@ using StackExchange.Redis;
 
 namespace Cosmos.Framework.Components
 {
+	/// <summary>
+	/// Use redis as a memory cache
+	/// 
+	/// Especially key component when you want to make your application STATELESS!
+	/// 
+	/// 使用Redis作为内存数据存放器，
+	/// 一般用于制作无状态App，如Http
+	/// 
+	/// 带分布式Redis锁功能、内部缓存功能，
+	/// 多次Get确保获取同一份数据，直到数据被改
+	/// 
+	/// 使用MsgPack进行序列化，建议你应尽可能使用简单的数据类型（如struct）进行保存
+	/// 
+	/// </summary>
     public class MemoryData : IDisposable
     {
         public IDatabase Db;
@@ -25,6 +39,7 @@ namespace Cosmos.Framework.Components
             while (!CheckLock(key, out _locker))
             {
                 // blocking
+				Thread.Sleep(1);
             }
         }
 

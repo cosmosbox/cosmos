@@ -39,12 +39,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="actors\chatActor\ChatActor.cs" />
     <Compile Include="actors\gameActor\GameActor.cs" />
     <Compile Include="actors\httpActor\HttpActor.cs" />
     <Compile Include="actors\httpActor\HttpHandler.cs" />
     <Compile Include="ExampleServerApp.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="gameLogics\PlayerSession.cs" />
+    <Compile Include="gameLogics\MapObject.cs" />
+    <Compile Include="gameLogics\GameMap.cs" />
+    <Compile Include="gameLogics\skill\Skill.cs" />
+    <Compile Include="gameLogics\characters\Character.cs" />
+    <Compile Include="gameLogics\characters\Npc.cs" />
+    <Compile Include="gameLogics\characters\Player.cs" />
+    <Compile Include="gameLogics\datas\PlayerData.cs" />
+    <Compile Include="d:\LocalCode\cosmos-net\examples\ExampleProjectLib\gameLogics\GateServices.cs" />
+    <Compile Include="gameLogics\GameServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\src\cosmos\NLog.config">
@@ -81,6 +90,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="gameLogics\" />
+    <Folder Include="actors\gateActor\" />
+    <Folder Include="gameLogics\datas\" />
+    <Folder Include="actors\proxyActor\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

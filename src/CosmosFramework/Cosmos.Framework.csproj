@@ -73,4 +73,10 @@
     <Folder Include="Servers\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\CosmosActor\Cosmos.Actor.csproj">
+      <Project>{501DEEC1-5738-465F-9AB2-4A9FF95A34E9}</Project>
+      <Name>Cosmos.Actor</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

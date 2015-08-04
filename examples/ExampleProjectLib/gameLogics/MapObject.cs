@@ -8,11 +8,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
-namespace Cosmos.Framework.Components
+namespace ExampleProjectLib
 {
-	public class MyClass
+	public class MapObject
 	{
-		public MyClass ()
+		public MapObject ()
 		{
 		}
 	}
