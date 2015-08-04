@@ -94,29 +94,29 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\CosmosFramework\CosmosFramework.csproj">
-      <Project>{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}</Project>
-      <Name>CosmosFramework</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CosmosRpc\CosmosRpc.csproj">
-      <Project>{7341E7EA-168C-4688-8B8C-4E697540FBAA}</Project>
-      <Name>CosmosRpc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CosmosScript\CosmosScript.csproj">
-      <Project>{60511790-088E-449E-A4E2-6485A976A20C}</Project>
-      <Name>CosmosScript</Name>
-    </ProjectReference>
     <ProjectReference Include="..\cosmos\Cosmos.csproj">
       <Project>{362E1B17-169A-4324-A1C1-CE7C1142AC75}</Project>
       <Name>Cosmos</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CosmosActor\CosmosActor.csproj">
-      <Project>{501DEEC1-5738-465F-9AB2-4A9FF95A34E9}</Project>
-      <Name>CosmosActor</Name>
+    <ProjectReference Include="..\CosmosFramework\Cosmos.Framework.csproj">
+      <Project>{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}</Project>
+      <Name>Cosmos.Framework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CosmosTool_DotNet45\CosmosTool_DotNet45.csproj">
+    <ProjectReference Include="..\CosmosActor\Cosmos.Actor.csproj">
+      <Project>{501DEEC1-5738-465F-9AB2-4A9FF95A34E9}</Project>
+      <Name>Cosmos.Actor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CosmosRpc\Cosmos.Rpc.csproj">
+      <Project>{7341E7EA-168C-4688-8B8C-4E697540FBAA}</Project>
+      <Name>Cosmos.Rpc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CosmosScript\Cosmos.Script.csproj">
+      <Project>{60511790-088E-449E-A4E2-6485A976A20C}</Project>
+      <Name>Cosmos.Script</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CosmosTool_DotNet45\Cosmos.Tool.DotNet45.csproj">
       <Project>{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}</Project>
-      <Name>CosmosTool_DotNet45</Name>
+      <Name>Cosmos.Tool.DotNet45</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

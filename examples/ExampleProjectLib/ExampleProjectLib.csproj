@@ -66,17 +66,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CosmosActor\CosmosActor.csproj">
-      <Project>{501DEEC1-5738-465F-9AB2-4A9FF95A34E9}</Project>
-      <Name>CosmosActor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\CosmosFramework\CosmosFramework.csproj">
+    <ProjectReference Include="..\..\src\CosmosFramework\Cosmos.Framework.csproj">
       <Project>{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}</Project>
-      <Name>CosmosFramework</Name>
+      <Name>Cosmos.Framework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\CosmosRpc\CosmosRpc.csproj">
+    <ProjectReference Include="..\..\src\CosmosActor\Cosmos.Actor.csproj">
+      <Project>{501DEEC1-5738-465F-9AB2-4A9FF95A34E9}</Project>
+      <Name>Cosmos.Actor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\CosmosRpc\Cosmos.Rpc.csproj">
       <Project>{7341E7EA-168C-4688-8B8C-4E697540FBAA}</Project>
-      <Name>CosmosRpc</Name>
+      <Name>Cosmos.Rpc</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

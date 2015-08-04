@@ -3,23 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos", "cosmos\Cosmos.csproj", "{362E1B17-169A-4324-A1C1-CE7C1142AC75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosTest", "CosmosTest\CosmosTest.csproj", "{CCE2BDCD-B04B-4F58-A5CA-47271B002885}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Test", "CosmosTest\Cosmos.Test.csproj", "{CCE2BDCD-B04B-4F58-A5CA-47271B002885}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosRpc", "CosmosRpc\CosmosRpc.csproj", "{7341E7EA-168C-4688-8B8C-4E697540FBAA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Rpc", "CosmosRpc\Cosmos.Rpc.csproj", "{7341E7EA-168C-4688-8B8C-4E697540FBAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosTool_DotNet35", "CosmosTool\CosmosTool_DotNet35.csproj", "{9B9946EE-BEE2-4B04-9392-652545039D11}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Tool.DotNet35", "CosmosTool\Cosmos.Tool.DotNet35.csproj", "{9B9946EE-BEE2-4B04-9392-652545039D11}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleProject", "..\examples\ExampleProject\ExampleProject.csproj", "{14A6D769-0996-4305-B1FA-07758A546BE3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleProjectLib", "..\examples\ExampleProjectLib\ExampleProjectLib.csproj", "{BFF6FB3E-E2F1-494B-963C-C5A5C0DB5B08}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosScript", "CosmosScript\CosmosScript.csproj", "{60511790-088E-449E-A4E2-6485A976A20C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Script", "CosmosScript\Cosmos.Script.csproj", "{60511790-088E-449E-A4E2-6485A976A20C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosFramework", "CosmosFramework\CosmosFramework.csproj", "{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Framework", "CosmosFramework\Cosmos.Framework.csproj", "{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosTool_DotNet45", "CosmosTool_DotNet45\CosmosTool_DotNet45.csproj", "{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Tool.DotNet45", "CosmosTool_DotNet45\Cosmos.Tool.DotNet45.csproj", "{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosActor", "CosmosActor\CosmosActor.csproj", "{501DEEC1-5738-465F-9AB2-4A9FF95A34E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Actor", "CosmosActor\Cosmos.Actor.csproj", "{501DEEC1-5738-465F-9AB2-4A9FF95A34E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

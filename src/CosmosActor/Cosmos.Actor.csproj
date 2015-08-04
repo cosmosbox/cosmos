@@ -57,21 +57,21 @@
       <Project>{362E1B17-169A-4324-A1C1-CE7C1142AC75}</Project>
       <Name>Cosmos</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CosmosFramework\CosmosFramework.csproj">
+    <ProjectReference Include="..\CosmosFramework\Cosmos.Framework.csproj">
       <Project>{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}</Project>
-      <Name>CosmosFramework</Name>
+      <Name>Cosmos.Framework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CosmosRpc\CosmosRpc.csproj">
+    <ProjectReference Include="..\CosmosRpc\Cosmos.Rpc.csproj">
       <Project>{7341E7EA-168C-4688-8B8C-4E697540FBAA}</Project>
-      <Name>CosmosRpc</Name>
+      <Name>Cosmos.Rpc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CosmosScript\CosmosScript.csproj">
+    <ProjectReference Include="..\CosmosScript\Cosmos.Script.csproj">
       <Project>{60511790-088E-449E-A4E2-6485A976A20C}</Project>
-      <Name>CosmosScript</Name>
+      <Name>Cosmos.Script</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CosmosTool_DotNet45\CosmosTool_DotNet45.csproj">
+    <ProjectReference Include="..\CosmosTool_DotNet45\Cosmos.Tool.DotNet45.csproj">
       <Project>{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}</Project>
-      <Name>CosmosTool_DotNet45</Name>
+      <Name>Cosmos.Tool.DotNet45</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
