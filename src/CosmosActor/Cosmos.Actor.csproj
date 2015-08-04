@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{501DEEC1-5738-465F-9AB2-4A9FF95A34E9}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CosmosActor</RootNamespace>
+    <RootNamespace>Cosmos.Actor</RootNamespace>
     <AssemblyName>CosmosActor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -50,6 +50,7 @@
     <Compile Include="Discovery\Discovery.cs" />
     <Compile Include="Discovery\DiscoveryMode.cs" />
     <Compile Include="Discovery\JsonDiscoveryMode.cs" />
+    <Compile Include="Discovery\EtcdDiscoveryMode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

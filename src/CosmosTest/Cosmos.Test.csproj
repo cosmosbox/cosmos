@@ -118,5 +118,9 @@
       <Project>{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}</Project>
       <Name>Cosmos.Tool.DotNet45</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Cosmos.Framework.Components\Cosmos.Framework.Components.csproj">
+      <Project>{3689ED7B-D457-4E8C-AD19-5AFAD297F6AA}</Project>
+      <Name>Cosmos.Framework.Components</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

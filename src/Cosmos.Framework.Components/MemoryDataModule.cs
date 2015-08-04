@@ -8,7 +8,7 @@ using MsgPack.Serialization;
 using Redlock.CSharp;
 using StackExchange.Redis;
 
-namespace Cosmos.Framework
+namespace Cosmos.Framework.Components
 {
     public class MemoryData : IDisposable
     {

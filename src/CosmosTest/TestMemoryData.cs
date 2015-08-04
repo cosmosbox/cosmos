@@ -7,6 +7,7 @@ using NUnit.Framework;
 using StackExchange.Redis;
 using Cosmos;
 using Cosmos.Framework;
+using Cosmos.Framework.Components;
 using MsgPack.Serialization;
 using Redlock.CSharp;
 
