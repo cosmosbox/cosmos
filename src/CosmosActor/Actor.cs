@@ -17,7 +17,7 @@ namespace Cosmos.Actor
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public ActorConf Conf { get; private set; }
+        public ActorNodeConfig Conf { get; private set; }
 
         public List<ActorNodeConfig> FriendActors = new List<ActorNodeConfig>(); 
         public Dictionary<string, RpcClient> RpcClients = new Dictionary<string, RpcClient>();  // every actor know each other
@@ -35,12 +35,12 @@ namespace Cosmos.Actor
         
         public bool IsActive { get; set; }
 
-        internal void Init(ActorConf conf)
+        internal void Init(ActorNodeConfig conf)
         {
             IsActive = true;
             Conf = conf;
             RpcServer = new RpcServer(NewRpcCaller());
-            _discovery = new Discovery(Conf.AppToken, Conf.DiscoverServers);
+            _discovery = new Discovery(Conf.AppToken, Conf.DiscoveryServers);
         }
 
 

@@ -39,21 +39,21 @@ namespace CosmosTest
         {
             // A server
             var discoverServers = new string[] {"http://127.0.0.1:4001"};
-            var actorConf = new ActorConf()
+            var actorConf = new ActorNodeConfig()
             {
                 Name = "Actor-Test-A",
-                DiscoverServers = discoverServers,
-                ActorClass = typeof(SampleActor),
+                DiscoveryServers = discoverServers,
+                ActorClass = "CosmosTest.SampleActor, CosmosTest",
             };
             _actorA = ActorRunner.Run(actorConf);
             Assert.AreEqual(_actorA.State, ActorRunState.Running);
 
             // B Server
-            var actorConfB = new ActorConf()
+            var actorConfB = new ActorNodeConfig()
             {
                 Name = "Actor-Test-B",
-                DiscoverServers = discoverServers,
-                ActorClass = typeof(SampleActor),
+                DiscoveryServers = discoverServers,
+                ActorClass = "CosmosTest.SampleActor, CosmosTest",
             };
             _actorB = ActorRunner.Run(actorConfB);
             Assert.AreEqual(_actorB.State, ActorRunState.Running);
@@ -77,10 +77,10 @@ namespace CosmosTest
 
         IEnumerator WaitRunner()
         {
-            var actorConf = new ActorConf()
+            var actorConf = new ActorNodeConfig
             {
                 Name = "Actor-Test-1",
-                ActorClass = typeof(SampleActor),
+                ActorClass = "CosmosTest.SampleActor, CosmosTest",
             };
             var runner1 = ActorRunner.Run(actorConf);
             Assert.AreEqual(runner1.SecondsTick, 0);
