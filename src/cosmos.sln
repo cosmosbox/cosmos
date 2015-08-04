@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosTest", "CosmosTest\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosRpc", "CosmosRpc\CosmosRpc.csproj", "{7341E7EA-168C-4688-8B8C-4E697540FBAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosTool_DotNet20", "CosmosTool\CosmosTool_DotNet20.csproj", "{9B9946EE-BEE2-4B04-9392-652545039D11}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosTool_DotNet35", "CosmosTool\CosmosTool_DotNet35.csproj", "{9B9946EE-BEE2-4B04-9392-652545039D11}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleProject", "..\examples\ExampleProject\ExampleProject.csproj", "{14A6D769-0996-4305-B1FA-07758A546BE3}"
 EndProject

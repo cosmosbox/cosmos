@@ -9,12 +9,14 @@ namespace Cosmos.Framework
 {
     class AppContainer
     {
+		/*
         public static AppContainer Instance = new AppContainer();
-        private IUnityContainer _container;
+		private UnityContainer _container;
         private AppContainer()
         {
             _container = new UnityContainer();
         }
+		*/
 
     }
 }

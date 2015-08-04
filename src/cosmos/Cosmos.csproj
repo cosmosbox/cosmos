@@ -58,7 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CosmosFramework\CosmosFramework.csproj">
-      <Project>{6de61dc4-0243-4a7f-b0bb-753ea850d3c8}</Project>
+      <Project>{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}</Project>
       <Name>CosmosFramework</Name>
     </ProjectReference>
   </ItemGroup>

@@ -30,15 +30,13 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Nancy, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\Nancy.1.2.0\lib\net40\Nancy.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Nancy.Hosting.Self, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\src\packages\Nancy.Hosting.Self.1.2.0\lib\net40\Nancy.Hosting.Self.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
+    <Reference Include="Nancy, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\src\packages\Nancy.1.2.0\lib\net40\Nancy.dll</HintPath>
+    </Reference>
+    <Reference Include="Nancy.Hosting.Self, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\src\packages\Nancy.Hosting.Self.1.2.0\lib\net40\Nancy.Hosting.Self.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="actors\chatActor\ChatActor.cs" />
@@ -69,15 +67,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\CosmosActor\CosmosActor.csproj">
-      <Project>{501deec1-5738-465f-9ab2-4a9ff95a34e9}</Project>
+      <Project>{501DEEC1-5738-465F-9AB2-4A9FF95A34E9}</Project>
       <Name>CosmosActor</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\CosmosFramework\CosmosFramework.csproj">
-      <Project>{6de61dc4-0243-4a7f-b0bb-753ea850d3c8}</Project>
+      <Project>{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}</Project>
       <Name>CosmosFramework</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\CosmosRpc\CosmosRpc.csproj">
-      <Project>{7341e7ea-168c-4688-8b8c-4e697540fbaa}</Project>
+      <Project>{7341E7EA-168C-4688-8B8C-4E697540FBAA}</Project>
       <Name>CosmosRpc</Name>
     </ProjectReference>
   </ItemGroup>
