@@ -1,21 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Cosmos.Framework.Components\MemoryDataModule.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="CosmosFramework\AppDirector.cs">
     <Files>
-      <File FileName="d:\LocalCode\cosmos-net\src\CosmosActor\Actor.cs" Line="1" Column="1" />
-      <File FileName="d:\LocalCode\cosmos-net\src\CosmosTest\TestActor.cs" Line="47" Column="15" />
-      <File FileName="d:\LocalCode\cosmos-net\src\CosmosFramework\AppContainer.cs" Line="10" Column="23" />
-      <File FileName="d:\LocalCode\cosmos-net\src\CosmosTool\Coroutine\Coroutine.cs" Line="27" Column="32" />
-      <File FileName="CosmosFramework\AppDirector.cs" Line="20" Column="8" />
-      <File FileName="CosmosFramework\ProjectConfModule.cs" Line="16" Column="21" />
-      <File FileName="CosmosFramework\FrameworkDef.cs" Line="14" Column="2" />
-      <File FileName="CosmosFramework\AssemblyInfo.cs" Line="7" Column="33" />
-      <File FileName="CosmosActor\Discovery\EtcdDiscoveryMode.cs" Line="25" Column="4" />
-      <File FileName="CosmosActor\Discovery\Discovery.cs" Line="8" Column="12" />
-      <File FileName="CosmosActor\Discovery\ActorNodeConfig.cs" Line="22" Column="6" />
-      <File FileName="CosmosActor\AssemblyInfo.cs" Line="7" Column="42" />
-      <File FileName="d:\LocalCode\cosmos-net\src\CosmosTest\TestMemoryData.cs" Line="10" Column="24" />
-      <File FileName="Cosmos.Framework.Components\MemoryDataModule.cs" Line="19" Column="47" />
+      <File FileName="..\examples\ExampleProjectLib\gameLogics\GameMap.cs" Line="20" Column="25" />
+      <File FileName="CosmosFramework\AppDirector.cs" Line="17" Column="13" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

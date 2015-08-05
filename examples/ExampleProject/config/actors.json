@@ -6,8 +6,8 @@
         "ResponsePort": 13000
     },
     {
-        "Name": "game-actor-1",
-        "ActorClass": "ExampleProject.GameActor",
+        "Name": "Gate-actor-1",
+        "ActorClass": "ExampleProject.GateActor",
         "RpcPort": 13011,
         "ResponsePort": 13001
     }
