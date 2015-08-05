@@ -23,6 +23,7 @@ namespace Cosmos.Rpc
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private IRpcCaller _rpcCaller;
+        
         public RpcServer(IRpcCaller rpcCaller, string host = "0.0.0.0") : base(-1, host)
         {
             _rpcCaller = rpcCaller;
@@ -40,24 +41,12 @@ namespace Cosmos.Rpc
 
             if (method != null)
             {
-                var arguments = new object[requestMsg.Arguments.Length];
-                for (var i = 0; i < arguments.Length; i++) // MsgPack.MessagePackObject arg in requestProto.Arguments)
-                {
-                    MsgPack.MessagePackObject arg = (MsgPack.MessagePackObject)requestMsg.Arguments[i];
-                    arguments[i] = arg.ToObject();
-                }
+                var arguments = MsgPackTool.ConvertMsgPackObjectArray(requestMsg.Arguments);
+
                 try
                 {
                     var result = method.Invoke(_rpcCaller, arguments);
-
-                    if (result is Task)
-                    {
-                        executeResult = await (result as Task<object>);
-                    }
-                    else
-                    {
-                        executeResult = result;
-                    }
+                    executeResult = result;
                 }
                 catch (Exception e)
                 {

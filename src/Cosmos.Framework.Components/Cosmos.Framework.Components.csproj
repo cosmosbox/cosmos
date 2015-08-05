@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -30,6 +30,9 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.4.0.1\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="MsgPack">
       <HintPath>..\MsgPack\MsgPack.dll</HintPath>
@@ -43,10 +46,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="FrontendActor.cs" />
+    <Compile Include="HandlerServer\HandlerServer.cs" />
     <Compile Include="MemoryData\MemoryData.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="MemoryData\" />
+    <ProjectReference Include="..\CosmosActor\Cosmos.Actor.csproj">
+      <Project>{501DEEC1-5738-465F-9AB2-4A9FF95A34E9}</Project>
+      <Name>Cosmos.Actor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CosmosRpc\Cosmos.Rpc.csproj">
+      <Project>{7341E7EA-168C-4688-8B8C-4E697540FBAA}</Project>
+      <Name>Cosmos.Rpc</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

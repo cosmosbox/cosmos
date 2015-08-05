@@ -34,5 +34,10 @@ namespace Cosmos.Actor
         public string DiscoveryUri;
 
         public string[] DiscoveryServers;
+
+        public ActorNodeConfig Clone()
+        {
+            return (ActorNodeConfig)this.MemberwiseClone();
+        }
     }
 }

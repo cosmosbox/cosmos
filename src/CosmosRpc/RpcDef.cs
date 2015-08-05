@@ -16,7 +16,7 @@ namespace Cosmos.Rpc
 
     public struct ResponseMsg
     {
-        public object Value;
+        public object Value;  // MessagePackObject
         public bool IsError;
         public string ErrorMessage;
     }

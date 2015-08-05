@@ -40,6 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="actors\gameActor\GameActor.cs" />
+    <Compile Include="actors\gateActor\GateActor.cs" />
+    <Compile Include="actors\gateActor\handlerServer\GateServer.cs" />
     <Compile Include="actors\httpActor\HttpActor.cs" />
     <Compile Include="actors\httpActor\HttpHandler.cs" />
     <Compile Include="ExampleServerApp.cs" />
@@ -75,6 +77,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Cosmos.Framework.Components\Cosmos.Framework.Components.csproj">
+      <Project>{3689ED7B-D457-4E8C-AD19-5AFAD297F6AA}</Project>
+      <Name>Cosmos.Framework.Components</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\CosmosFramework\Cosmos.Framework.csproj">
       <Project>{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}</Project>
       <Name>Cosmos.Framework</Name>
@@ -89,11 +95,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
-    <Folder Include="gameLogics\" />
-    <Folder Include="actors\gateActor\" />
-    <Folder Include="gameLogics\datas\" />
     <Folder Include="actors\proxyActor\" />
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -38,9 +38,9 @@ namespace ExampleProjectLib
     {
 		GameMap _map;
 
-		public GameActor()
+		public GameActor(int mapTypeId)
 		{
-			_map = GameMap.Get(123123);
+			_map = GameMap.Get(mapTypeId);
 			MainLoop();
 		}
 

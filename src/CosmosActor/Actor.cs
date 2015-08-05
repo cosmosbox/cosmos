@@ -11,6 +11,7 @@ namespace Cosmos.Actor
 {
     public interface IActorRpcer : IRpcCaller
     {
+
     }
 
     public abstract partial class Actor
@@ -29,20 +30,22 @@ namespace Cosmos.Actor
 
         private Dictionary<Type, ActorClassFilterRouteFunc> FilterRoutes = new Dictionary<Type, ActorClassFilterRouteFunc>();
 
+        public IRpcCaller RpcCaller;
         public RpcServer RpcServer;
         private Discovery _discovery;
 
         
         public bool IsActive { get; set; }
 
-        internal void Init(ActorNodeConfig conf)
+        public virtual void Init(ActorNodeConfig conf)
         {
             IsActive = true;
             Conf = conf;
-            RpcServer = new RpcServer(NewRpcCaller());
+
+            RpcCaller = NewRpcCaller();
+            RpcServer = new RpcServer(RpcCaller);
             _discovery = new Discovery(Conf.AppToken, Conf.DiscoveryServers);
         }
-
 
         #region Router Call RPC
 

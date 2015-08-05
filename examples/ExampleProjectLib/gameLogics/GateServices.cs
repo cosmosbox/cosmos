@@ -8,14 +8,18 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cosmos.Actor;
 
 namespace ExampleProjectLib
 {
 	class GateServices
 	{
-		GameActor _actor;
-		public GateServices (GameActor actor)
+        Dictionary<int, ActorRunner> SubActors = new Dictionary<int, ActorRunner>();
+
+        GateActor _actor;
+		public GateServices (GateActor actor)
 		{
 			_actor = actor;
 		}
@@ -29,12 +33,19 @@ namespace ExampleProjectLib
 		}
 
 		/// <summary>
-		/// 返回，有多少怪物
+		/// 返回一个动态创建的Actor，供客户端连接
 		/// </summary>
 		/// <param name="session">Session.</param>
-		public GameMap OpenMap(PlayerSession session, int mapId)
+		public ActorNodeConfig GetGameActor(PlayerSession session, int mapId)
 		{
-			return null;
+		    ActorRunner actorRunner;
+		    if (!SubActors.TryGetValue(mapId, out actorRunner))
+		    {
+                var actorNodeConf = _actor.Conf.Clone();
+                actorRunner = SubActors[mapId] = ActorRunner.Run(actorNodeConf); // 启动一个Actor
+            }
+
+            return actorRunner.Actor.Conf;
 		}
 
 		public Task<bool> UserLogout(PlayerSession session)
