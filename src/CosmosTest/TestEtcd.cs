@@ -4,6 +4,7 @@ using System;
 using Cosmos.Rpc;
 using System.Threading.Tasks;
 using System.IO;
+using Cosmos.Actor;
 using MsgPack.Serialization;
 using NLog;
 using etcetera;
@@ -90,10 +91,32 @@ namespace Cosmos.Test
         }
 
         [Test]
-        public void TestWatch()
+        public async void TestWatch()
         {
-            
+            var watchTask = Task.Run(() =>
+            {
+                etcd.Watch("test-watch", (response) =>
+                {
+                    Assert.AreEqual(response.Node.Value, "NewKey");
+                });
+            });
+
+            var setRes = etcd.Set("test-watch", "NewKey");
+            Assert.AreEqual(setRes.Node.Value, "NewKey");
+
+            await watchTask;
+            Assert.Pass();
         }
+
+        [Test]
+        public void TestJsonDiscoveryMode()
+        {
+            var dis = new JsonDiscoveryMode("config/actors.json");
+            Assert.AreEqual(dis.Nodes.Length, 2);
+            Assert.AreEqual(dis.Nodes[0].Name, "actor-1");
+
+        }
+        
     }
 }
 

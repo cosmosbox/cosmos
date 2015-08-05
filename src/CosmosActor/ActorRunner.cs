@@ -35,7 +35,7 @@ namespace Cosmos.Actor
 
         public ActorRunState State = ActorRunState.None;
         private Task ActorThread;
-        private ActorConf Conf;
+        private ActorNodeConfig Conf;
         public Actor Actor;
 
         public object ActorName
@@ -43,7 +43,7 @@ namespace Cosmos.Actor
             get { return Conf.Name; }
         }
 
-        private ActorRunner(ActorConf conf)
+        private ActorRunner(ActorNodeConfig conf)
         {
             Conf = conf;
             ActorThread = Task.Run(() =>
@@ -67,7 +67,7 @@ namespace Cosmos.Actor
 
 
 
-        public static ActorRunner Run(ActorConf conf)
+        public static ActorRunner Run(ActorNodeConfig conf)
         {
             ActorRunner runner = new ActorRunner(conf);
             return runner;

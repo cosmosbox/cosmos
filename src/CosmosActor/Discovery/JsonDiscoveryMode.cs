@@ -11,9 +11,13 @@ namespace Cosmos.Actor
 {
     public class JsonDiscoveryMode : DiscoveryMode
     {
-        private ActorNodeConfig[] Nodes;
+        public ActorNodeConfig[] Nodes;
         public JsonDiscoveryMode(string jsonFile)
         {
+            if (!File.Exists(jsonFile))
+            {
+                throw new FileNotFoundException("Not found json discovery file", jsonFile);
+            }
             var text = File.ReadAllText(jsonFile);
             Nodes = JsonConvert.DeserializeObject<ActorNodeConfig[]>(text);
         }
