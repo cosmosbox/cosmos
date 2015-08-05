@@ -7,15 +7,14 @@ using Cosmos.Actor;
 
 namespace Cosmos.Framework.Components
 {
-
     /// <summary>
     /// 前端可用
     /// </summary>
-    public abstract class CFrontendActor : CInternalActor
+    public abstract class FrontendActor : CInternalActor
     {
         private HandlerServer _gateServer;
 
-        protected CFrontendActor()
+        protected FrontendActor()
         {
         }
 

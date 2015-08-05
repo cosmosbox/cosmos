@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 using etcetera;
 using NLog;
 
@@ -43,7 +44,7 @@ namespace Cosmos.Actor
             if (_etcdClient == null)
                 throw new Exception("Not valid EtcdClient");
         }
-		public override ActorNodeConfig[] GetNodes()
+		public override IList<ActorNodeConfig> GetNodes()
 		{
 			return null;
 		}

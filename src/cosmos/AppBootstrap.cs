@@ -10,11 +10,17 @@ namespace Cosmos
     public class AppBootstrap
     {
         /// <summary>
-        /// Start the App
+        /// StartAll the App
         /// </summary>
-        /// <param name="type"></param>
-        public static void Start(AppDirector director)
+        /// <param name="director">if null, auto find</param>
+        public static void StartAll(AppDirector director = null)
         {
+            director.StartAll();
+        }
+
+        public static void StartActor(AppDirector director, string actorName)
+        {
+            director.StartActor(actorName);
         }
     }
 }

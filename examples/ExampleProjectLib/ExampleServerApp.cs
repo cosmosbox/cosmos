@@ -8,7 +8,6 @@ namespace ExampleProject
     {
         public ExampleServerApp()
         {
-            new HttpActor();
         }
     }
 }

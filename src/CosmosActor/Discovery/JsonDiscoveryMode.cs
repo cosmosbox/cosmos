@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using Cosmos.Actor;
 using etcetera;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Cosmos.Actor
 {
     public class JsonDiscoveryMode : DiscoveryMode
     {
-        public ActorNodeConfig[] Nodes;
+        public IList<ActorNodeConfig> Nodes;
         public JsonDiscoveryMode(string jsonFile)
         {
 
@@ -20,10 +21,11 @@ namespace Cosmos.Actor
             {
                 throw new FileNotFoundException("Not found json discovery file", jsonFile);
             }
+
             var text = File.ReadAllText(jsonFile);
             Nodes = JsonConvert.DeserializeObject<ActorNodeConfig[]>(text);
         }
-        public override ActorNodeConfig[] GetNodes()
+        public override IList<ActorNodeConfig> GetNodes()
         {
             return Nodes;
         }

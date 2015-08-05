@@ -1,4 +1,5 @@
 ﻿{
-    "DiscoveryMode": "JsonDiscoveryMode",
-    "DiscoveryUri": "./actors.json"
+  "AppToken": "ExampleAppTokenAnyStringOK",
+  "DiscoveryMode": "Json",
+  "DiscoveryParam": "./config/actors.json"
 }

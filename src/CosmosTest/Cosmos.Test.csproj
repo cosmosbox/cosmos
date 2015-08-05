@@ -72,7 +72,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="TestActor.cs" />
-    <Compile Include="TestClientServerActor.cs" />
+    <Compile Include="TestProject.cs" />
     <Compile Include="TestEtcd.cs" />
     <Compile Include="TestMemoryData.cs" />
     <Compile Include="TestRpc.cs" />
@@ -84,21 +84,32 @@
       <Link>NLog.config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="..\..\examples\ExampleProject\config\actors.json">
+      <Link>config\actors.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\examples\ExampleProject\config\app.json">
+      <Link>config\app.json</Link>
+    </None>
     <None Include="..\cosmos\NLog.xsd">
       <Link>NLog.xsd</Link>
       <SubType>Designer</SubType>
     </None>
-    <None Include="config\app.json" />
     <None Include="packages.config" />
-    <None Include="config\actors.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\..\examples\ExampleProjectLib\ExampleProjectLib.csproj">
+      <Project>{bff6fb3e-e2f1-494b-963c-c5a5c0db5b08}</Project>
+      <Name>ExampleProjectLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\examples\ExampleProject\ExampleProject.csproj">
+      <Project>{14a6d769-0996-4305-b1fa-07758a546be3}</Project>
+      <Name>ExampleProject</Name>
+    </ProjectReference>
     <ProjectReference Include="..\cosmos\Cosmos.csproj">
       <Project>{362E1B17-169A-4324-A1C1-CE7C1142AC75}</Project>
       <Name>Cosmos</Name>

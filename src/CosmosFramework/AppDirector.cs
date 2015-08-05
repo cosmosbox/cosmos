@@ -9,8 +9,19 @@ namespace Cosmos.Framework
 {
     public abstract class AppDirector
     {
+        private ProjectJsonConfLoader _projectConf;
+
+        protected AppDirector()
+        {
+            // load configs
+            _projectConf = new ProjectJsonConfLoader();
+        }
+
 		/// <summary>
 		/// Create all actor on actors.json
+		/// 
+		/// 1. load configs
+		/// 2. start all actor in configs
 		/// </summary>
         public virtual void StartAll()
         {
@@ -19,7 +30,15 @@ namespace Cosmos.Framework
 
         public virtual void StartActor(string actorName)
         {
-            
+            foreach (var actorConfig in _projectConf.TheActorConfigs)
+            {
+                if (actorConfig.Name == actorName)
+                {
+                    ActorRunner.Run(actorConfig);
+                    return;
+                }
+            }
+            throw new Exception(string.Format("Not Found Actor on actors.json: {0}", actorName));
         }
 
 		/// <summary>

@@ -5,35 +5,56 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cosmos.Actor;
 using Newtonsoft.Json;
 
 namespace Cosmos.Framework
 {
-    /// <summary>
-    /// A Module To Load confg
-    /// </summary>
-    class ProjectConfModule
-    {
-        public static ProjectConfModule Instance = new ProjectConfModule();
-
-        ProjectJsonConfLoader ConfLoader = new ProjectJsonConfLoader();
-    }
-
-    public struct AppConfig
+    public class AppConfig
     {
         public string AppToken;
     //    public ActorNodeConfig[] Actors { get; internal set; }
+        public string DiscoveryMode = "Json";
+        public object DiscoveryParam;
     }
     public class ProjectJsonConfLoader
     {
-        public AppConfig GetAppConfig(string configPath = "config/app.json")
+        public AppConfig TheAppConfig;
+        public IList<ActorNodeConfig> TheActorConfigs;
+        public ProjectJsonConfLoader()
+        {
+            TheAppConfig = LoadAppConfig();
+            TheActorConfigs = LoadActorsConfig(TheAppConfig);
+        }
+
+        public static AppConfig LoadAppConfig(string configPath = "config/app.json")
         {
             if (!File.Exists(configPath))
             {
-                throw new FileNotFoundException("Not found json discovery file", configPath);
+                throw new FileNotFoundException("Not found app config app.json file", configPath);
             }
             var text = File.ReadAllText(configPath);
             return JsonConvert.DeserializeObject<AppConfig>(text);
         }
+
+        public static IList<ActorNodeConfig> LoadActorsConfig(AppConfig appConfig, string configPath = "config/actors.json")
+        {
+            if (!File.Exists(configPath))
+            {
+                throw new FileNotFoundException("Not found app actors config actors.json file", configPath);
+            }
+            var text = File.ReadAllText(configPath);
+            var configs = JsonConvert.DeserializeObject<ActorNodeConfig[]>(text);
+
+            foreach (var config in configs)
+            {
+                if (!string.IsNullOrEmpty(appConfig.DiscoveryMode))
+                    config.DiscoveryMode = appConfig.DiscoveryMode;
+
+                if (appConfig.DiscoveryParam != null)
+                    config.DiscoveryParam = appConfig.DiscoveryParam;
+            }
+            return configs;
+        } 
     }
 }

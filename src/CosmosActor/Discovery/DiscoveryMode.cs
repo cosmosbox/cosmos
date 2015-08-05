@@ -8,7 +8,7 @@ namespace Cosmos.Actor
 {
     public abstract class DiscoveryMode
     {
-        public abstract ActorNodeConfig[] GetNodes();
+        public abstract IList<ActorNodeConfig> GetNodes();
     }
 
 }

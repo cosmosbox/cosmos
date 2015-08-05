@@ -20,9 +20,9 @@ namespace Cosmos.Actor
     /// <summary>
     /// Control a actor's running in process
     /// 
-    /// A observer
+    /// Actor的启动器，Actor线程管理，可通过该类动态创建Actor
     /// </summary>
-    public class ActorRunner
+    public class ActorRunner : IDisposable
     {
         public static Dictionary<string, ActorRunner> Runners = new Dictionary<string, ActorRunner>();
 
@@ -38,7 +38,7 @@ namespace Cosmos.Actor
         private ActorNodeConfig Conf;
         public Actor Actor;
 
-        public object ActorName
+        public string ActorName
         {
             get { return Conf.Name; }
         }
@@ -76,6 +76,12 @@ namespace Cosmos.Actor
         public static ActorRunner GetActorStateByName(string actorName)
         {
             return Runners[actorName];
+        }
+
+        public void Dispose()
+        {
+            Runners.Remove(ActorName);
+            ActorThread.Dispose(); // kill the actor
         }
     }
 }

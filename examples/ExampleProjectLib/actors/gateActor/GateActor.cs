@@ -10,7 +10,7 @@ using Cosmos.Rpc;
 namespace ExampleProjectLib
 {
 
-    class GateActor : CFrontendActor
+    class GateActor : FrontendActor
     {
         public override IActorRpcer NewRpcCaller()
         {
@@ -25,11 +25,14 @@ namespace ExampleProjectLib
 
     class GateActorHandler : IServerHandler
     {
-        
+
+        public string TestHandler()
+        {
+            return "TestHandlerString";
+        }
     }
 
     class GateActorRpcer : IActorRpcer
     {
-        
     }
 }

@@ -42,8 +42,8 @@
     <Compile Include="actors\gameActor\GameActor.cs" />
     <Compile Include="actors\gateActor\GateActor.cs" />
     <Compile Include="actors\gateActor\handlerServer\GateServer.cs" />
-    <Compile Include="actors\httpActor\HttpActor.cs" />
-    <Compile Include="actors\httpActor\HttpHandler.cs" />
+    <Compile Include="actors\adminHttpActor\AdminHttpActor.cs" />
+    <Compile Include="actors\adminHttpActor\HttpHandler.cs" />
     <Compile Include="ExampleServerApp.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="gameLogics\PlayerSession.cs" />
@@ -65,14 +65,6 @@
     <None Include="..\..\src\cosmos\NLog.xsd">
       <Link>NLog.xsd</Link>
       <SubType>Designer</SubType>
-    </None>
-    <None Include="..\ExampleProject\config\actors.json">
-      <Link>config\actors.json</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\ExampleProject\config\base.json">
-      <Link>config\base.json</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

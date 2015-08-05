@@ -112,7 +112,7 @@ namespace Cosmos.Test
         public void TestJsonDiscoveryMode()
         {
             var dis = new JsonDiscoveryMode("config/actors.json");
-            Assert.AreEqual(dis.Nodes.Length, 2);
+            Assert.AreEqual(dis.Nodes.Count, 2);
             Assert.AreEqual(dis.Nodes[0].Name, "actor-1");
 
         }

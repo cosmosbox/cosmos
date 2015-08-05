@@ -1,13 +1,13 @@
 ﻿[
     {
         "Name": "http-fronend-actor",
-        "ActorClass": "ExampleProject.HttpActor",
+        "ActorClass": "ExampleProjectLib.AdminHttpActor, ExampleProjectLib",
         "RpcPort": 13010,
         "ResponsePort": 13000
     },
     {
-        "Name": "Gate-actor-1",
-        "ActorClass": "ExampleProject.GateActor",
+        "Name": "gate-actor-1",
+        "ActorClass": "ExampleProjectLib.GateActor, ExampleProjectLib",
         "RpcPort": 13011,
         "ResponsePort": 13001
     }

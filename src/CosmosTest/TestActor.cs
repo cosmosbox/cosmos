@@ -29,7 +29,7 @@ namespace CosmosTest
         }
     }
 
-    public class SampleActor : CFrontendActor
+    public class SampleActor : FrontendActor
     {
         public override IActorRpcer NewRpcCaller()
         {
@@ -73,12 +73,37 @@ namespace CosmosTest
             Assert.AreEqual(_actorB.State, ActorRunState.Running);
         }
 
+
+        /// <summary>
+        /// 创建一个Actor，并且使用客户端联系之
+        /// </summary>
         [Test]
-        public async void RpcFromTwoActor()
+        public async void TestFrontendActor()
         {
-            //var addResult = await _actorA.Actor.Call<int>("Actor-Test-B", "Add", 1, 2);
-            //Assert.AreEqual(addResult, 3);
+            var actorConf = new ActorNodeConfig
+            {
+                AppToken = "TestApp",
+                Name = "Actor-Test-1",
+                ActorClass = "CosmosTest.SampleActor, CosmosTest",
+                Host = "*",
+                RpcPort = 12300,
+
+                DiscoveryMode = "Json",
+                DiscoveryParam = "config/actors.json",
+
+
+                ResponsePort = 12311,
+
+            };
+            ActorRunner.Run(actorConf);
+
+            // Handler
+            var client = new HandlerClient("127.0.0.1", 12311);
+            var result = await client.Call<string>("Test");
+            Assert.AreEqual(result, "TestString");
+            Assert.Pass();
         }
+
 
         [Test]
         public async void CreateActorByCode()

@@ -10,7 +10,7 @@ namespace Cosmos.Actor
     /// <summary>
     /// For discovery and Config
     /// </summary>
-    public class ActorNodeConfig
+    public partial class ActorNodeConfig
     {
         public string AppToken;
 
@@ -28,11 +28,18 @@ namespace Cosmos.Actor
         public string Host = "*";
         public int RpcPort = -1;
 
-        public int ResponsePort = 0;
+        public string DiscoveryMode = "Json";
+        public object DiscoveryParam;
+
+
+        
         public int PublisherPort;
 
-        public string DiscoveryMode = "file";
-        public object DiscoveryParam;
+
+        /// <summary>
+        /// For FrontendActor
+        /// </summary>
+        public int ResponsePort = 0;
 
         public ActorNodeConfig Clone()
         {
