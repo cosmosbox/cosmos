@@ -26,7 +26,7 @@ namespace Cosmos.Actor
         // TODO:
         public Dictionary<Type, List<RpcClient>> RpcClientsOfTypes = new Dictionary<Type, List<RpcClient>>();
 
-        public delegate ActorNodeConfig? ActorClassFilterRouteFunc(IList<ActorNodeConfig> classActors);
+        public delegate ActorNodeConfig ActorClassFilterRouteFunc(IList<ActorNodeConfig> classActors);
 
         private Dictionary<Type, ActorClassFilterRouteFunc> FilterRoutes = new Dictionary<Type, ActorClassFilterRouteFunc>();
 
@@ -44,7 +44,7 @@ namespace Cosmos.Actor
 
             RpcCaller = NewRpcCaller();
             RpcServer = new RpcServer(RpcCaller);
-            _discovery = new Discovery(Conf.AppToken, Conf.DiscoveryServers);
+            _discovery = new Discovery(Conf.AppToken, Conf.DiscoveryMode, Conf.DiscoveryParam);
         }
 
         #region Router Call RPC
@@ -64,10 +64,10 @@ namespace Cosmos.Actor
                 Logger.Error("Router get actor config is Null of actor type: {0}", typeof(TActor));
                 return default(TReturn);
             }
-            return await Call<TReturn>(actorConfig.Value.Name, funcName, arguments);
+            return await Call<TReturn>(actorConfig.Name, funcName, arguments);
         }
 
-        public ActorNodeConfig? SetRouteRule<T>(ActorClassFilterRouteFunc route) where T : Actor
+        public ActorNodeConfig SetRouteRule<T>(ActorClassFilterRouteFunc route) where T : Actor
         {
             var t = typeof (T);
             if (FilterRoutes.ContainsKey(t))

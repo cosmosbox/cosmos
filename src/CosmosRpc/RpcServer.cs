@@ -24,7 +24,7 @@ namespace Cosmos.Rpc
 
         private IRpcCaller _rpcCaller;
         
-        public RpcServer(IRpcCaller rpcCaller, string host = "0.0.0.0") : base(-1, host)
+        public RpcServer(IRpcCaller rpcCaller, string host = "0.0.0.0", int responsePort = -1) : base(responsePort, host)
         {
             _rpcCaller = rpcCaller;
         }

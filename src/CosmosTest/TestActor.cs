@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Cosmos.Actor;
+using Cosmos.Framework.Components;
 using Cosmos.Rpc;
 using Cosmos.Tool;
 using NUnit.Framework;
@@ -20,11 +21,24 @@ namespace CosmosTest
         }
     }
 
-    public class SampleActor : Actor
+    public class SampleHandler : IServerHandler
+    {
+        public string Test()
+        {
+            return "TestString";
+        }
+    }
+
+    public class SampleActor : CFrontendActor
     {
         public override IActorRpcer NewRpcCaller()
         {
             return new SampleRpcCaller();
+        }
+
+        public override IServerHandler GetHandler()
+        {
+            return new SampleHandler();
         }
     }
 
@@ -42,7 +56,7 @@ namespace CosmosTest
             var actorConf = new ActorNodeConfig()
             {
                 Name = "Actor-Test-A",
-                DiscoveryServers = discoverServers,
+                DiscoveryParam = discoverServers,
                 ActorClass = "CosmosTest.SampleActor, CosmosTest",
             };
             _actorA = ActorRunner.Run(actorConf);
@@ -52,7 +66,7 @@ namespace CosmosTest
             var actorConfB = new ActorNodeConfig()
             {
                 Name = "Actor-Test-B",
-                DiscoveryServers = discoverServers,
+                DiscoveryParam = discoverServers,
                 ActorClass = "CosmosTest.SampleActor, CosmosTest",
             };
             _actorB = ActorRunner.Run(actorConfB);
@@ -92,6 +106,6 @@ namespace CosmosTest
             var runner2 = ActorRunner.GetActorStateByName("Actor-Test-1");
             Assert.AreEqual(runner2.State, ActorRunState.Running);
             Assert.AreEqual(runner2.ActorName, "Actor-Test-1");
-        } 
+        }
     }
 }

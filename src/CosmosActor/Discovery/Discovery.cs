@@ -20,26 +20,15 @@ namespace Cosmos.Actor
         public event Action<ActorNodeConfig> RemoveNodeEvent;
 
         private EtcdClient _etcdClient;
-        public Discovery(string appToken, string[] discoveryServers)
-        {
-            foreach (var etcdUrl in discoveryServers)
-            {
-                var etcdClient = new EtcdClient(new Uri(string.Format("{0}/v2/keys", etcdUrl)));
-                try
-                {
-                    etcdClient.Statistics.Leader();
-                    _etcdClient = etcdClient;
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(e.Message);
-                    Logger.Error("Invalid Etcd Host: {0}", etcdUrl);
-                    continue;
-                }
-            }
 
-            if(_etcdClient == null)
-                throw new Exception("Not valid EtcdClient");
+        private DiscoveryMode _mode;
+        public Discovery(string appToken, string discoveryMode, object discoveryParam)
+        {
+            var modeType = Type.GetType(string.Format("Cosmos.Actor.{0}DiscoveryMode", discoveryMode));
+            _mode = (DiscoveryMode)Activator.CreateInstance(modeType, new object[]
+            {
+                discoveryParam
+            });
             
         }
         public void RegisterActor()

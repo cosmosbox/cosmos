@@ -8,6 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using etcetera;
+using NLog;
+
 namespace Cosmos.Actor
 {
 	/// <summary>
@@ -15,10 +18,31 @@ namespace Cosmos.Actor
 	/// </summary>
 	public class EtcdDiscoveryMode : DiscoveryMode
 	{
-		public EtcdDiscoveryMode (params string[] address)
-		{
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-		}
+        private EtcdClient _etcdClient;
+
+        public EtcdDiscoveryMode (string[] discoveryServers)
+		{
+            foreach (var etcdUrl in discoveryServers)
+            {
+                var etcdClient = new EtcdClient(new Uri(string.Format("{0}/v2/keys", etcdUrl)));
+                try
+                {
+                    etcdClient.Statistics.Leader();
+                    _etcdClient = etcdClient;
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e.Message);
+                    Logger.Error("Invalid Etcd Host: {0}", etcdUrl);
+                    continue;
+                }
+            }
+
+            if (_etcdClient == null)
+                throw new Exception("Not valid EtcdClient");
+        }
 		public override ActorNodeConfig[] GetNodes()
 		{
 			return null;

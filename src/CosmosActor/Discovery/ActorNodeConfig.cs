@@ -10,7 +10,7 @@ namespace Cosmos.Actor
     /// <summary>
     /// For discovery and Config
     /// </summary>
-    public struct ActorNodeConfig
+    public class ActorNodeConfig
     {
         public string AppToken;
 
@@ -25,15 +25,14 @@ namespace Cosmos.Actor
             }
         }
 
-        public string Host;
-        public int RpcPort;
-        public int ResponsePort;
+        public string Host = "*";
+        public int RpcPort = -1;
+
+        public int ResponsePort = 0;
         public int PublisherPort;
 
-        public string DiscoveryMode;
-        public string DiscoveryUri;
-
-        public string[] DiscoveryServers;
+        public string DiscoveryMode = "file";
+        public object DiscoveryParam;
 
         public ActorNodeConfig Clone()
         {

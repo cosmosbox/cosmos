@@ -22,8 +22,8 @@ namespace Cosmos.Framework.Components
     {
         protected IServerHandler _handler;
 
-        public HandlerServer(IServerHandler handler)
-            : base(handler, "0.0.0.0")
+        public HandlerServer(IServerHandler handler, int responsePort)
+            : base(handler, "0.0.0.0", responsePort)
         {
             _handler = handler;
         }

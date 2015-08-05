@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="FrontendActor.cs" />
+    <Compile Include="HandlerServer\HandlerClient.cs" />
     <Compile Include="HandlerServer\HandlerServer.cs" />
     <Compile Include="MemoryData\MemoryData.cs" />
   </ItemGroup>

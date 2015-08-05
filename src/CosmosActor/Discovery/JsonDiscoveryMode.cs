@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cosmos.Actor;
+using etcetera;
 using Newtonsoft.Json;
 
 namespace Cosmos.Actor
@@ -14,6 +15,7 @@ namespace Cosmos.Actor
         public ActorNodeConfig[] Nodes;
         public JsonDiscoveryMode(string jsonFile)
         {
+
             if (!File.Exists(jsonFile))
             {
                 throw new FileNotFoundException("Not found json discovery file", jsonFile);

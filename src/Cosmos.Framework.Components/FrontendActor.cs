@@ -23,7 +23,7 @@ namespace Cosmos.Framework.Components
         {
             base.Init(conf);
 
-            _gateServer = new HandlerServer(GetHandler());
+            _gateServer = new HandlerServer(GetHandler(), conf.ResponsePort);
         }
 
         public abstract IServerHandler GetHandler();
