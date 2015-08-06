@@ -1,11 +1,6 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="CosmosFramework\AppDirector.cs">
-    <Files>
-      <File FileName="..\examples\ExampleProjectLib\gameLogics\GameMap.cs" Line="20" Column="25" />
-      <File FileName="CosmosFramework\AppDirector.cs" Line="17" Column="13" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Breakpoint file="d:\LocalCode\cosmos-net\cosmos\cosmos\Main.cs" line="31" />

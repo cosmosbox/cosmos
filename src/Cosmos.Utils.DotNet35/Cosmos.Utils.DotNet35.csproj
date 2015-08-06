@@ -5,18 +5,18 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>12.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}</ProjectGuid>
+    <ProjectGuid>{9B9946EE-BEE2-4B04-9392-652545039D11}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CosmosTool_DotNet45</RootNamespace>
-    <AssemblyName>CosmosTool_DotNet45</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>Cosmos.Tool</RootNamespace>
+    <AssemblyName>CosmosTool</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;DOTNET45</DefineConstants>
+    <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
@@ -33,13 +33,10 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\CosmosTool\Coroutine\Coroutine.cs">
-      <Link>Coroutine\Coroutine.cs</Link>
-    </Compile>
-    <Compile Include="..\CosmosTool\Coroutine\CoroutineRunner.cs">
-      <Link>Coroutine\CoroutineRunner.cs</Link>
-    </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Coroutine\Coroutine.cs" />
+    <Compile Include="Coroutine\CoroutineRunner.cs" />
+    <Compile Include="NetTool.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

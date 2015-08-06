@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Test", "CosmosTest\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Rpc", "CosmosRpc\Cosmos.Rpc.csproj", "{7341E7EA-168C-4688-8B8C-4E697540FBAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Tool.DotNet35", "CosmosTool\Cosmos.Tool.DotNet35.csproj", "{9B9946EE-BEE2-4B04-9392-652545039D11}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Utils.DotNet35", "Cosmos.Utils.DotNet35\Cosmos.Utils.DotNet35.csproj", "{9B9946EE-BEE2-4B04-9392-652545039D11}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleProject", "..\examples\ExampleProject\ExampleProject.csproj", "{14A6D769-0996-4305-B1FA-07758A546BE3}"
 EndProject
@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Script", "CosmosScri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Framework", "CosmosFramework\Cosmos.Framework.csproj", "{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Tool.DotNet45", "CosmosTool_DotNet45\Cosmos.Tool.DotNet45.csproj", "{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Utils.DotNet45", "Cosmos.Utils.DotNet45\Cosmos.Utils.DotNet45.csproj", "{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Actor", "CosmosActor\Cosmos.Actor.csproj", "{501DEEC1-5738-465F-9AB2-4A9FF95A34E9}"
 EndProject

@@ -103,11 +103,11 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\..\examples\ExampleProjectLib\ExampleProjectLib.csproj">
-      <Project>{bff6fb3e-e2f1-494b-963c-c5a5c0db5b08}</Project>
+      <Project>{BFF6FB3E-E2F1-494B-963C-C5A5C0DB5B08}</Project>
       <Name>ExampleProjectLib</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\examples\ExampleProject\ExampleProject.csproj">
-      <Project>{14a6d769-0996-4305-b1fa-07758a546be3}</Project>
+      <Project>{14A6D769-0996-4305-B1FA-07758A546BE3}</Project>
       <Name>ExampleProject</Name>
     </ProjectReference>
     <ProjectReference Include="..\cosmos\Cosmos.csproj">
@@ -130,13 +130,13 @@
       <Project>{60511790-088E-449E-A4E2-6485A976A20C}</Project>
       <Name>Cosmos.Script</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CosmosTool_DotNet45\Cosmos.Tool.DotNet45.csproj">
-      <Project>{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}</Project>
-      <Name>Cosmos.Tool.DotNet45</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Cosmos.Framework.Components\Cosmos.Framework.Components.csproj">
       <Project>{3689ED7B-D457-4E8C-AD19-5AFAD297F6AA}</Project>
       <Name>Cosmos.Framework.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cosmos.Utils.DotNet45\Cosmos.Utils.DotNet45.csproj">
+      <Project>{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}</Project>
+      <Name>Cosmos.Utils.DotNet45</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

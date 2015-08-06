@@ -31,20 +31,20 @@ namespace Cosmos.Rpc
 
         public string Host { get; private set; }
 
-        public int RequestPort { get; private set; }
+        public int ResponsePort { get; private set; }
 
         public string Protocol { get; private set; }
 
         public string Address
         {
-            get { return string.Format("{0}://{1}:{2}", Protocol, Host, RequestPort); }
+            get { return string.Format("{0}://{1}:{2}", Protocol, Host, ResponsePort); }
         }
         private Dictionary<string, BaseResponseMsg> _responses = new Dictionary<string, BaseResponseMsg>();
 
-        protected BaseNetMqClient(string host, int requestPort, string protocol = "tcp")
+        protected BaseNetMqClient(string host, int responsePort, string protocol = "tcp")
         {
             Host = host;
-            RequestPort = requestPort;
+            ResponsePort = responsePort;
             Protocol = protocol;
 
             _poller = new Poller();

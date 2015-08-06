@@ -8,7 +8,7 @@
     <ProjectGuid>{6DE61DC4-0243-4A7F-B0BB-753EA850D3C8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Cosmos.Framework</RootNamespace>
-    <AssemblyName>CosmosApp</AssemblyName>
+    <AssemblyName>Cosmos.Framework</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -33,10 +33,6 @@
     <Reference Include="MsgPack">
       <HintPath>..\MsgPack\MsgPack.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Redlock.CSharp">
       <HintPath>..\packages\redlock-cs.1.0.0.1\lib\net45\Redlock.CSharp.dll</HintPath>
     </Reference>
@@ -52,6 +48,9 @@
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

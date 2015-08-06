@@ -8,7 +8,7 @@ using Cosmos.Actor;
 namespace Cosmos.Framework.Components
 {
     /// <summary>
-    /// 前端可用
+    /// 前端可用, 使用ResponsePort
     /// </summary>
     public abstract class FrontendActor : CInternalActor
     {

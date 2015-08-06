@@ -18,7 +18,7 @@ namespace Cosmos.Rpc
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public RpcClient(string host, int requestPort, string protocol = "tcp") : base(host, requestPort, protocol)
+        public RpcClient(string host, int responsePort, string protocol = "tcp") : base(host, responsePort, protocol)
         {
         }
 
