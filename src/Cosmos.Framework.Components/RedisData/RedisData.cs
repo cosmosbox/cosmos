@@ -24,13 +24,13 @@ namespace Cosmos.Framework.Components
 	/// 使用MsgPack进行序列化，建议你应尽可能使用简单的数据类型（如struct）进行保存
 	/// 
 	/// </summary>
-    public class MemoryData : IDisposable
+    public class RedisData : IDisposable
     {
         public IDatabase Db;
         private readonly Redlock.CSharp.Redlock _redlock;
         readonly Lock _locker;
         private string _key;
-        internal MemoryData(string key, IDatabase db, Redlock.CSharp.Redlock redlock)
+        internal RedisData(string key, IDatabase db, Redlock.CSharp.Redlock redlock)
         {
             _key = key;
             Db = db;
@@ -134,9 +134,9 @@ namespace Cosmos.Framework.Components
             Db = _redis.GetDatabase();
         }
 
-        public MemoryData GetData(string key)
+        public RedisData GetData(string key)
         {
-            return new MemoryData(key, Db, _redlock);
+            return new RedisData(key, Db, _redlock);
         }
 
         public void Dispose()

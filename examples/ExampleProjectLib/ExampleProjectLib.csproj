@@ -44,6 +44,7 @@
     <Compile Include="actors\gateActor\handlerServer\GateServer.cs" />
     <Compile Include="actors\adminHttpActor\AdminHttpActor.cs" />
     <Compile Include="actors\adminHttpActor\HttpHandler.cs" />
+    <Compile Include="ExampleClient.cs" />
     <Compile Include="ExampleServerApp.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="gameLogics\PlayerSession.cs" />
