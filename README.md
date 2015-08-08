@@ -1,7 +1,7 @@
 # cosmos - a keeper
 
-cosmos是一个.Net分布式应用开发框架管理器(Keeper)。
-配合默认提供的各种组件(Components): 包括框架组建(Framework), 前端访问组件(Handler)等等实现诸如分布式游戏服务器, 分布式聊天服务器等应用.
+cosmos是一个基于Actor的.Net Service服务框架。
+配合默认提供的各种组件(Components): 包括前端访问组件(Handler)等等实现诸如分布式游戏服务器, 分布式聊天服务器等应用.
 
 
 ## 快速入门:创建新项目
@@ -18,12 +18,15 @@ cosmos createproject ExampleProject
 
 TODO:
 
+## 有什么类似的项目?
+
+Dubbo
+
 ## cosmos是一个分布式应用开发管理器,但提供框架功能
 
 她的设计初衷是游戏服务器框架，但它并不是一个游戏服务器开发框架......
 
-她本质是一个RPC调用管理器.
-相对开发框架它的最大好处是, 你可以脱离看框架使用这个管理器去启动分布式应用.
+她本质是一个服务框架.
 
 她的核心只做一件事：启动你预先定义好的Actor结点，并且确保这些Actor结点可以互相通讯。
 
@@ -133,14 +136,13 @@ PS: 如果你突然对麦当佬加盟店的管理兴趣盎然，可搜关键字�
 
 # 其它
 
-## 技术上来说Cosmos不是框架
-为什么一再强调Cosmos只是一个分布式应用管理器,而不是框架?
 
-因为它本质上既不提供MVC等设计模式,核心组建也没有耦合任何业务逻辑相关的功能.
-尽管它提供了Cosmos.Framework组件来实现一个框架功能
-
-可是这里并没有否定开发框架的意思, 开发框架能大大增强开发效率. 事实上, Cosmos可以与任何其它开发框架配合使用, 如甲Actor运行逻辑是使用Asp.net框架, 乙Actor运行逻辑是运行ThinkPHP框架等, 这时候Cosmos则为甲Actor和乙Actor提供通讯能力.
-
+## 跟Dubbo很像?
+Cosmos的灵感来源于游戏服务器框架Pomelo, 在设计之初并没有参考Dubbo. 后来才知道跟Dubbo架构非常相像
+* Dubbo的Provider 对应 Cosmos.Actor
+* Dubbo的Registry 对应 Cosmos.Actor的Discovery
+* Dubbo的Remoting 对应 Cosmos.Rpc
+* Cosmos没有提供Monitor
 
 ## 为什么使用C#，而不是Go,NodeJS,Python？
 Cosmos的灵感源于游戏开发框架Pomelo。在设计之初，
