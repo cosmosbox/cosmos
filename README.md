@@ -142,6 +142,7 @@ Cosmos的灵感来源于游戏服务器框架Pomelo, 在设计之初并没有参
 * Dubbo的Provider 对应 Cosmos.Actor
 * Dubbo的Registry 对应 Cosmos.Actor的Discovery
 * Dubbo的Remoting 对应 Cosmos.Rpc
+* Dubbo的Consumer和Providoer需要Xml配置, interface调用;  Cosmos.Rpc使用字符串反射调用,免配置
 * Cosmos没有提供Monitor
 
 ## 为什么使用C#，而不是Go,NodeJS,Python？
