@@ -13,7 +13,7 @@ using NUnit.Framework;
 
 namespace CosmosTest
 {
-    public class SampleRpcCaller : IActorRpcer
+    public class SampleRpcCaller : IActorService
     {
         public int Add(int a, int b)
         {
@@ -31,7 +31,7 @@ namespace CosmosTest
 
     public class SampleActor : FrontendActor
     {
-        public override IActorRpcer NewRpcCaller()
+        public override IActorService NewRpcCaller()
         {
             return new SampleRpcCaller();
         }

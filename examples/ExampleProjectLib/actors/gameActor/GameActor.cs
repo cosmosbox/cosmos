@@ -9,10 +9,10 @@ using Cosmos.Rpc;
 
 namespace ExampleProjectLib
 {
-    class GameActorRpcer : IActorRpcer
+    class GameActorService : IActorService
     {
 		GameActor _actor;
-        public GameActorRpcer(GameActor actor)
+        public GameActorService(GameActor actor)
 		{
 			_actor = actor;
 		}
@@ -57,9 +57,9 @@ namespace ExampleProjectLib
 			});
 		}
 
-        public override IActorRpcer NewRpcCaller()
+        public override IActorService NewRpcCaller()
         {
-            return new GameActorRpcer(this);
+            return new GameActorService(this);
         }
     }
 }

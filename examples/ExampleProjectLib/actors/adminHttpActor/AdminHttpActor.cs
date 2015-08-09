@@ -11,7 +11,7 @@ using Nancy.ModelBinding;
 namespace ExampleProject
 {
 
-    internal class AdminHttpActorRpcCaller : IActorRpcer
+    internal class AdminHttpActorRpcCaller : IActorService
     {
         private readonly AdminHttpActor _actor;
 
@@ -41,7 +41,7 @@ namespace ExampleProject
             httpHandler.Start();
 
         }
-        public override IActorRpcer NewRpcCaller()
+        public override IActorService NewRpcCaller()
         {
             return new AdminHttpActorRpcCaller(this);
         }

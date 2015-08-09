@@ -9,7 +9,7 @@ using NLog;
 
 namespace Cosmos.Actor
 {
-    public interface IActorRpcer : IRpcCaller
+    public interface IActorService : IRpcService
     {
 
     }
@@ -30,7 +30,7 @@ namespace Cosmos.Actor
 
         private Dictionary<Type, ActorClassFilterRouteFunc> FilterRoutes = new Dictionary<Type, ActorClassFilterRouteFunc>();
 
-        public IRpcCaller RpcCaller;
+        public IRpcService RpcService;
         public RpcServer RpcServer;
         private Discovery _discovery;
 
@@ -42,8 +42,8 @@ namespace Cosmos.Actor
             IsActive = true;
             Conf = conf;
 
-            RpcCaller = NewRpcCaller();
-            RpcServer = new RpcServer(RpcCaller);
+            RpcService = NewRpcCaller();
+            RpcServer = new RpcServer(RpcService);
             _discovery = new Discovery(Conf.AppToken, Conf.DiscoveryMode, Conf.DiscoveryParam);
         }
 
@@ -100,6 +100,6 @@ namespace Cosmos.Actor
 
             return default(T);
         }
-        abstract public IActorRpcer NewRpcCaller();
+        abstract public IActorService NewRpcCaller();
     }
 }

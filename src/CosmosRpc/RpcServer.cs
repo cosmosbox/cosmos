@@ -22,11 +22,11 @@ namespace Cosmos.Rpc
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private IRpcCaller _rpcCaller;
+        private IRpcService _rpcService;
         
-        public RpcServer(IRpcCaller rpcCaller, string host = "0.0.0.0", int responsePort = -1) : base(responsePort, host)
+        public RpcServer(IRpcService rpcService, string host = "0.0.0.0", int responsePort = -1) : base(responsePort, host)
         {
-            _rpcCaller = rpcCaller;
+            _rpcService = rpcService;
         }
 
         protected override async Task<byte[]> ProcessRequest(byte[] reqData)
@@ -36,7 +36,7 @@ namespace Cosmos.Rpc
             var resMsg = new ResponseMsg();
             resMsg.IsError = false;
 
-            var method = _rpcCaller.GetType().GetMethod(requestMsg.FuncName);
+            var method = _rpcService.GetType().GetMethod(requestMsg.FuncName);
             object executeResult = null;
 
             if (method != null)
@@ -45,7 +45,7 @@ namespace Cosmos.Rpc
 
                 try
                 {
-                    var result = method.Invoke(_rpcCaller, arguments);
+                    var result = method.Invoke(_rpcService, arguments);
                     executeResult = result;
                 }
                 catch (Exception e)
@@ -71,7 +71,7 @@ namespace Cosmos.Rpc
     /// <summary>
     /// Any call RPC Fucntion must in this class
     /// </summary>
-    public interface IRpcCaller
+    public interface IRpcService
     {
     }
 
@@ -92,7 +92,7 @@ namespace Cosmos.Rpc
 
     //    object RpcInstace;
 
-    //    public RpcServer(RpcCaller rpcInstance, string host = "0.0.0.0")
+    //    public RpcServer(rpcService rpcInstance, string host = "0.0.0.0")
     //    {
     //        RpcInstace = rpcInstance;
     //        Poller = new Poller();

@@ -12,9 +12,9 @@ namespace ExampleProjectLib
 
     class GateActor : FrontendActor
     {
-        public override IActorRpcer NewRpcCaller()
+        public override IActorService NewRpcCaller()
         {
-            return new GateActorRpcer();
+            return new GateActorService();
         }
 
         public override IServerHandler GetHandler()
@@ -44,7 +44,7 @@ namespace ExampleProjectLib
         }
     }
 
-    class GateActorRpcer : IActorRpcer
+    class GateActorService : IActorService
     {
     }
 }

@@ -10,7 +10,7 @@ using NLog;
 namespace Cosmos.Framework.Components
 {
 
-    public interface IServerHandler : IRpcCaller
+    public interface IServerHandler : IRpcService
     {
 
     }
