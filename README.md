@@ -6,7 +6,7 @@ cosmos是一个基于Actor的.Net分布式服务框架。
 
 ![Cosmos Infrastructure](docs/CosmosInfrastructure.png)
 
-## 快速入门:创建新项目
+## TODO: 快速入门:创建新项目
 
 ```shell
 
@@ -14,6 +14,7 @@ cosmos createproject ExampleProject
 ```
 
 在安装好Visual Studio的机子上双击ExampleProject.sln文件。
+
 点击运行...
 
 ## 简单项目举例: 分布式实时游戏(地图角色砍怪发技能)
