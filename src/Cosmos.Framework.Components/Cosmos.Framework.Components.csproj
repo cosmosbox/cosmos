@@ -49,7 +49,7 @@
     <Compile Include="FrontendActor.cs" />
     <Compile Include="HandlerServer\HandlerClient.cs" />
     <Compile Include="HandlerServer\HandlerServer.cs" />
-    <Compile Include="MemoryData\RedisData.cs" />
+    <Compile Include="RedisData\RedisData.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
