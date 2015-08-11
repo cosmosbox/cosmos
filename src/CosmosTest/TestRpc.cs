@@ -11,6 +11,12 @@ namespace Cosmos.Test
     [TestFixture()]
     public class TestRpc
     {
+        [Test]
+        public void SessionTokenGenerate()
+        {
+            var token = BaseNetMqServer.GenerateSessionKey();
+            Assert.AreEqual(16, token.Length);
+        }
         [Test()]
         public void TestAdd()
         {

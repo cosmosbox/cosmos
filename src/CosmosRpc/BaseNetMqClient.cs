@@ -12,10 +12,8 @@ using NetMQ.Sockets;
 namespace Cosmos.Rpc
 {
 
-    public struct BaseRequestMsg
+    public class BaseRequestMsg : BaseNetMqMsg
     {
-        public string RequestToken;
-        public byte[] Data;
     }
 
     /// <summary>
@@ -40,9 +38,11 @@ namespace Cosmos.Rpc
             get { return string.Format("{0}://{1}:{2}", Protocol, Host, ResponsePort); }
         }
         private Dictionary<string, BaseResponseMsg> _responses = new Dictionary<string, BaseResponseMsg>();
+        public string SessionToken { get; private set; }
 
         protected BaseNetMqClient(string host, int responsePort, string protocol = "tcp")
         {
+            SessionToken = null;
             Host = host;
             ResponsePort = responsePort;
             Protocol = protocol;
@@ -79,6 +79,7 @@ namespace Cosmos.Rpc
 
         public void Dispose()
         {
+            SessionToken = null;
             _subSocket.Close();
             _poller.RemoveSocket(_requestClient);
             _requestClient.Close();
@@ -101,6 +102,7 @@ namespace Cosmos.Rpc
         {
             var requestMsg = new BaseRequestMsg()
             {
+                SessionToken = SessionToken,
                 RequestToken = Path.GetRandomFileName(),
                 Data = obj,
             };
@@ -120,6 +122,11 @@ namespace Cosmos.Rpc
             });
             var responseData = await waitResponse;
             _responses.Remove(requestMsg.RequestToken); // must true!
+
+            SessionToken = responseData.SessionToken;
+            if (string.IsNullOrEmpty(SessionToken))
+                throw new Exception(string.Format("Error Session token when get response"));
+
             return responseData.Data;
         }
 

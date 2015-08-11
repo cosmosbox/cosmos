@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseNetMqClient.cs" />
+    <Compile Include="BaseNetMqMsg.cs" />
     <Compile Include="BaseNetMqServer.cs" />
     <Compile Include="MsgPackTool.cs" />
     <Compile Include="RpcClient.cs" />
@@ -60,6 +61,12 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cosmos.Utils.DotNet35\Cosmos.Utils.DotNet35.csproj">
+      <Project>{9B9946EE-BEE2-4B04-9392-652545039D11}</Project>
+      <Name>Cosmos.Utils.DotNet35</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

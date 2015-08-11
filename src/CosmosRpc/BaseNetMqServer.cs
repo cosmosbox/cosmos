@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cosmos.Tool;
 using MsgPack.Serialization;
 using NetMQ;
 using NetMQ.Sockets;
@@ -13,11 +14,8 @@ namespace Cosmos.Rpc
     /// <summary>
     /// Mutable
     /// </summary>
-    public struct BaseResponseMsg
+    public class BaseResponseMsg : BaseNetMqMsg
     {
-        // Fields...
-        public string RequestToken;
-        public byte[] Data;
     }
 
     public abstract class BaseNetMqServer : IDisposable
@@ -86,8 +84,16 @@ namespace Cosmos.Rpc
             var requestDataMsg = baseRequestMsg.Data;
 
             var responseMsg = await ProcessRequest(requestDataMsg);
+
+            // if no session key, generate new
+            var sessionToken = baseRequestMsg.SessionToken;
+            if (string.IsNullOrEmpty(sessionToken))
+            {
+                sessionToken = GenerateSessionKey();
+            }
             var baseResponseMsg = new BaseResponseMsg()
             {
+                SessionToken = sessionToken,
                 RequestToken = baseRequestMsg.RequestToken,
                 Data = responseMsg,
             };
@@ -110,6 +116,19 @@ namespace Cosmos.Rpc
 
 
             _pollerTask.Dispose();
+        }
+
+        /// <summary>
+        /// Create a new Session Key of Hex
+        /// </summary>
+        /// <returns></returns>
+        public static string GenerateSessionKey()
+        {
+            var now = DateTime.UtcNow;
+            var random = new Random(now.Millisecond);
+            var pureKeyStr = string.Format("{0}{1}", now.Ticks, random.Next(int.MinValue, int.MaxValue));
+
+            return Md5Util.Hex(pureKeyStr);
         }
     }
 

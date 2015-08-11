@@ -19,7 +19,10 @@ cosmos createproject ExampleProject
 
 点击运行...
 
-## 简单项目举例: 分布式实时游戏(地图角色砍怪发技能)
+Examples:
+----------------------
+
+### 简单分布式实时游戏(地图角色砍怪发技能)
 
 TODO:
 

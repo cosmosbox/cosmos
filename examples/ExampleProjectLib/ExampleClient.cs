@@ -24,9 +24,11 @@ namespace ExampleProjectLib
             //_gateClient.Call<LoginResProto>()
         }
 
-        PlayerClient Login()
+        public async Task<PlayerClient> Login()
         {
-            return null;
+            var loginRes = await _gateClient.Call<LoginResProto>("Login");
+            
+            return new PlayerClient(loginRes.GameServerHost, loginRes.GameServerPort);
         }
         
     }
@@ -36,7 +38,7 @@ namespace ExampleProjectLib
     /// </summary>
     class PlayerClient
     {
-        public PlayerClient()
+        public PlayerClient(string host, int port)
         {
             SubcribeMe();
         }
