@@ -55,7 +55,7 @@
     <Compile Include="gameLogics\characters\Npc.cs" />
     <Compile Include="gameLogics\characters\Player.cs" />
     <Compile Include="gameLogics\datas\PlayerData.cs" />
-    <Compile Include="d:\LocalCode\cosmos-net\examples\ExampleProjectLib\gameLogics\GateServices.cs" />
+    <Compile Include="gameLogics\GateServices.cs" />
     <Compile Include="gameLogics\GameServices.cs" />
     <Compile Include="ProtoMsgs.cs" />
   </ItemGroup>
