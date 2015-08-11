@@ -45,7 +45,7 @@ namespace Cosmos.Tool
         }
 
         // 字符串16位 MD5
-        public static string Hex(string str)
+        public static string String16(string str)
         {
             byte[] md5Bytes = MD5_bytes(str);
             str = System.BitConverter.ToString(md5Bytes, 4, 8);

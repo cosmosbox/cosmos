@@ -128,7 +128,7 @@ namespace Cosmos.Rpc
             var random = new Random(now.Millisecond);
             var pureKeyStr = string.Format("{0}{1}", now.Ticks, random.Next(int.MinValue, int.MaxValue));
 
-            return Md5Util.Hex(pureKeyStr);
+            return Md5Util.String16(pureKeyStr);
         }
     }
 
