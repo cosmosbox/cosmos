@@ -21,7 +21,7 @@ namespace ExampleProjectLib
 
         public void Start()
         {
-            _gateClient.Call<LoginResProto>()
+            //_gateClient.Call<LoginResProto>()
         }
 
         PlayerClient Login()
