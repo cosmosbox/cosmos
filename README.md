@@ -1,4 +1,6 @@
-# cosmos - a keeper
+# cosmos
+
+[![Build Status](https://travis-ci.org/cosmosbox/cosmos.svg)](https://travis-ci.org/cosmosbox/cosmos)
 
 cosmos是一个基于Actor的.Net分布式服务框架。
 
@@ -190,3 +192,9 @@ Go语言的gocoroutine可以说是最先进的异步编程模型，开发者无�
 Unity3D使用Mono引擎，自然而然C#就是它最佳的编程脚本。如果一个网络游戏，服务器客户端都使用同一种语言，那么就能享受共享类库（如共享配置类、网络数据类、业务逻辑类）的巨大便捷了。
 
 
+
+
+# TODO List
+
+* Components.RunnerActor - for run a new actor in thread
+* Components.MonitorActor
