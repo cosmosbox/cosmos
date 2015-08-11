@@ -38,9 +38,18 @@ namespace ExampleProjectLib
             return "TestHandlerString";
         }
 
-        public void Login()
+        public void RunGameServer()
+        {
+            //ActorRunner.Run()
+        }
+        public LoginResProto Login()
         {
             
+            return new LoginResProto()
+            {
+                GameServerHost = "127.0.0.1",
+                //GameServerPort = ""
+            };
         }
     }
 

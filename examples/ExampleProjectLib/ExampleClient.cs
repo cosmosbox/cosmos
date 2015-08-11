@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cosmos.Framework.Components;
 
-namespace ExampleProject
+namespace ExampleProjectLib
 {
     /// <summary>
     /// Gate
@@ -16,12 +16,12 @@ namespace ExampleProject
         public ExampleClient()
         {
             _gateClient = new HandlerClient("127.0.0.1", 13001);
-            _gateClient
+            
         }
 
         public void Start()
         {
-            
+            _gateClient.Call<LoginResProto>()
         }
 
         PlayerClient Login()
