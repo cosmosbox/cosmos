@@ -26,6 +26,10 @@ namespace Cosmos.Test
             Assert.AreEqual(sum, 3);
         }
 
+        /// <summary>
+        /// A struct for test MsgPack
+        /// 一个用于测试MsgPack的构造器
+        /// </summary>
         public struct TestStruct
         {
             public string A;

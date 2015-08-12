@@ -52,10 +52,10 @@ namespace ExampleProjectLib
 					_map.Update();
 					Thread.Sleep(40);  // 1 / 25
 				}
-
-				Console.WriteLine("Finish main loop!");
 			});
-		}
+
+            Console.WriteLine("Finish main loop!");
+        }
 
         public override IActorService NewRpcCaller()
         {

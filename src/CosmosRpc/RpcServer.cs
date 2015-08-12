@@ -31,40 +31,43 @@ namespace Cosmos.Rpc
 
         protected override async Task<byte[]> ProcessRequest(byte[] reqData)
         {
-            var requestMsg = MsgPackTool.GetMsg<RequestMsg>(reqData);
-
-            var resMsg = new ResponseMsg();
-            resMsg.IsError = false;
-
-            var method = _rpcService.GetType().GetMethod(requestMsg.FuncName);
-            object executeResult = null;
-
-            if (method != null)
+            return await Task.Run(() =>
             {
-                var arguments = MsgPackTool.ConvertMsgPackObjectArray(requestMsg.Arguments);
+                var requestMsg = MsgPackTool.GetMsg<RequestMsg>(reqData);
 
-                try
+                var resMsg = new ResponseMsg();
+                resMsg.IsError = false;
+
+                var method = _rpcService.GetType().GetMethod(requestMsg.FuncName);
+                object executeResult = null;
+
+                if (method != null)
                 {
-                    var result = method.Invoke(_rpcService, arguments);
-                    executeResult = result;
+                    var arguments = MsgPackTool.ConvertMsgPackObjectArray(requestMsg.Arguments);
+
+                    try
+                    {
+                        var result = method.Invoke(_rpcService, arguments);
+                        executeResult = result;
+                    }
+                    catch (Exception e)
+                    {
+                        resMsg.IsError = true;
+                        resMsg.ErrorMessage = string.Format("[ERROR]Method '{0}' Exception: {1}", requestMsg.FuncName, e);
+                        Logger.Error(resMsg.ErrorMessage);
+                    }
                 }
-                catch (Exception e)
+                else
                 {
                     resMsg.IsError = true;
-                    resMsg.ErrorMessage = string.Format("[ERROR]Method '{0}' Exception: {1}", requestMsg.FuncName, e);
+                    resMsg.ErrorMessage = string.Format("[ERROR]Not found method: {0}", requestMsg.FuncName);
                     Logger.Error(resMsg.ErrorMessage);
+                    Thread.Sleep(1);
                 }
-            }
-            else
-            {
-                resMsg.IsError = true;
-                resMsg.ErrorMessage = string.Format("[ERROR]Not found method: {0}", requestMsg.FuncName);
-                Logger.Error(resMsg.ErrorMessage);
-                Thread.Sleep(1);
-            }
 
-            resMsg.Value = executeResult;
-            return MsgPackTool.GetBytes(resMsg);
+                resMsg.Value = executeResult;
+                return MsgPackTool.GetBytes(resMsg);
+            });
         }
 
     }

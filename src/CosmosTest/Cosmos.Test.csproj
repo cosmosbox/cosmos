@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{CCE2BDCD-B04B-4F58-A5CA-47271B002885}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CosmosTest</RootNamespace>
-    <AssemblyName>CosmosTest</AssemblyName>
+    <RootNamespace>Cosmos.Test</RootNamespace>
+    <AssemblyName>Cosmos.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -24,11 +24,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>..\..\release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
     <DefineConstants>publi</DefineConstants>
+    <DocumentationFile>bin\Release\Cosmos.Test.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="etcetera">
