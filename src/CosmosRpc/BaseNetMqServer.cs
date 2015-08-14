@@ -114,7 +114,8 @@ namespace Cosmos.Rpc
 
             var sendData = MsgPackTool.GetBytes(baseResponseMsg);
             
-            _responseSocket.Send(sendData);
+            e.Socket.Send(sendData);
+            //_responseSocket.Send(sendData);
         }
 
         protected abstract Task<byte[]> ProcessRequest(byte[] requestDataMsg);
