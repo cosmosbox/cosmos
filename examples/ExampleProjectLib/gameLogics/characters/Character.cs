@@ -11,19 +11,11 @@ using System;
 namespace ExampleProjectLib
 {
 
-	public class Character : MapObject
+	public class Character
 	{
-		public int Hp;
-		public int Attack;
-
 		public Character ()
 		{
 
-		}
-
-		public Skill CastSkill(Character target)
-		{
-			return new Skill(Attack, this, target);
 		}
 	}
 }

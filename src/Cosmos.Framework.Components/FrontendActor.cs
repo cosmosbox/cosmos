@@ -12,7 +12,7 @@ namespace Cosmos.Framework.Components
     /// </summary>
     public abstract class FrontendActor : CInternalActor
     {
-        private HandlerServer _gateServer;
+        protected HandlerServer _handlerServer;
 
         protected FrontendActor()
         {
@@ -22,10 +22,10 @@ namespace Cosmos.Framework.Components
         {
             base.Init(conf);
 
-            _gateServer = new HandlerServer(GetHandler(), conf.ResponsePort);
+            _handlerServer = new HandlerServer(GetHandler(), conf.ResponsePort);
         }
 
-        public abstract IServerHandler GetHandler();
+        public abstract IHandler GetHandler();
     }
 
 

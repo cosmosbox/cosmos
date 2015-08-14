@@ -4,33 +4,49 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cosmos.Actor;
+using NLog;
 
 namespace Cosmos.Framework
 {
     public abstract class AppDirector
     {
-        private ProjectJsonConfLoader _projectConf;
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        public ProjectJsonConfLoader ProjectConf { get; private set; }
+
+        protected bool _hasStartAll = false;
         protected AppDirector()
         {
             // load configs
-            _projectConf = new ProjectJsonConfLoader();
+            ProjectConf = new ProjectJsonConfLoader();
         }
 
-		/// <summary>
-		/// Create all actor on actors.json
-		/// 
-		/// 1. load configs
-		/// 2. start all actor in configs
-		/// </summary>
+        /// <summary>
+        /// Create all actor on actors.json
+        /// 
+        /// 1. load configs
+        /// 2. start all actor in configs
+        /// 
+        /// TODO:  check if the actor running, not running then run it !  hot update !
+        /// </summary>
         public virtual void StartAll()
-        {
+		{
+		    if (_hasStartAll)
+		    {
+                Logger.Error("AppDirector cannot `StartAll` twice!");
+                return;
+		    }
             
+		    _hasStartAll = true;
+            foreach (var actorConfig in ProjectConf.TheActorConfigs)
+            {
+                ActorRunner.Run(actorConfig);
+            }
         }
 
         public virtual void StartActor(string actorName)
         {
-            foreach (var actorConfig in _projectConf.TheActorConfigs)
+            foreach (var actorConfig in ProjectConf.TheActorConfigs)
             {
                 if (actorConfig.Name == actorName)
                 {

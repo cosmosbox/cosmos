@@ -24,13 +24,14 @@ namespace Cosmos.Rpc
         private NetMQSocket _responseSocket;
         private PublisherSocket _pubSocket;
         public int ResponsePort { get; private set; }
+        public int PublishPort { get; private set; }
         public string Host { get; private set; }
 
         private Task _pollerTask;
 
         public Poller Poller;
 
-        public BaseNetMqServer(int responsePort = -1, string host = "0.0.0.0")
+        public BaseNetMqServer(int responsePort = -1, int publishPort = 0, string host = "*")
         {
             Poller = new Poller();
             Host = host;
@@ -49,15 +50,20 @@ namespace Cosmos.Rpc
                 _responseSocket.Bind(string.Format("tcp://{0}:{1}", host, ResponsePort));
             }
 
+
             _responseSocket.ReceiveReady += OnResponseReceiveReady;
 
+            if (publishPort != 0)
+            {
+                PublishPort = publishPort;
+                _pubSocket = _context.CreatePublisherSocket();
+                _pubSocket.Options.SendHighWatermark = 1000;
+                // Bind ? Connect? 
+                _pubSocket.Bind(string.Format("tcp://{0}:{1}", Host, publishPort));
 
-            //_pubSocket = _context.CreatePublisherSocket();
-            //_pubSocket.Options.SendHighWatermark = 1000;
-            //// Bind ? Connect? 
-            //_pubSocket.Bind(string.Format("tcp://{0}:{1}", "*", requestPort));
-            
-            //Poller.AddSocket(_pubSocket);
+                Poller.AddSocket(_pubSocket);
+            }
+
 
             _pollerTask = Task.Run(() =>
             {

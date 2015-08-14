@@ -1,14 +1,23 @@
 ﻿[
-    {
-        "Name": "http-fronend-actor",
-        "ActorClass": "ExampleProjectLib.AdminHttpActor, ExampleProjectLib",
-        "RpcPort": 13010,
-        "ResponsePort": 13000
-    },
-    {
-        "Name": "gate-actor-1",
-        "ActorClass": "ExampleProjectLib.GateActor, ExampleProjectLib",
-        "RpcPort": 13011,
-        "ResponsePort": 13001
-    }
+  {
+    "Name": "http-fronend-actor",
+    "ActorClass": "ExampleProjectLib.AdminHttpActor, ExampleProjectLib",
+    "RpcPort": 13001,
+    "ResponsePort": 13002,
+    "PublishPort": 13003
+  },
+  {
+    "Name": "gate-actor-1",
+    "ActorClass": "ExampleProjectLib.GateActor, ExampleProjectLib",
+    "RpcPort": 14001,
+    "ResponsePort": 14002,
+    "PublishPort": 14003
+  },
+  {
+    "Name": "game-actor-1",
+    "ActorClass": "ExampleProjectLib.GameActor, ExampleProjectLib",
+    "RpcPort": 15001,
+    "ResponsePort": 15002,
+    "PublishPort": 15003
+  }
 ]

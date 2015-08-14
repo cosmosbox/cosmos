@@ -10,7 +10,7 @@ using NLog;
 namespace Cosmos.Framework.Components
 {
 
-    public interface IServerHandler : IRpcService
+    public interface IHandler : IRpcService
     {
 
     }
@@ -18,11 +18,11 @@ namespace Cosmos.Framework.Components
     /// <summary>
     /// 使用Rpc的网络组件，与客户端沟通
     /// </summary>
-    public class HandlerServer : RpcServer, IServerHandler
+    public class HandlerServer : RpcServer, IHandler
     {
-        protected IServerHandler _handler;
+        protected IHandler _handler;
 
-        public HandlerServer(IServerHandler handler, int responsePort)
+        public HandlerServer(IHandler handler, int responsePort)
             : base(handler, "0.0.0.0", responsePort)
         {
             _handler = handler;

@@ -8,14 +8,65 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using NLog;
+
 namespace ExampleProjectLib
 {
-	public class Player : Character
-	{
-		public Player (PlayerData data)
+    /// <summary>
+    /// Client + Server
+    /// </summary>
+	public class Player
+    {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        private PlayerEntity _entity;
+
+        public Player (PlayerEntity entity)
 		{
+            _entity = entity;
 		}
 
+
+        /// <summary>
+        /// 进入关卡
+        /// </summary>
+        /// <param name="levelTypeId"></param>
+        /// <returns>是否成功进入</returns>
+	    public bool EnterLevel(int levelTypeId)
+	    {
+	        if (_entity.State == PlayerState.Level)
+	        {
+                Logger.Error("正在关卡中不允许再进入关卡了！");
+	            return false;
+	        }
+
+	        _entity.State = PlayerState.Level;
+	        _entity.StateArg = levelTypeId;
+	        return true;
+	    }
+
+        /// <summary>
+        /// 完成关卡
+        /// </summary>
+        /// <param name="levelTypeId"></param>
+        /// <param name="isSuccess"></param>
+        /// <returns>是否成功完成</returns>
+	    public bool FinishLevel(int levelTypeId, bool isSuccess)
+	    {
+	        if (_entity.State != PlayerState.Level && !_entity.StateArg.Equals(levelTypeId))
+	        {
+                Logger.Error("无法完成关卡，当前玩家状态: {0}, {1}", _entity.State, _entity.StateArg);
+	            return false;
+	        }
+            if (isSuccess)
+            {
+                var rand = new Random();
+                _entity.Exp += rand.Next(1, 100);
+            }
+            _entity.State = PlayerState.UI;
+	        _entity.StateArg = null;
+	        return true;
+	    }
 
 	}
 }

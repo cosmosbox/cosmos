@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Cosmos.Actor;
 using Cosmos.Framework.Components;
 using Cosmos.Rpc;
+using ExampleProject;
 
 namespace ExampleProjectLib
 {
@@ -17,13 +18,13 @@ namespace ExampleProjectLib
             return new GateActorService();
         }
 
-        public override IServerHandler GetHandler()
+        public override IHandler GetHandler()
         {
             return new GateActorHandler(this);
         }
     }
 
-    class GateActorHandler : IServerHandler
+    class GateActorHandler : IHandler
     {
         private GateServices _services;
         private GateActor _gateActor;
@@ -44,11 +45,12 @@ namespace ExampleProjectLib
         }
         public LoginResProto Login()
         {
-            
+            var cfg = ExampleServerApp.Instance.ProjectConf.TheActorConfigs[2];
+
             return new LoginResProto()
             {
-                GameServerHost = "127.0.0.1",
-                //GameServerPort = ""
+                GameServerHost = cfg.Host,
+                GameServerPort = cfg.ResponsePort,
             };
         }
     }

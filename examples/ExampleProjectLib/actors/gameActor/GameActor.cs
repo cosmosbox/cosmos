@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Cosmos.Actor;
+using Cosmos.Framework.Components;
 using Cosmos.Rpc;
 
 namespace ExampleProjectLib
@@ -34,7 +35,7 @@ namespace ExampleProjectLib
 	}
 
 	// as a Facade
-    class GameActor : Actor
+    class GameActor : FrontendActor
     {
 		GameMap _map;
 
@@ -60,6 +61,11 @@ namespace ExampleProjectLib
         public override IActorService NewRpcCaller()
         {
             return new GameActorService(this);
+        }
+
+        public override IHandler GetHandler()
+        {
+            return new GameHandler(this._handlerServer);
         }
     }
 }

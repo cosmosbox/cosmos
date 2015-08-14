@@ -22,7 +22,7 @@ namespace Cosmos.Rpc
     public abstract class BaseNetMqClient : IDisposable
     {
         internal NetMQContext _context;
-        private NetMQSocket _requestClient;
+        private NetMQSocket _requestSocket;
         private SubscriberSocket _subSocket;
         Poller _poller;
         private Task _pollerTask;
@@ -33,39 +33,66 @@ namespace Cosmos.Rpc
 
         public string Protocol { get; private set; }
 
-        public string Address
+        public int SubscribePort { get; private set; }
+
+        public string ReqAddress
         {
             get { return string.Format("{0}://{1}:{2}", Protocol, Host, ResponsePort); }
         }
+        public string SubcribeAddress
+        {
+            get { return string.Format("{0}://{1}:{2}", Protocol, Host, SubscribePort); }
+        }
+
         private Dictionary<string, BaseResponseMsg> _responses = new Dictionary<string, BaseResponseMsg>();
         public string SessionToken { get; private set; }
 
-        protected BaseNetMqClient(string host, int responsePort, string protocol = "tcp")
+        protected BaseNetMqClient(string host, int responsePort, int subscribePort, string protocol = "tcp")
         {
             SessionToken = null;
             Host = host;
             ResponsePort = responsePort;
+            SubscribePort = subscribePort;
             Protocol = protocol;
 
             _poller = new Poller();
-
             _context = NetMQContext.Create();
 
-            _subSocket = _context.CreateSubscriberSocket();
-            _subSocket.Options.ReceiveHighWatermark = 1000;
-            _subSocket.Connect(Address);
-            _subSocket.ReceiveReady += OnSubscriberReceiveReady;
-            _poller.AddSocket(_subSocket);
+            // subcribe
+            if (SubscribePort != 0)
+            {
+                _subSocket = _context.CreateSubscriberSocket();
+                _subSocket.Options.ReceiveHighWatermark = 1000;
+                _subSocket.Connect(SubcribeAddress);
+                _subSocket.ReceiveReady += OnSubscriberReceiveReady;
+                _poller.AddSocket(_subSocket);
+            }
 
-            _requestClient = _context.CreateRequestSocket();
-            _requestClient.Connect(Address);
-            _requestClient.ReceiveReady += OnRequestReceiveReady;
 
-            _poller.AddSocket(_requestClient);
+            // request
+            _requestSocket = _context.CreateRequestSocket();
+            _requestSocket.Connect(ReqAddress);
+            _requestSocket.ReceiveReady += OnRequestReceiveReady;
+            _poller.AddSocket(_requestSocket);
+
+            // run poller
             _pollerTask = Task.Run(() =>
             {
                 _poller.Start();
             });
+        }
+
+        public void Dispose()
+        {
+            SessionToken = null;
+            _subSocket.Close();
+            _poller.RemoveSocket(_requestSocket);
+            _requestSocket.Close();
+            _context.Dispose();
+
+            _poller.Stop();
+            _poller.Dispose();
+            _pollerTask.Dispose(); // until release poller
         }
 
         private void OnSubscriberReceiveReady(object sender, NetMQSocketEventArgs e)
@@ -75,19 +102,6 @@ namespace Cosmos.Rpc
 
             Console.WriteLine("Topic: {0}", messageTopicReceived);
             Console.WriteLine("Message: {0}", messageReceived);
-        }
-
-        public void Dispose()
-        {
-            SessionToken = null;
-            _subSocket.Close();
-            _poller.RemoveSocket(_requestClient);
-            _requestClient.Close();
-            _context.Dispose();
-
-            _poller.Stop();
-            _poller.Dispose();
-            _pollerTask.Dispose(); // until release poller
         }
 
         protected async Task<TResponse> Request<TRequest, TResponse>(TRequest obj)
@@ -109,7 +123,7 @@ namespace Cosmos.Rpc
 
             var bytes = MsgPackTool.GetBytes(requestMsg);
 
-            _requestClient.Send(bytes);
+            _requestSocket.Send(bytes);
 
             var waitResponse = Task.Run(() =>
             {
@@ -129,10 +143,9 @@ namespace Cosmos.Rpc
 
             return responseData.Data;
         }
-
         private void OnRequestReceiveReady(object sender, NetMQSocketEventArgs e)
         {
-            var recvData = _requestClient.Receive();
+            var recvData = _requestSocket.Receive();
             var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvData);
             _responses[recvMsg.RequestToken] = recvMsg;
         }
@@ -182,6 +195,11 @@ namespace Cosmos.Rpc
         }
         #endregion
 
+
+        public void Subcribe(string topic)
+        {
+            _subSocket.Subscribe(topic);
+        }
     }
 
 }

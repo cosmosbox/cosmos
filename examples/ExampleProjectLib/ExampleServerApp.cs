@@ -6,7 +6,9 @@ namespace ExampleProject
 {
     public class ExampleServerApp : AppDirector
     {
-        public ExampleServerApp()
+        public static ExampleServerApp Instance = new ExampleServerApp();  // µ¥Àý
+
+        private ExampleServerApp()
         {
         }
     }

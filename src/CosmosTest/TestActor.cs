@@ -21,7 +21,7 @@ namespace CosmosTest
         }
     }
 
-    public class SampleHandler : IServerHandler
+    public class SampleHandler : IHandler
     {
         public string Test()
         {
@@ -36,7 +36,7 @@ namespace CosmosTest
             return new SampleRpcCaller();
         }
 
-        public override IServerHandler GetHandler()
+        public override IHandler GetHandler()
         {
             return new SampleHandler();
         }

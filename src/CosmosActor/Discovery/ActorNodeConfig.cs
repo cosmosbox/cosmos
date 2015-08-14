@@ -33,7 +33,7 @@ namespace Cosmos.Actor
 
 
         
-        public int PublisherPort;
+        public int PublishPort;
 
 
         /// <summary>

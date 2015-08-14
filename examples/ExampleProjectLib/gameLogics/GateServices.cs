@@ -11,12 +11,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cosmos.Actor;
+using Cosmos.Framework.Components;
 
 namespace ExampleProjectLib
 {
 	class GateServices
 	{
-        Dictionary<int, ActorRunner> SubActors = new Dictionary<int, ActorRunner>();
+        //Dictionary<int, ActorRunner> SubActors = new Dictionary<int, ActorRunner>();
 
         GateActor _actor;
 		public GateServices (GateActor actor)
@@ -26,7 +27,7 @@ namespace ExampleProjectLib
 
 		public Task<PlayerSession> UserLogin()
 		{
-			var player = new Player(new PlayerData());
+			var player = new Player(new PlayerEntity());
 			var pSession = new PlayerSession(player);
 
 			return null;
@@ -36,17 +37,17 @@ namespace ExampleProjectLib
 		/// 返回一个动态创建的Actor，供客户端连接
 		/// </summary>
 		/// <param name="session">Session.</param>
-		public ActorNodeConfig GetGameActor(PlayerSession session, int mapId)
-		{
-		    ActorRunner actorRunner;
-		    if (!SubActors.TryGetValue(mapId, out actorRunner))
-		    {
-                var actorNodeConf = _actor.Conf.Clone();
-                actorRunner = SubActors[mapId] = ActorRunner.Run(actorNodeConf); // 启动一个Actor
-            }
+		//public ActorNodeConfig GetGameActor(PlayerSession session, int mapId)
+		//{
+		//    ActorRunner actorRunner;
+		//    if (!SubActors.TryGetValue(mapId, out actorRunner))
+		//    {
+  //              var actorNodeConf = _actor.Conf.Clone();
+  //              actorRunner = SubActors[mapId] = ActorRunner.Run(actorNodeConf); // 启动一个Actor
+  //          }
 
-            return actorRunner.Actor.Conf;
-		}
+  //          return actorRunner.Actor.Conf;
+		//}
 
 		public Task<bool> UserLogout(PlayerSession session)
 		{

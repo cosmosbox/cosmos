@@ -10,11 +10,23 @@
 using System;
 namespace ExampleProjectLib
 {
-	public class MapObject
+    public enum PlayerState
+    {
+        UI,
+        Level,
+    }
+	/// <summary>
+	/// Rpc Send
+	/// </summary>
+	public class PlayerEntity
 	{
-		public MapObject ()
-		{
-		}
+		public int Uid;
+		public int Hp;
+		public int Attack;
+
+	    public long Exp;
+	    public PlayerState State;
+	    public object StateArg; 
 	}
 }
 

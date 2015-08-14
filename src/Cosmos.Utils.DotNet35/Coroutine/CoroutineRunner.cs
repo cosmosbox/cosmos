@@ -24,7 +24,7 @@ namespace Cosmos.Tool
 
         private static CoroutineRunner Instance = new CoroutineRunner();
         private static LinkedList<Coroutine> _coroutines = new LinkedList<Coroutine>();
-
+        private Thread _coroutineRunnerThread;
         private CoroutineRunner()
         {
             DoLoopTaskAsync();
@@ -32,7 +32,7 @@ namespace Cosmos.Tool
 
         void DoLoopTaskAsync()
         {
-            var t = new Thread(() =>
+            _coroutineRunnerThread = new Thread(() =>
             {
                 while (true)
                 {
@@ -64,7 +64,7 @@ namespace Cosmos.Tool
                     Thread.Sleep(HeartbeatMilliseconds);
                 }
             });
-            t.Start();
+            _coroutineRunnerThread.Start();
         }
 
         /// <summary>

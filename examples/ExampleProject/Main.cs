@@ -7,7 +7,7 @@ namespace ExampleProject
 	{
 		public static void Main (string[] args)
 		{
-		    AppBootstrap.StartAll(new ExampleServerApp());
+		    AppBootstrap.StartAll(ExampleServerApp.Instance);
 		}
 	}
 }

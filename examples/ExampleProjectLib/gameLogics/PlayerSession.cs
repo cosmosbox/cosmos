@@ -10,7 +10,7 @@
 using System;
 namespace ExampleProjectLib
 {
-	class PlayerSession
+	public class PlayerSession
 	{
 		public Player Player {get; private set;}
 

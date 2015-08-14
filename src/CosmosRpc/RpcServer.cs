@@ -24,7 +24,7 @@ namespace Cosmos.Rpc
 
         private IRpcService _rpcService;
         
-        public RpcServer(IRpcService rpcService, string host = "0.0.0.0", int responsePort = -1) : base(responsePort, host)
+        public RpcServer(IRpcService rpcService, string host = "0.0.0.0", int responsePort = -1) : base(responsePort, 0, host)
         {
             _rpcService = rpcService;
         }
