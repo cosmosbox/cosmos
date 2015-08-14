@@ -51,6 +51,7 @@ namespace ExampleProjectLib
             {
                 GameServerHost = cfg.Host,
                 GameServerPort = cfg.ResponsePort,
+                SubcribePort = cfg.PublishPort,
             };
         }
     }

@@ -46,6 +46,12 @@ namespace Cosmos.Rpc
             return serializer.Unpack(stream);
         }
 
+        public static byte[] GetBytes(Type type, object obj)
+        {
+            var serializer = MessagePackSerializer.Get(type);
+            return serializer.PackSingleObject(obj);
+        }
+
         public static byte[] GetBytes<T>(T msg)
         {
             var serializer = MessagePackSerializer.Get<T>();

@@ -85,7 +85,12 @@ namespace Cosmos.Rpc
         public void Dispose()
         {
             SessionToken = null;
-            _subSocket.Close();
+            if (_subSocket != null)
+            {
+                _subSocket.Close();
+                _poller.RemoveSocket(_subSocket);
+            }
+            
             _poller.RemoveSocket(_requestSocket);
             _requestSocket.Close();
             _context.Dispose();

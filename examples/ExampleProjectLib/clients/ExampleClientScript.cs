@@ -4,27 +4,43 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using NLog;
 
 namespace ExampleProjectLib.clients
 {
     public class ExampleClientScript
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        public Task Task;
         public ExampleClientScript()
         {
-            ClientLoop();
+            Task = Task.Run(() =>
+            {
+                int id = 0;
+                //while (true)
+                {
+                    id++;
+                    ClientLoop(id);
+                    Thread.Sleep(500); // 0.5秒登录一个
+                }
+            });
         }
 
-        async void ClientLoop()
+        async void ClientLoop(int id)
         {
-            
-            while (true)
+            Logger.Warn("Now Start Client: {0}", id);
+            //while (true)
             {
                 // Login
                 var client = new GateClient("127.0.0.1", 14002);
                 var loginRes = await client.Login();
-
+                var host = loginRes.GameServerHost;
+                if (host == "*")
+                {
+                    host = "127.0.0.1";
+                }
                 // Connect game server
-                var gameClient = new PlayerHandlerClient(loginRes.GameServerHost, loginRes.GameServerPort);
+                var gameClient = new PlayerHandlerClient(host, loginRes.GameServerPort, loginRes.SubcribePort);
                 var sessionToken = gameClient.SessionToken;
                 if (string.IsNullOrEmpty(sessionToken))
                 {
@@ -50,9 +66,10 @@ namespace ExampleProjectLib.clients
 
                 }
 
-                // Logout, Append player result
+                
             }
-
+            // Logout, Append player result
+            Logger.Warn("Now End Client.................. {0}", id);
         }
     }
 }

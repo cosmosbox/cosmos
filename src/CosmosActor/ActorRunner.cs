@@ -57,10 +57,10 @@ namespace Cosmos.Actor
                 }
             });
 
-            while (State == ActorRunState.None)
-            {
-                // block
-            }
+            //while (State == ActorRunState.None)
+            //{
+            //    // block
+            //}
 
             Runners[conf.Name] = this;
         }

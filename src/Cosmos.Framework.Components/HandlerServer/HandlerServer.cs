@@ -23,7 +23,7 @@ namespace Cosmos.Framework.Components
         protected IHandler _handler;
 
         public HandlerServer(IHandler handler, int responsePort)
-            : base(handler, "0.0.0.0", responsePort)
+            : base(handler, "*", responsePort)
         {
             _handler = handler;
         }

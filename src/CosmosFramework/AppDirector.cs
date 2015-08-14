@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Cosmos.Actor;
 using NLog;
@@ -44,6 +45,11 @@ namespace Cosmos.Framework
             }
         }
 
+        public void Wait()
+        {
+            while(true)
+                Thread.Sleep(1);
+        }
         public virtual void StartActor(string actorName)
         {
             foreach (var actorConfig in ProjectConf.TheActorConfigs)

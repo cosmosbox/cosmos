@@ -16,7 +16,7 @@ namespace Cosmos.Rpc
 
     public struct ResponseMsg
     {
-        public object Value;  // MessagePackObject
+        public byte[] Value;  // MessagePackObject
         public bool IsError;
         public string ErrorMessage;
     }
@@ -53,8 +53,7 @@ namespace Cosmos.Rpc
                 Value = default(T);
             else
             {
-                var msgObj = (MsgPack.MessagePackObject)response.Value;
-                Value = (T)msgObj.ToObject();
+                Value = MsgPackTool.GetMsg<T>(response.Value);
             }
 
         }

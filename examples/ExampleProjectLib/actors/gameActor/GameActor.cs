@@ -37,11 +37,8 @@ namespace ExampleProjectLib
 	// as a Facade
     class GameActor : FrontendActor
     {
-		GameMap _map;
-
-		public GameActor(int mapTypeId)
+		public GameActor()
 		{
-			_map = GameMap.Get(mapTypeId);
 			MainLoop();
 		}
 
@@ -50,7 +47,6 @@ namespace ExampleProjectLib
 			await Task.Run (()=> {
 				while(true)
 				{
-					_map.Update();
 					Thread.Sleep(40);  // 1 / 25
 				}
 			});

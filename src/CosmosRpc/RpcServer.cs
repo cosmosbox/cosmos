@@ -23,8 +23,8 @@ namespace Cosmos.Rpc
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private IRpcService _rpcService;
-        
-        public RpcServer(IRpcService rpcService, string host = "0.0.0.0", int responsePort = -1) : base(responsePort, 0, host)
+
+        public RpcServer(IRpcService rpcService, string host = "*", int responsePort = -1) : base(responsePort, 0, host)
         {
             _rpcService = rpcService;
         }
@@ -39,7 +39,7 @@ namespace Cosmos.Rpc
                 resMsg.IsError = false;
 
                 var method = _rpcService.GetType().GetMethod(requestMsg.FuncName);
-                object executeResult = null;
+                byte[] executeResult = null;
 
                 if (method != null)
                 {
@@ -48,7 +48,7 @@ namespace Cosmos.Rpc
                     try
                     {
                         var result = method.Invoke(_rpcService, arguments);
-                        executeResult = result;
+                        executeResult = MsgPackTool.GetBytes(method.ReturnType, result);
                     }
                     catch (Exception e)
                     {

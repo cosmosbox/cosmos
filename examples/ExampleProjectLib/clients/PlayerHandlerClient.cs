@@ -10,9 +10,9 @@ namespace ExampleProjectLib
     public class PlayerHandlerClient : IGameHandler
     {
         private HandlerClient _handlerClient;
-        public PlayerHandlerClient(string host, int port)
+        public PlayerHandlerClient(string host, int port, int subcribePort)
         {
-            _handlerClient = new HandlerClient(host, port);
+            _handlerClient = new HandlerClient(host, port, subcribePort);
             SubcribePlayer();
         }
 

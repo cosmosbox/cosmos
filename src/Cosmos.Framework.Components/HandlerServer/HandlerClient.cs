@@ -12,8 +12,8 @@ namespace Cosmos.Framework.Components
     /// </summary>
     public class HandlerClient : RpcClient
     {
-        public HandlerClient(string host, int responsePort) 
-            : base(host, responsePort, "tcp")
+        public HandlerClient(string host, int responsePort, int subcribePort = 0) 
+            : base(host, responsePort, subcribePort, "tcp")
         {
 
         }

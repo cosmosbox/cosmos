@@ -8,7 +8,7 @@ using Cosmos.Actor;
 using Cosmos.Rpc;
 using Nancy.ModelBinding;
 
-namespace ExampleProject
+namespace ExampleProjectLib
 {
 
     internal class AdminHttpActorRpcCaller : IActorService

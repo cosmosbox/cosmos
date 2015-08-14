@@ -79,7 +79,7 @@ namespace Cosmos.Test
             {
                 Assert.AreEqual(server.ResponsePort.GetType(), typeof(int));
                 Assert.GreaterOrEqual(server.ResponsePort, 0);
-                Assert.AreEqual(server.Host, "0.0.0.0");
+                Assert.AreEqual(server.Host, "*");
 
                 using (var server2 = new RpcServer(new TestActorService(), "127.0.0.1"))
                     Assert.AreEqual(server2.Host, "127.0.0.1");

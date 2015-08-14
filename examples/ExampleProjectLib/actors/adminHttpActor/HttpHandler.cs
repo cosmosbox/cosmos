@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Nancy.Hosting.Self;
-namespace ExampleProject
+namespace ExampleProjectLib
 {
     public class HttpHandler : Nancy.NancyModule
     {
