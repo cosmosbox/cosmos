@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using MsgPack.Serialization;
 using NetMQ;
 using NetMQ.Sockets;
+using NLog;
 
 namespace Cosmos.Rpc
 {
@@ -21,7 +22,16 @@ namespace Cosmos.Rpc
     /// </summary>
     public abstract class BaseNetMqClient : IDisposable
     {
-        internal NetMQContext _context;
+        static NetMQContext _context;
+        static BaseNetMqClient()
+        {
+            _context = NetMQContext.Create();
+            _context.MaxSockets = 10240;
+            _context.ThreadPoolSize = 128;
+        }
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private NetMQSocket _requestSocket;
         private SubscriberSocket _subSocket;
         Poller _poller;
@@ -55,8 +65,7 @@ namespace Cosmos.Rpc
             SubscribePort = subscribePort;
             Protocol = protocol;
 
-            _poller = new Poller();
-            _context = NetMQContext.Create();
+            _poller = new Poller(new NetMQTimer(1));
 
             // subcribe
             if (SubscribePort != 0)
@@ -93,7 +102,7 @@ namespace Cosmos.Rpc
             
             _poller.RemoveSocket(_requestSocket);
             _requestSocket.Close();
-            _context.Dispose();
+            //_context.Dispose();
 
             _poller.Stop();
             _poller.Dispose();

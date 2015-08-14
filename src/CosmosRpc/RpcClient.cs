@@ -24,7 +24,9 @@ namespace Cosmos.Rpc
 
         public async Task<RpcCallResult<T>> CallResult<T>(string funcName, params object[] arguments)
         {
-            Logger.Trace("RpcClient CallResult Function: {0}, Arguments: {1}", funcName, arguments);
+            var startTime = DateTime.UtcNow;
+            
+            Logger.Trace("[Start]CallResult: {0}, Arguments: {1}", funcName, arguments);
 
             var proto = new RequestMsg
             {
@@ -32,6 +34,9 @@ namespace Cosmos.Rpc
                 Arguments = arguments,
             };
             var responseMsg = await Request<RequestMsg, ResponseMsg>(proto);
+
+            Logger.Trace("[Finish]CallResult: {0} used time: {1:F5}s", funcName, (DateTime.UtcNow - startTime).TotalSeconds);
+
             return new RpcCallResult<T>(responseMsg);
 
         }

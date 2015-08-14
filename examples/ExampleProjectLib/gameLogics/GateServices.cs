@@ -25,14 +25,6 @@ namespace ExampleProjectLib
 			_actor = actor;
 		}
 
-		public Task<PlayerSession> UserLogin()
-		{
-			var player = new Player(new PlayerEntity());
-			var pSession = new PlayerSession(player);
-
-			return null;
-		}
-
 		/// <summary>
 		/// 返回一个动态创建的Actor，供客户端连接
 		/// </summary>

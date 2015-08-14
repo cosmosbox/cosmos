@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Cosmos.Tool;
 using MsgPack.Serialization;
@@ -20,7 +21,15 @@ namespace Cosmos.Rpc
 
     public abstract class BaseNetMqServer : IDisposable
     {
-        internal NetMQContext _context;
+
+        static NetMQContext _context;
+        static BaseNetMqServer()
+        {
+            _context = NetMQContext.Create();
+            _context.MaxSockets = 10240;
+            _context.ThreadPoolSize = 128;
+        }
+
         private NetMQSocket _responseSocket;
         private PublisherSocket _pubSocket;
         public int ResponsePort { get; private set; }
@@ -33,10 +42,9 @@ namespace Cosmos.Rpc
 
         public BaseNetMqServer(int responsePort = -1, int publishPort = 0, string host = "*")
         {
-            Poller = new Poller();
+            Poller = new Poller(new NetMQTimer(1));
             Host = host;
 
-            _context = NetMQContext.Create();
             _responseSocket = _context.CreateResponseSocket();
             Poller.AddSocket(_responseSocket);
 
@@ -49,15 +57,13 @@ namespace Cosmos.Rpc
                 ResponsePort = responsePort;
                 _responseSocket.Bind(string.Format("tcp://{0}:{1}", host, ResponsePort));
             }
-
-
+            
             _responseSocket.ReceiveReady += OnResponseReceiveReady;
 
             if (publishPort != 0)
             {
                 PublishPort = publishPort;
                 _pubSocket = _context.CreatePublisherSocket();
-                _pubSocket.Options.SendHighWatermark = 1000;
                 // Bind ? Connect? 
                 _pubSocket.Bind(string.Format("tcp://{0}:{1}", Host, publishPort));
 
@@ -115,7 +121,7 @@ namespace Cosmos.Rpc
         {
             Poller.RemoveSocket(_responseSocket);
             _responseSocket.Close();
-            _context.Dispose();
+            //_context.Dispose();
 
             Poller.Stop();
             Poller.Dispose();

@@ -44,11 +44,11 @@ namespace ExampleProjectLib
         /// 随机请求一次，获取SessionToken
         /// </summary>
         /// <returns></returns>
-        public void Handshake()
+        public async void Handshake()
         {
             if (string.IsNullOrEmpty(SessionToken))
             {
-                var task = _handlerClient.CallResult<string>("Handshake");
+                var task = _handlerClient.CallResult<object>("Handshake");
                 task.Wait();
             }
         }

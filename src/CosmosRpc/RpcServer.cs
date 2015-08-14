@@ -48,7 +48,8 @@ namespace Cosmos.Rpc
                     try
                     {
                         var result = method.Invoke(_rpcService, arguments);
-                        executeResult = MsgPackTool.GetBytes(method.ReturnType, result);
+                        if (result != null)
+                            executeResult = MsgPackTool.GetBytes(method.ReturnType, result);
                     }
                     catch (Exception e)
                     {

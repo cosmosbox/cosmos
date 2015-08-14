@@ -20,10 +20,11 @@ namespace ExampleProjectLib
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private PlayerEntity _entity;
-
-        public Player (PlayerEntity entity)
+        private string _playerToken;
+        public Player (string playerToken, PlayerEntity entity)
 		{
             _entity = entity;
+            _playerToken = playerToken;
 		}
 
 
@@ -65,6 +66,8 @@ namespace ExampleProjectLib
             }
             _entity.State = PlayerState.UI;
 	        _entity.StateArg = null;
+
+            Logger.Info("Now player: {0} Exp: {1}", this._playerToken, _entity.Exp);
 	        return true;
 	    }
 

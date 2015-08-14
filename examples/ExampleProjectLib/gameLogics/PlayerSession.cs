@@ -13,10 +13,11 @@ namespace ExampleProjectLib
 	public class PlayerSession
 	{
 		public Player Player {get; private set;}
-
-		public PlayerSession (Player player)
+        public string SessionToken { get; private set; }
+		public PlayerSession (string sessionToken)
 		{
-			Player = player;
+		    SessionToken = sessionToken;
+            Player = new Player(SessionToken, new PlayerEntity());
 		}
 	}
 }

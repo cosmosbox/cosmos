@@ -1,5 +1,7 @@
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cosmos.Framework.Components;
 
@@ -18,14 +20,22 @@ namespace ExampleProjectLib
 	public class GameHandler : IGameHandler
     {
         private HandlerServer _handlerServer;
+        private ConcurrentDictionary<string, PlayerSession> PlayerSessions = new ConcurrentDictionary<string, PlayerSession>();
+
         public GameHandler (HandlerServer handlerServer)
         {
             _handlerServer = handlerServer;
         }
 
+         
         public PlayerSession GetSession(string sessionToken)
         {
-            return null;
+            PlayerSession session;
+            if (!PlayerSessions.TryGetValue(sessionToken, out session))
+            {
+                session = PlayerSessions[sessionToken] = new PlayerSession(sessionToken);
+            }
+            return session;
         }
 
         /// <summary>

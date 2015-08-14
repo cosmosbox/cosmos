@@ -17,11 +17,11 @@ namespace ExampleProjectLib.clients
             Task = Task.Run(() =>
             {
                 int id = 0;
-                //while (true)
+                while (id < 5)
                 {
                     id++;
                     ClientLoop(id);
-                    Thread.Sleep(500); // 0.5秒登录一个
+                    Thread.Sleep(2000); // 1秒登录一个
                 }
             });
         }
@@ -50,8 +50,8 @@ namespace ExampleProjectLib.clients
                     if (string.IsNullOrEmpty(sessionToken))
                         throw new Exception("No SessionToken Error!");
                 }
-
-                for (var i = 0; i < 1000; i++)
+                // 操作100次后结束客户端
+                for (var i = 0; i < 100; i++)
                 {
                     // Enter Level
                     var rand = new Random();
@@ -59,7 +59,7 @@ namespace ExampleProjectLib.clients
                     gameClient.EnterLevel(sessionToken, randLevelId);
 
                     // 5s in level 
-                    Thread.Sleep(5000);
+                    Thread.Sleep(100);
 
                     // Finish Level
                     gameClient.FinishLevel(sessionToken, randLevelId, true);
