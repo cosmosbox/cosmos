@@ -17,11 +17,11 @@ namespace ExampleProjectLib.clients
             Task = Task.Run(() =>
             {
                 int id = 0;
-                while (id < 5)
+                while (id < 2)
                 {
                     id++;
                     ClientLoop(id);
-                    Thread.Sleep(2000); // 1秒登录一个
+                    //Thread.Sleep(2000); // 1秒登录一个
                 }
             });
         }
@@ -32,13 +32,18 @@ namespace ExampleProjectLib.clients
             //while (true)
             {
                 // Login
-                var client = new GateClient("127.0.0.1", 14002);
-                var loginRes = await client.Login();
-                var host = loginRes.GameServerHost;
-                if (host == "*")
+                string host;
+                LoginResProto loginRes;
+                using (var client = new GateClient("127.0.0.1", 14002))
                 {
-                    host = "127.0.0.1";
+                    loginRes = await client.Login();
+                    host = loginRes.GameServerHost;
+                    if (host == "*")
+                    {
+                        host = "127.0.0.1";
+                    }
                 }
+
                 // Connect game server
                 var gameClient = new PlayerHandlerClient(host, loginRes.GameServerPort, loginRes.SubcribePort);
                 var sessionToken = gameClient.SessionToken;
@@ -51,22 +56,25 @@ namespace ExampleProjectLib.clients
                         throw new Exception("No SessionToken Error!");
                 }
                 // 操作100次后结束客户端
-                for (var i = 0; i < 100; i++)
+                for (var i = 0; i < 1000; i++)
                 {
+                    Logger.Info("EnterLevel from Id: {0}, Loop: {1}", id, i);
                     // Enter Level
                     var rand = new Random();
                     var randLevelId = rand.Next(1, 100000);
                     gameClient.EnterLevel(sessionToken, randLevelId);
 
                     // 5s in level 
-                    Thread.Sleep(100);
+                    Thread.Sleep(1);
 
+                    Logger.Info("FinishLevel from Id: {0}, Loop: {1}", id, i);
                     // Finish Level
                     gameClient.FinishLevel(sessionToken, randLevelId, true);
+                    Logger.Info("next call");
 
                 }
 
-                
+
             }
             // Logout, Append player result
             Logger.Warn("Now End Client.................. {0}", id);

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Cosmos.Tool;
 using MsgPack.Serialization;
 using NetMQ;
+using NetMQ.Actors;
 using NetMQ.Sockets;
 
 namespace Cosmos.Rpc
@@ -21,7 +22,6 @@ namespace Cosmos.Rpc
 
     public abstract class BaseNetMqServer : IDisposable
     {
-
         static NetMQContext _context;
         static BaseNetMqServer()
         {
@@ -51,13 +51,15 @@ namespace Cosmos.Rpc
             if (responsePort == -1)
             {
                 ResponsePort = _responseSocket.BindRandomPort("tcp://" + host);
+                
             }
             else
             {
                 ResponsePort = responsePort;
                 _responseSocket.Bind(string.Format("tcp://{0}:{1}", host, ResponsePort));
             }
-            
+            _responseSocket.Options.ReceiveHighWatermark = 1024;
+            _responseSocket.Options.SendHighWatermark = 1024;
             _responseSocket.ReceiveReady += OnResponseReceiveReady;
 
             if (publishPort != 0)
@@ -111,7 +113,7 @@ namespace Cosmos.Rpc
             };
 
             var sendData = MsgPackTool.GetBytes(baseResponseMsg);
-
+            
             _responseSocket.Send(sendData);
         }
 
@@ -136,9 +138,18 @@ namespace Cosmos.Rpc
         /// <returns></returns>
         public static string GenerateSessionKey()
         {
+            return GenerateKey("S");
+        }
+        public static string GenerateRequestKey()
+        {
+            return GenerateKey("REQ");
+        }
+
+        static string GenerateKey(string suffix)
+        {
             var now = DateTime.UtcNow;
             var random = new Random(now.Millisecond);
-            var pureKeyStr = string.Format("{0}{1}", now.Ticks, random.Next(int.MinValue, int.MaxValue));
+            var pureKeyStr = string.Format("{0}{1}{2}",suffix, now.Ticks, random.Next(int.MinValue, int.MaxValue));
 
             return Md5Util.String16(pureKeyStr);
         }

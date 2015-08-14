@@ -10,7 +10,7 @@ namespace ExampleProjectLib
     /// <summary>
     /// Gate
     /// </summary>
-    class GateClient
+    class GateClient : IDisposable
     {
         private HandlerClient _gateClient;
         public GateClient(string host, int port)
@@ -29,6 +29,11 @@ namespace ExampleProjectLib
             var loginRes = await _gateClient.Call<LoginResProto>("Login");
 
             return loginRes;
+        }
+
+        public void Dispose()
+        {
+            _gateClient.Dispose();
         }
     }
     

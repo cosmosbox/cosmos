@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -54,7 +55,7 @@ namespace Cosmos.Rpc
             get { return string.Format("{0}://{1}:{2}", Protocol, Host, SubscribePort); }
         }
 
-        private Dictionary<string, BaseResponseMsg> _responses = new Dictionary<string, BaseResponseMsg>();
+        private ConcurrentDictionary<string, BaseResponseMsg> _responses = new ConcurrentDictionary<string, BaseResponseMsg>();
         public string SessionToken { get; private set; }
 
         protected BaseNetMqClient(string host, int responsePort, int subscribePort, string protocol = "tcp")
@@ -82,6 +83,9 @@ namespace Cosmos.Rpc
             _requestSocket = _context.CreateRequestSocket();
             _requestSocket.Connect(ReqAddress);
             _requestSocket.ReceiveReady += OnRequestReceiveReady;
+            _requestSocket.Options.ReceiveHighWatermark = 1024;
+            _requestSocket.Options.SendHighWatermark = 1024;
+
             _poller.AddSocket(_requestSocket);
 
             // run poller
@@ -125,13 +129,13 @@ namespace Cosmos.Rpc
 
             return MsgPackTool.GetMsg<TResponse>(resData);
         }
-
+        static int Reqid = 0;
         protected async Task<byte[]> Request(byte[] obj)
         {
             var requestMsg = new BaseRequestMsg()
             {
                 SessionToken = SessionToken,
-                RequestToken = Path.GetRandomFileName(),
+                RequestToken = BaseNetMqServer.GenerateRequestKey(), //Path.GetRandomFileName(),
                 Data = obj,
             };
 
@@ -149,7 +153,9 @@ namespace Cosmos.Rpc
                 return waitResponseMsg;
             });
             var responseData = await waitResponse;
-            _responses.Remove(requestMsg.RequestToken); // must true!
+
+            BaseResponseMsg tmpMsg;
+            _responses.TryRemove(requestMsg.RequestToken, out tmpMsg); // must true!
 
             SessionToken = responseData.SessionToken;
             if (string.IsNullOrEmpty(SessionToken))

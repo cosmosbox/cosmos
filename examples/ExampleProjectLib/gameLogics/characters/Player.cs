@@ -54,7 +54,7 @@ namespace ExampleProjectLib
         /// <returns>是否成功完成</returns>
 	    public bool FinishLevel(int levelTypeId, bool isSuccess)
 	    {
-	        if (_entity.State != PlayerState.Level && !_entity.StateArg.Equals(levelTypeId))
+	        if (_entity.State != PlayerState.Level || !_entity.StateArg.Equals(levelTypeId))
 	        {
                 Logger.Error("无法完成关卡，当前玩家状态: {0}, {1}", _entity.State, _entity.StateArg);
 	            return false;
