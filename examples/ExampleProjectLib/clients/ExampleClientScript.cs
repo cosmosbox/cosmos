@@ -17,10 +17,14 @@ namespace ExampleProjectLib.clients
             Task = Task.Run(() =>
             {
                 int id = 0;
-                while (id < 1)
+                while (id < 10)
                 {
                     id++;
-                    ClientLoop(id);
+                    var id_ = id;
+                    Task.Run(() =>
+                    {
+                        ClientLoop(id_);
+                    });
                     Thread.Sleep(1000); // 1秒登录一个
                 }
             });

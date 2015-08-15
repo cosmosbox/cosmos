@@ -72,6 +72,15 @@ namespace Cosmos.Test
             }
         }
 
+        [Test]
+        public void TestServerCreate()
+        {
+            using (var server = new RpcServer(new TestActorService()))
+            {
+            }
+            Assert.Pass();
+        }
+
         [Test()]
         public void TestCallRpc()
         {
@@ -81,10 +90,9 @@ namespace Cosmos.Test
                 Assert.GreaterOrEqual(server.ResponsePort, 0);
                 Assert.AreEqual(server.Host, "*");
 
-                using (var server2 = new RpcServer(new TestActorService(), "127.0.0.1"))
-                    Assert.AreEqual(server2.Host, "127.0.0.1");
+                //using (var server2 = new RpcServer(new TestActorService(), "127.0.0.1"))
+                //    Assert.AreEqual(server2.Host, "127.0.0.1");
 
-                //Assert.AreEqual(server.requestPort, 5506);
                 using (var client = new RpcClient("127.0.0.1", server.ResponsePort))
                 {
                     var result = client.Call<string>("TestFunc", "ABC", "DEFG");
@@ -104,12 +112,12 @@ namespace Cosmos.Test
 
 
                     // client 2
-                    using (var client2 = new RpcClient("127.0.0.1", server.ResponsePort))
-                    {
-                        var resultC2 = client2.Call<string>("TestFunc", "ABC", "DEFG");
-                        resultC2.Wait();
-                        Assert.AreEqual(resultC2.Result, "ABCDEFG");
-                    }
+                    //using (var client2 = new RpcClient("127.0.0.1", server.ResponsePort))
+                    //{
+                    //    var resultC2 = client2.Call<string>("TestFunc", "ABC", "DEFG");
+                    //    resultC2.Wait();
+                    //    Assert.AreEqual(resultC2.Result, "ABCDEFG");
+                    //}
 
 
                     Console.WriteLine("Async Rpc Server Done!");
@@ -117,7 +125,6 @@ namespace Cosmos.Test
                 }
             }
             Assert.Pass();
-            //Assert.Pass("Success async rpc");
         }
     }
 }

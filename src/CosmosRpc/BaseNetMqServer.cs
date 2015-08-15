@@ -30,17 +30,14 @@ namespace Cosmos.Rpc
 
         //private Task _pollerTask;
 
-        public Poller _poller
-        {
-            get { return NetMqManager.Instance.Poller; }
-        }
+        //public Poller _poller;
 
         protected BaseNetMqServer(int responsePort = -1, int publishPort = 0, string host = "*")
         {
             Host = host;
             //_poller = new Poller();
             _responseSocket = NetMqManager.Instance.Context.CreateRouterSocket();
-            _poller.AddSocket(_responseSocket);
+            //_poller.AddSocket(_responseSocket);
 
             if (responsePort == -1)
             {
@@ -54,17 +51,19 @@ namespace Cosmos.Rpc
             }
             _responseSocket.Options.ReceiveHighWatermark = 1024;
             _responseSocket.Options.SendHighWatermark = 1024;
-            _responseSocket.ReceiveReady += OnResponseReceiveReady;
+            //_responseSocket.ReceiveReady += LoopReceive;
+            new Thread(LoopReceive).Start();
+            int i;
+            i = 0;
+            //if (publishPort != 0)
+            //{
+            //    PublishPort = publishPort;
+            //    _pubSocket = NetMqManager.Instance.Context.CreatePublisherSocket();
+            //    // Bind ? Connect? 
+            //    _pubSocket.Bind(string.Format("tcp://{0}:{1}", Host, publishPort));
 
-            if (publishPort != 0)
-            {
-                PublishPort = publishPort;
-                _pubSocket = NetMqManager.Instance.Context.CreatePublisherSocket();
-                // Bind ? Connect? 
-                _pubSocket.Bind(string.Format("tcp://{0}:{1}", Host, publishPort));
-
-                _poller.AddSocket(_pubSocket);
-            }
+            //    _poller.AddSocket(_pubSocket);
+            //}
 
 
             //_poller.PollTillCancelledNonBlocking();
@@ -80,47 +79,51 @@ namespace Cosmos.Rpc
             _pubSocket.SendMore(topicName).Send(data);
         }
 
-        private async void OnResponseReceiveReady(object sender, NetMQSocketEventArgs e)
+        private async void LoopReceive()//(object sender, NetMQSocketEventArgs e)
         {
-            var recvMsg = _responseSocket.ReceiveMessage();
-            var clientAddr = recvMsg[0];
-            var clientData = recvMsg[2];
-            //var recvData = _responseSocket.Receive();
-            //var recvData2 = _responseSocket.Receive();
-            var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(clientData.Buffer);
-            var requestDataMsg = baseRequestMsg.Data;
-
-            var responseMsg = await ProcessRequest(requestDataMsg);
-
-            // if no session key, generate new
-            var sessionToken = baseRequestMsg.SessionToken;
-            if (string.IsNullOrEmpty(sessionToken))
+            while (true)
             {
-                sessionToken = GenerateSessionKey();
+                var recvMsg = _responseSocket.ReceiveMultipartMessage(3);
+                var clientAddr = recvMsg[0];
+                var clientData = recvMsg[2];
+                //var recvData = _responseSocket.Receive();
+                //var recvData2 = _responseSocket.Receive();
+                var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(clientData.Buffer);
+                var requestDataMsg = baseRequestMsg.Data;
+
+                var responseMsg = await ProcessRequest(requestDataMsg);
+
+                // if no session key, generate new
+                var sessionToken = baseRequestMsg.SessionToken;
+                if (string.IsNullOrEmpty(sessionToken))
+                {
+                    sessionToken = GenerateSessionKey();
+                }
+                var baseResponseMsg = new BaseResponseMsg()
+                {
+                    SessionToken = sessionToken,
+                    RequestToken = baseRequestMsg.RequestToken,
+                    Data = responseMsg,
+                };
+
+                var sendData = MsgPackTool.GetBytes(baseResponseMsg);
+
+                var messageToServer = new NetMQMessage();
+                messageToServer.Append(clientAddr);
+                messageToServer.AppendEmptyFrame();
+                messageToServer.Append(sendData);
+                _responseSocket.SendMultipartMessage(messageToServer);
             }
-            var baseResponseMsg = new BaseResponseMsg()
-            {
-                SessionToken = sessionToken,
-                RequestToken = baseRequestMsg.RequestToken,
-                Data = responseMsg,
-            };
 
-            var sendData = MsgPackTool.GetBytes(baseResponseMsg);
-
-            var messageToServer = new NetMQMessage();
-            messageToServer.Append(clientAddr);
-            messageToServer.AppendEmptyFrame();
-            messageToServer.Append(sendData);
-            e.Socket.SendMessage(messageToServer);
-
-            //_responseSocket.Send(sendData);
         }
 
         protected abstract Task<byte[]> ProcessRequest(byte[] requestDataMsg);
 
         public void Dispose()
         {
-            _poller.RemoveSocket(_responseSocket);
+            //_poller.RemoveSocket(_responseSocket);
+
+            //_responseSocket.Disconnect();
             _responseSocket.Close();
 
 

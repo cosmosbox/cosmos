@@ -12,13 +12,13 @@ namespace Cosmos.Rpc
         public readonly static NetMqManager Instance = new NetMqManager();
 
 
-        public readonly Poller Poller = new Poller(new NetMQTimer(1));
+        //public readonly Poller Poller = new Poller(new NetMQTimer(1));
 
         public readonly NetMQContext Context;
 
         private NetMqManager()
         {
-            Poller.PollTillCancelledNonBlocking();
+            //Poller.PollTillCancelledNonBlocking();
 
             Context = NetMQContext.Create();
             Context.MaxSockets = 10240;

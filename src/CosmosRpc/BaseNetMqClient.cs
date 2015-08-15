@@ -28,10 +28,7 @@ namespace Cosmos.Rpc
         private NetMQSocket _requestSocket;
         private SubscriberSocket _subSocket;
 
-        Poller _poller
-        {
-            get { return NetMqManager.Instance.Poller; }
-        }
+        //private Poller _poller;
 
         public string Host { get; private set; }
 
@@ -50,7 +47,7 @@ namespace Cosmos.Rpc
             get { return string.Format("{0}://{1}:{2}", Protocol, Host, SubscribePort); }
         }
 
-        private ConcurrentDictionary<string, BaseResponseMsg> _responses = new ConcurrentDictionary<string, BaseResponseMsg>();
+        //private ConcurrentDictionary<string, BaseResponseMsg> _responses = new ConcurrentDictionary<string, BaseResponseMsg>();
         public string SessionToken { get; private set; }
 
         protected BaseNetMqClient(string host, int responsePort, int subscribePort, string protocol = "tcp")
@@ -64,24 +61,24 @@ namespace Cosmos.Rpc
             //_poller = new Poller();
 
             // subcribe
-            if (SubscribePort != 0)
-            {
-                _subSocket = NetMqManager.Instance.Context.CreateSubscriberSocket();
-                _subSocket.Options.ReceiveHighWatermark = 1000;
-                _subSocket.Connect(SubcribeAddress);
-                _subSocket.ReceiveReady += OnSubscriberReceiveReady;
-                _poller.AddSocket(_subSocket);
-            }
+            //if (SubscribePort != 0)
+            //{
+            //    _subSocket = NetMqManager.Instance.Context.CreateSubscriberSocket();
+            //    _subSocket.Options.ReceiveHighWatermark = 1000;
+            //    _subSocket.Connect(SubcribeAddress);
+            //    _subSocket.ReceiveReady += OnSubscriberReceiveReady;
+            //    _poller.AddSocket(_subSocket);
+            //}
 
 
             // request
             _requestSocket = NetMqManager.Instance.Context.CreateRequestSocket();
             _requestSocket.Connect(ReqAddress);
-            _requestSocket.ReceiveReady += OnRequestReceiveReady;
+            //_requestSocket.ReceiveReady += OnRequestReceiveReady;
             _requestSocket.Options.ReceiveHighWatermark = 1024;
             _requestSocket.Options.SendHighWatermark = 1024;
 
-            _poller.AddSocket(_requestSocket);
+            //_poller.AddSocket(_requestSocket);
 
             // run poller
             //_poller.PollTillCancelledNonBlocking();
@@ -89,25 +86,10 @@ namespace Cosmos.Rpc
 
         public void Dispose()
         {
-            return;
-
             SessionToken = null;
-            if (_subSocket != null)
-            {
-                _subSocket.Close();
-                _poller.RemoveSocket(_subSocket);
-            }
 
-            _poller.RemoveSocket(_requestSocket);
+            _requestSocket.Disconnect(ReqAddress);
             _requestSocket.Close();
-            //_context.Dispose();
-
-            //_poller.CancelAndJoin();
-            //_poller.Dispose();
-
-            //Poller.Stop();
-            //Poller.Dispose();
-            //_pollerTask.Dispose(); // until release poller
         }
 
         private void OnSubscriberReceiveReady(object sender, NetMQSocketEventArgs e)
@@ -129,43 +111,55 @@ namespace Cosmos.Rpc
         static int Reqid = 0;
         protected async Task<byte[]> Request(byte[] obj)
         {
-            var requestMsg = new BaseRequestMsg()
+            return await Task.Run(() =>
             {
-                SessionToken = SessionToken,
-                RequestToken = BaseNetMqServer.GenerateRequestKey(), //Path.GetRandomFileName(),
-                Data = obj,
-            };
-
-            var bytes = MsgPackTool.GetBytes(requestMsg);
-
-            _requestSocket.Send(bytes);
-
-            var waitResponse = Task.Run(() =>
-            {
-                BaseResponseMsg waitResponseMsg;
-                while (!_responses.TryGetValue(requestMsg.RequestToken, out waitResponseMsg))
+                var requestMsg = new BaseRequestMsg()
                 {
-                    Thread.Sleep(1);
-                }; // thread blocking
-                return waitResponseMsg;
+                    SessionToken = SessionToken,
+                    RequestToken = BaseNetMqServer.GenerateRequestKey(), //Path.GetRandomFileName(),
+                    Data = obj,
+                };
+
+                var bytes = MsgPackTool.GetBytes(requestMsg);
+
+                _requestSocket.Send(bytes);
+
+                var recvMessage = _requestSocket.ReceiveMessage();
+                var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage[0].Buffer);
+                if (recvMsg.RequestToken != requestMsg.RequestToken)
+                    throw new Exception("not equal request token!");
+                var responseData = recvMsg;
+
+                SessionToken = recvMsg.SessionToken;
+                return responseData.Data;
+
+                //bool result = _requestSocket.Poll(TimeSpan.FromSeconds(5));
+
+                //if (result)
+                //{
+                //    //var recvMessage = _requestSocket.ReceiveMessage();
+                //    //var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage[0].Buffer);
+
+                //    //var responseData = recvMsg;
+
+                //    BaseResponseMsg tmpMsg;
+                //    _responses.TryRemove(requestMsg.RequestToken, out tmpMsg); // must true!
+
+                //    SessionToken = tmpMsg.SessionToken;
+                //    if (string.IsNullOrEmpty(SessionToken))
+                //        throw new Exception(string.Format("Error Session token when get response"));
+
+                //    return tmpMsg.Data;
+                //}
+                //return null;
             });
-            var responseData = await waitResponse;
-
-            BaseResponseMsg tmpMsg;
-            _responses.TryRemove(requestMsg.RequestToken, out tmpMsg); // must true!
-
-            SessionToken = responseData.SessionToken;
-            if (string.IsNullOrEmpty(SessionToken))
-                throw new Exception(string.Format("Error Session token when get response"));
-
-            return responseData.Data;
         }
-        private void OnRequestReceiveReady(object sender, NetMQSocketEventArgs e)
-        {
-            var recvMessage = _requestSocket.ReceiveMessage();
-            var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage[0].Buffer);
-            _responses[recvMsg.RequestToken] = recvMsg;
-        }
+        //private void OnRequestReceiveReady(object sender, NetMQSocketEventArgs e)
+        //{
+        //    var recvMessage = _requestSocket.ReceiveMessage();
+        //    var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage[0].Buffer);
+        //    _responses[recvMsg.RequestToken] = recvMsg;
+        //}
 
         #region Boardcast, Event listen
 
