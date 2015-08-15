@@ -56,7 +56,7 @@ namespace ExampleProjectLib.clients
                         throw new Exception("No SessionToken Error!");
                 }
                 // 操作100次后结束客户端
-                for (var i = 0; i < 100; i++)
+                for (var i = 0; i < 10000; i++)
                 {
                     Logger.Info("EnterLevel from Id: {0}, Loop: {1}", id, i);
                     // Enter Level
@@ -65,7 +65,7 @@ namespace ExampleProjectLib.clients
                     gameClient.EnterLevel(sessionToken, randLevelId);
 
                     // 5s in level 
-                    Thread.Sleep(3000);
+                    //Thread.Sleep(3000);
 
                     Logger.Info("FinishLevel from Id: {0}, Loop: {1}", id, i);
                     // Finish Level

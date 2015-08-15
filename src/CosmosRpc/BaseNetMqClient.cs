@@ -89,6 +89,8 @@ namespace Cosmos.Rpc
 
         public void Dispose()
         {
+            return;
+
             SessionToken = null;
             if (_subSocket != null)
             {

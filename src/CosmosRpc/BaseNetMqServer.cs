@@ -30,12 +30,15 @@ namespace Cosmos.Rpc
 
         //private Task _pollerTask;
 
-        public Poller _poller;
+        public Poller _poller
+        {
+            get { return NetMqManager.Instance.Poller; }
+        }
 
         protected BaseNetMqServer(int responsePort = -1, int publishPort = 0, string host = "*")
         {
             Host = host;
-            _poller = new Poller();
+            //_poller = new Poller();
             _responseSocket = NetMqManager.Instance.Context.CreateRouterSocket();
             _poller.AddSocket(_responseSocket);
 
@@ -64,7 +67,7 @@ namespace Cosmos.Rpc
             }
 
 
-            _poller.PollTillCancelledNonBlocking();
+            //_poller.PollTillCancelledNonBlocking();
         }
 
         /// <summary>
@@ -119,12 +122,10 @@ namespace Cosmos.Rpc
         {
             _poller.RemoveSocket(_responseSocket);
             _responseSocket.Close();
-            //_context.Dispose();
 
-            //Poller.Stop();
-            _poller.CancelAndJoin();
-            _poller.Dispose();
 
+            //_poller.CancelAndJoin();
+            //_poller.Dispose();
 
             //_pollerTask.Dispose();
         }

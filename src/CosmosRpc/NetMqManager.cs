@@ -12,7 +12,7 @@ namespace Cosmos.Rpc
         public readonly static NetMqManager Instance = new NetMqManager();
 
 
-        public readonly Poller Poller = new Poller();
+        public readonly Poller Poller = new Poller(new NetMQTimer(1));
 
         public readonly NetMQContext Context;
 
@@ -22,7 +22,7 @@ namespace Cosmos.Rpc
 
             Context = NetMQContext.Create();
             Context.MaxSockets = 10240;
-            //Context.ThreadPoolSize = 128;
+            Context.ThreadPoolSize = 128;
         }
 
 
