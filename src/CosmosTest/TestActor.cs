@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Cosmos.Actor;
 using Cosmos.Framework.Components;
 using Cosmos.Rpc;
-using Cosmos.Tool;
+using Cosmos.Utils;
 using NUnit.Framework;
 
 namespace CosmosTest

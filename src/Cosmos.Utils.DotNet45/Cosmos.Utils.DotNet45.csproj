@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CosmosTool_DotNet45</RootNamespace>
-    <AssemblyName>CosmosTool_DotNet45</AssemblyName>
+    <RootNamespace>Cosmos.Utils.DotNet45</RootNamespace>
+    <AssemblyName>Cosmos.Utils.DotNet45</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -31,6 +31,10 @@
     <DefineConstants>DOTNET45</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AsyncIO, Version=0.1.17.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8, processorArchitecture=MSIL">
+      <HintPath>..\packages\AsyncIO.0.1.17.0\lib\net40\AsyncIO.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -41,6 +45,9 @@
       <Link>Coroutine\CoroutineRunner.cs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

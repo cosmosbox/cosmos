@@ -30,6 +30,10 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AsyncIO, Version=0.1.17.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8, processorArchitecture=MSIL">
+      <HintPath>..\packages\AsyncIO.0.1.17.0\lib\net40\AsyncIO.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.4.0.1\lib\net45\NLog.dll</HintPath>
@@ -58,13 +62,12 @@
       <Project>{7341E7EA-168C-4688-8B8C-4E697540FBAA}</Project>
       <Name>Cosmos.Rpc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CosmosScript\Cosmos.Script.csproj">
-      <Project>{60511790-088E-449E-A4E2-6485A976A20C}</Project>
-      <Name>Cosmos.Script</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Cosmos.Utils.DotNet45\Cosmos.Utils.DotNet45.csproj">
       <Project>{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}</Project>
       <Name>Cosmos.Utils.DotNet45</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

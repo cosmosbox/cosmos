@@ -23,20 +23,15 @@ namespace Cosmos.Rpc
     /// </summary>
     public abstract class BaseNetMqClient : IDisposable
     {
-        static NetMQContext _context;
-        static BaseNetMqClient()
-        {
-            _context = NetMQContext.Create();
-            _context.MaxSockets = 10240;
-            _context.ThreadPoolSize = 128;
-        }
-
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private NetMQSocket _requestSocket;
         private SubscriberSocket _subSocket;
-        Poller _poller;
-        private Task _pollerTask;
+
+        Poller _poller
+        {
+            get { return NetMqManager.Instance.Poller; }
+        }
 
         public string Host { get; private set; }
 
@@ -66,12 +61,12 @@ namespace Cosmos.Rpc
             SubscribePort = subscribePort;
             Protocol = protocol;
 
-            _poller = new Poller(new NetMQTimer(1));
+            //_poller = new Poller();
 
             // subcribe
             if (SubscribePort != 0)
             {
-                _subSocket = _context.CreateSubscriberSocket();
+                _subSocket = NetMqManager.Instance.Context.CreateSubscriberSocket();
                 _subSocket.Options.ReceiveHighWatermark = 1000;
                 _subSocket.Connect(SubcribeAddress);
                 _subSocket.ReceiveReady += OnSubscriberReceiveReady;
@@ -80,7 +75,7 @@ namespace Cosmos.Rpc
 
 
             // request
-            _requestSocket = _context.CreateRequestSocket();
+            _requestSocket = NetMqManager.Instance.Context.CreateRequestSocket();
             _requestSocket.Connect(ReqAddress);
             _requestSocket.ReceiveReady += OnRequestReceiveReady;
             _requestSocket.Options.ReceiveHighWatermark = 1024;
@@ -89,10 +84,7 @@ namespace Cosmos.Rpc
             _poller.AddSocket(_requestSocket);
 
             // run poller
-            _pollerTask = Task.Run(() =>
-            {
-                _poller.Start();
-            });
+            //_poller.PollTillCancelledNonBlocking();
         }
 
         public void Dispose()
@@ -103,14 +95,17 @@ namespace Cosmos.Rpc
                 _subSocket.Close();
                 _poller.RemoveSocket(_subSocket);
             }
-            
+
             _poller.RemoveSocket(_requestSocket);
             _requestSocket.Close();
             //_context.Dispose();
 
-            _poller.Stop();
-            _poller.Dispose();
-            _pollerTask.Dispose(); // until release poller
+            //_poller.CancelAndJoin();
+            //_poller.Dispose();
+
+            //Poller.Stop();
+            //Poller.Dispose();
+            //_pollerTask.Dispose(); // until release poller
         }
 
         private void OnSubscriberReceiveReady(object sender, NetMQSocketEventArgs e)
@@ -165,8 +160,8 @@ namespace Cosmos.Rpc
         }
         private void OnRequestReceiveReady(object sender, NetMQSocketEventArgs e)
         {
-            var recvData = _requestSocket.Receive();
-            var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvData);
+            var recvMessage = _requestSocket.ReceiveMessage();
+            var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage[0].Buffer);
             _responses[recvMsg.RequestToken] = recvMsg;
         }
 
@@ -218,7 +213,12 @@ namespace Cosmos.Rpc
 
         public void Subcribe(string topic)
         {
-            _subSocket.Subscribe(topic);
+            if (_subSocket != null)
+                _subSocket.Subscribe(topic);
+            else
+            {
+                Logger.Error("No Subcribe Socket");
+            }
         }
     }
 

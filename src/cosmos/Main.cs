@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Threading;
-using NetMQ;
+//using NetMQ;
 
 namespace Cosmos
 {
@@ -12,30 +12,30 @@ namespace Cosmos
             TestAsync();
             HelloWorldAsync();
 
-			using (var context = NetMQContext.Create())
-				using (var server = context.CreateResponseSocket())
-					using (var client = context.CreateRequestSocket())
-			{
-				// Bind the server to a local TCP address
-				server.Bind("tcp://localhost:5556");
+			//using (var context = NetMQContext.Create())
+			//	using (var server = context.CreateResponseSocket())
+			//		using (var client = context.CreateRequestSocket())
+			//{
+			//	// Bind the server to a local TCP address
+			//	server.Bind("tcp://localhost:5556");
 				
-				// Connect the client to the server
-				client.Connect("tcp://localhost:5556");
+			//	// Connect the client to the server
+			//	client.Connect("tcp://localhost:5556");
 				
-				// Send a message from the client socket
-				client.Send("Hello");
+			//	// Send a message from the client socket
+			//	client.Send("Hello");
 
-				// Receive the message from the server socket
-				string m1 = server.ReceiveString();
-				Console.WriteLine("From Client: {0}", m1);
+			//	// Receive the message from the server socket
+			//	string m1 = server.ReceiveString();
+			//	Console.WriteLine("From Client: {0}", m1);
 				
-				// Send a response back from the server
-				server.Send("Hi Back");
+			//	// Send a response back from the server
+			//	server.Send("Hi Back");
 				
-				// Receive the response from the client socket
-				string m2 = client.ReceiveString();
-				Console.WriteLine("From Server: {0}", m2);
-			}
+			//	// Receive the response from the client socket
+			//	string m2 = client.ReceiveString();
+			//	Console.WriteLine("From Server: {0}", m2);
+			//}
 
 
             while (true)

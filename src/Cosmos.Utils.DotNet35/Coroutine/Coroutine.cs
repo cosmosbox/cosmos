@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 #endif
 
-namespace Cosmos.Tool
+namespace Cosmos.Utils
 {
     /// <summary>
     /// TODO: yield return 一个协程，本协程挂起等待

@@ -12,7 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Cosmos.Tool
+namespace Cosmos.Utils
 {
     internal class CoroutineRunner
     {

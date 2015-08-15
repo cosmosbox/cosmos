@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Cosmos.Tool;
+using Cosmos.Utils;
 using MsgPack.Serialization;
 using NetMQ;
 using NetMQ.Actors;
@@ -22,31 +22,22 @@ namespace Cosmos.Rpc
 
     public abstract class BaseNetMqServer : IDisposable
     {
-        static NetMQContext _context;
-        static BaseNetMqServer()
-        {
-            _context = NetMQContext.Create();
-            _context.MaxSockets = 10240;
-            _context.ThreadPoolSize = 128;
-        }
-
         private NetMQSocket _responseSocket;
         private PublisherSocket _pubSocket;
         public int ResponsePort { get; private set; }
         public int PublishPort { get; private set; }
         public string Host { get; private set; }
 
-        private Task _pollerTask;
+        //private Task _pollerTask;
 
-        public Poller Poller;
+        public Poller _poller;
 
-        public BaseNetMqServer(int responsePort = -1, int publishPort = 0, string host = "*")
+        protected BaseNetMqServer(int responsePort = -1, int publishPort = 0, string host = "*")
         {
-            Poller = new Poller(new NetMQTimer(1));
             Host = host;
-
-            _responseSocket = _context.CreateResponseSocket();
-            Poller.AddSocket(_responseSocket);
+            _poller = new Poller();
+            _responseSocket = NetMqManager.Instance.Context.CreateRouterSocket();
+            _poller.AddSocket(_responseSocket);
 
             if (responsePort == -1)
             {
@@ -65,18 +56,15 @@ namespace Cosmos.Rpc
             if (publishPort != 0)
             {
                 PublishPort = publishPort;
-                _pubSocket = _context.CreatePublisherSocket();
+                _pubSocket = NetMqManager.Instance.Context.CreatePublisherSocket();
                 // Bind ? Connect? 
                 _pubSocket.Bind(string.Format("tcp://{0}:{1}", Host, publishPort));
 
-                Poller.AddSocket(_pubSocket);
+                _poller.AddSocket(_pubSocket);
             }
 
 
-            _pollerTask = Task.Run(() =>
-            {
-                Poller.Start();
-            });
+            _poller.PollTillCancelledNonBlocking();
         }
 
         /// <summary>
@@ -91,10 +79,12 @@ namespace Cosmos.Rpc
 
         private async void OnResponseReceiveReady(object sender, NetMQSocketEventArgs e)
         {
-            //var recvMsg = _responseSocket.ReceiveMessage();
-            var recvData = _responseSocket.Receive();
+            var recvMsg = _responseSocket.ReceiveMessage();
+            var clientAddr = recvMsg[0];
+            var clientData = recvMsg[2];
+            //var recvData = _responseSocket.Receive();
             //var recvData2 = _responseSocket.Receive();
-            var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(recvData);
+            var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(clientData.Buffer);
             var requestDataMsg = baseRequestMsg.Data;
 
             var responseMsg = await ProcessRequest(requestDataMsg);
@@ -113,8 +103,13 @@ namespace Cosmos.Rpc
             };
 
             var sendData = MsgPackTool.GetBytes(baseResponseMsg);
-            
-            e.Socket.Send(sendData);
+
+            var messageToServer = new NetMQMessage();
+            messageToServer.Append(clientAddr);
+            messageToServer.AppendEmptyFrame();
+            messageToServer.Append(sendData);
+            e.Socket.SendMessage(messageToServer);
+
             //_responseSocket.Send(sendData);
         }
 
@@ -122,15 +117,16 @@ namespace Cosmos.Rpc
 
         public void Dispose()
         {
-            Poller.RemoveSocket(_responseSocket);
+            _poller.RemoveSocket(_responseSocket);
             _responseSocket.Close();
             //_context.Dispose();
 
-            Poller.Stop();
-            Poller.Dispose();
+            //Poller.Stop();
+            _poller.CancelAndJoin();
+            _poller.Dispose();
 
 
-            _pollerTask.Dispose();
+            //_pollerTask.Dispose();
         }
 
         /// <summary>

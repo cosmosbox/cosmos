@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{9B9946EE-BEE2-4B04-9392-652545039D11}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Cosmos.Tool</RootNamespace>
-    <AssemblyName>CosmosTool</AssemblyName>
+    <RootNamespace>Cosmos.Utils</RootNamespace>
+    <AssemblyName>Cosmos.Utils.DotNet35</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -30,6 +30,10 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AsyncIO, Version=0.1.17.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8, processorArchitecture=MSIL">
+      <HintPath>..\packages\AsyncIO.0.1.17.0\lib\net35\AsyncIO.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -38,6 +42,9 @@
     <Compile Include="Coroutine\CoroutineRunner.cs" />
     <Compile Include="Md5Util.cs" />
     <Compile Include="NetTool.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

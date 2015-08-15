@@ -36,11 +36,16 @@
     </DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AsyncIO, Version=0.1.17.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8, processorArchitecture=MSIL">
+      <HintPath>..\packages\AsyncIO.0.1.17.0\lib\net40\AsyncIO.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MsgPack">
       <HintPath>..\MsgPack\MsgPack.dll</HintPath>
     </Reference>
-    <Reference Include="NetMQ">
-      <HintPath>..\packages\NetMQ.3.3.0.11\lib\net40\NetMQ.dll</HintPath>
+    <Reference Include="NetMQ, Version=3.3.1.15040, Culture=neutral, PublicKeyToken=a6decef4ddc58b3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NetMQ.3.3.0.13-alpha622\lib\net40\NetMQ.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.4.0.1\lib\net45\NLog.dll</HintPath>
@@ -53,6 +58,7 @@
     <Compile Include="BaseNetMqMsg.cs" />
     <Compile Include="BaseNetMqServer.cs" />
     <Compile Include="MsgPackTool.cs" />
+    <Compile Include="NetMqManager.cs" />
     <Compile Include="RpcClient.cs" />
     <Compile Include="RpcDef.cs" />
     <Compile Include="RpcServer.cs" />

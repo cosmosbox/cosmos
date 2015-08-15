@@ -32,6 +32,10 @@
     <DocumentationFile>bin\Release\Cosmos.Test.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AsyncIO, Version=0.1.17.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8, processorArchitecture=MSIL">
+      <HintPath>..\packages\AsyncIO.0.1.17.0\lib\net40\AsyncIO.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="etcetera">
       <HintPath>..\packages\etcetera.0.6.0\lib\net40\etcetera.dll</HintPath>
     </Reference>
@@ -127,10 +131,6 @@
     <ProjectReference Include="..\CosmosRpc\Cosmos.Rpc.csproj">
       <Project>{7341E7EA-168C-4688-8B8C-4E697540FBAA}</Project>
       <Name>Cosmos.Rpc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CosmosScript\Cosmos.Script.csproj">
-      <Project>{60511790-088E-449E-A4E2-6485A976A20C}</Project>
-      <Name>Cosmos.Script</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cosmos.Framework.Components\Cosmos.Framework.Components.csproj">
       <Project>{3689ED7B-D457-4E8C-AD19-5AFAD297F6AA}</Project>

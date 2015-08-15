@@ -88,8 +88,15 @@ namespace Cosmos.Test
                 using (var client = new RpcClient("127.0.0.1", server.ResponsePort))
                 {
                     var result = client.Call<string>("TestFunc", "ABC", "DEFG");
+
                     result.Wait();
                     Assert.AreEqual(result.Result, "ABCDEFG");
+                    using (var client2 = new RpcClient("127.0.0.1", server.ResponsePort))
+                    {
+                        var resultC2 = client2.Call<string>("TestFunc", "ABC", "DEFG");
+                        resultC2.Wait();
+                        Assert.AreEqual(resultC2.Result, "ABCDEFG");
+                    }
 
                     var result2 = client.CallResult<string>("TestFunc2", "ABC", 123);
                     result2.Wait();
@@ -105,7 +112,7 @@ namespace Cosmos.Test
 
                 }
             }
-            //Assert.Pass();
+            Assert.Pass();
             //Assert.Pass("Success async rpc");
         }
     }

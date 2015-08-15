@@ -6,7 +6,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Cosmos.Tool
+namespace Cosmos.Utils
 {
     class NetTool
     {
