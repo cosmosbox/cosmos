@@ -43,7 +43,7 @@ namespace Cosmos.Actor
             Conf = conf;
 
             RpcService = NewRpcCaller();
-            RpcServer = new RpcServer(RpcService);
+            RpcServer = new RpcServer(RpcService, "*", conf.RpcPort);
             _discovery = new Discovery(Conf.AppToken, Conf.DiscoveryMode, Conf.DiscoveryParam);
         }
 

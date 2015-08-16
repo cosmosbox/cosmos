@@ -14,10 +14,11 @@ namespace ExampleProjectLib
         public Task Task;
         public ExampleClientScript()
         {
+            
             Task = Task.Run(() =>
             {
                 int id = 0;
-                while (id < 2)
+                while (id < 1)
                 {
                     id++;
                     var id_ = id;

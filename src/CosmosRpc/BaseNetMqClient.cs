@@ -10,6 +10,7 @@ using MsgPack.Serialization;
 using NetMQ;
 using NetMQ.Sockets;
 using NLog;
+using ZeroMQ;
 
 namespace Cosmos.Rpc
 {
@@ -25,7 +26,7 @@ namespace Cosmos.Rpc
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private NetMQSocket _requestSocket;
+        private ZSocket _requestSocket;
         private SubscriberSocket _subSocket;
 
         //private Poller _poller;
@@ -59,11 +60,11 @@ namespace Cosmos.Rpc
             Protocol = protocol;
 
             // request
-            _requestSocket = NetMqManager.Instance.Context.CreateDealerSocket();
+            _requestSocket = new ZSocket(NetMqManager.Instance.Context, ZSocketType.DEALER);
             _requestSocket.Connect(ReqAddress);
-            _requestSocket.ReceiveReady += OnRequestReceiveReady;
-            _requestSocket.Options.ReceiveHighWatermark = 1024;
-            _requestSocket.Options.SendHighWatermark = 1024;
+            //_requestSocket.ReceiveReady += OnRequestReceiveReady;
+            //_requestSocket.Options.ReceiveHighWatermark = 1024;
+            //_requestSocket.Options.SendHighWatermark = 1024;
 
         }
 
@@ -71,8 +72,8 @@ namespace Cosmos.Rpc
         {
             SessionToken = null;
 
-            _requestSocket.Disconnect(ReqAddress);
-            _requestSocket.Close();
+            _requestSocket.Dispose();
+            //_requestSocket.Close();
         }
 
         private void OnSubscriberReceiveReady(object sender, NetMQSocketEventArgs e)
@@ -107,53 +108,66 @@ namespace Cosmos.Rpc
                     };
 
                     var bytes = MsgPackTool.GetBytes(requestMsg);
-                    var mqMsg = new NetMQMessage();
+                    ZError error;
                     //mqMsg.Append(requestMsg.RequestToken);
-                    mqMsg.AppendEmptyFrame();
-                    mqMsg.Append(bytes);
-                    _requestSocket.SendMessage(mqMsg);
+                    // We send a request, then we work to get a reply
+                    using (var mqMsg = new ZMessage())
+                    {
+                        mqMsg.Append(ZFrame.CreateEmpty());
+                        mqMsg.Append(new ZFrame(bytes));
+                        if (!_requestSocket.SendMessage(mqMsg, out error))
+                        {
+                            if (error == ZError.ETERM)
+                                return null;    // Interrupted
+                            throw new ZException(error);
+                        }
+                    }
 
-                    //var recvMessage = _requestSocket.ReceiveMessage();
-                    //var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage[0].Buffer);
-                    //if (recvMsg.RequestToken != requestMsg.RequestToken)
-                    //    throw new Exception("not equal request token!");
-                    //var responseData = recvMsg;
-
-                    //SessionToken = recvMsg.SessionToken;
-                    //return responseData.Data;
-
-                    var result = _requestSocket.Poll(TimeSpan.FromSeconds(5));
+                    var poll = ZPollItem.CreateReceiver();
+                    ZMessage incoming;
+                    var result = _requestSocket.PollIn(poll, out incoming, out error, TimeSpan.FromSeconds(5)); //(TimeSpan.FromSeconds(5));
                     if (!result)
                     {
                         Logger.Error("超时重试");
                         continue;
                     }
-
-                    BaseResponseMsg tmpMsg;
-                    while (!_responses.TryGetValue(requestMsg.RequestToken, out tmpMsg))
+                    else
                     {
-                        // must true!
-                        //if (!removeResult)
-                        //    throw new Exception(string.Format("Error TryRemove RequestToken Msg: {0}",
-                        // TODO: remove
+                        using (incoming)
+                        {
+                            // We got a reply from the server
+                            //int incoming_sequence = incoming[0].ReadInt32();
+                            //var recvMessage = _requestSocket.ReceiveMessage();
+                            var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(incoming[1].Read());
+                            _responses[recvMsg.RequestToken] = recvMsg;
+                            SessionToken = recvMsg.SessionToken;
+                            if (string.IsNullOrEmpty(SessionToken))
+                                throw new Exception(string.Format("Error Session token when get response"));
 
-                        // requestMsg.RequestToken));
-                        Thread.Sleep(1);
+                            return recvMsg.Data;
+                        }
                     }
-                    SessionToken = tmpMsg.SessionToken;
-                    if (string.IsNullOrEmpty(SessionToken))
-                        throw new Exception(string.Format("Error Session token when get response"));
 
-                    return tmpMsg.Data;
+                    //BaseResponseMsg tmpMsg;
+                    //while (!_responses.TryGetValue(requestMsg.RequestToken, out tmpMsg))
+                    //{
+                    //    // must true!
+                    //    //if (!removeResult)
+                    //    //    throw new Exception(string.Format("Error TryRemove RequestToken Msg: {0}",
+                    //    // TODO: remove
+
+                    //    // requestMsg.RequestToken));
+                    //    Thread.Sleep(1);
+                    //}
                 }
             });
         }
-        private void OnRequestReceiveReady(object sender, NetMQSocketEventArgs e)
-        {
-            var recvMessage = _requestSocket.ReceiveMessage();
-            var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage.Last.Buffer);
-            _responses[recvMsg.RequestToken] = recvMsg;
-        }
+        //private void OnRequestReceiveReady(object sender, NetMQSocketEventArgs e)
+        //{
+        //    var recvMessage = _requestSocket.ReceiveMessage();
+        //    var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage.Last.Buffer);
+        //    _responses[recvMsg.RequestToken] = recvMsg;
+        //}
 
         #region Boardcast, Event listen
 

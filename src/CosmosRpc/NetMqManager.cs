@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NetMQ;
+using NetMQ.zmq;
+using ZeroMQ;
 
 namespace Cosmos.Rpc
 {
@@ -14,15 +16,15 @@ namespace Cosmos.Rpc
 
         //public readonly Poller Poller = new Poller(new NetMQTimer(1));
 
-        public readonly NetMQContext Context;
+        public readonly ZContext Context;
 
         private NetMqManager()
         {
             //Poller.PollTillCancelledNonBlocking();
 
-            Context = NetMQContext.Create();
-            Context.MaxSockets = 10240;
-            Context.ThreadPoolSize = 128;
+            Context = new ZContext();
+            //Context.MaxSockets = 10240;
+            //Context.ThreadPoolSize = 128;
         }
 
 
