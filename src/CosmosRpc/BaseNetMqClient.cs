@@ -128,13 +128,18 @@ namespace Cosmos.Rpc
                         Logger.Error("超时重试");
                         continue;
                     }
-                        
 
                     BaseResponseMsg tmpMsg;
-                    var removeResult = _responses.TryRemove(requestMsg.RequestToken, out tmpMsg); // must true!
-                    if (!removeResult)
-                        throw new Exception(string.Format("Error TryRemove RequestToken Msg: {0}",
-                            requestMsg.RequestToken));
+                    while (!_responses.TryGetValue(requestMsg.RequestToken, out tmpMsg))
+                    {
+                        // must true!
+                        //if (!removeResult)
+                        //    throw new Exception(string.Format("Error TryRemove RequestToken Msg: {0}",
+                        // TODO: remove
+
+                        // requestMsg.RequestToken));
+                        Thread.Sleep(1);
+                    }
                     SessionToken = tmpMsg.SessionToken;
                     if (string.IsNullOrEmpty(SessionToken))
                         throw new Exception(string.Format("Error Session token when get response"));
@@ -161,7 +166,7 @@ namespace Cosmos.Rpc
         /// <param name="data"></param>
         public void Boardcast(Enum eventName, object data)
         {
-            
+
         }
 
         /// <summary>

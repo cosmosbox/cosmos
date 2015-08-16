@@ -43,7 +43,7 @@ namespace ExampleProjectLib
         {
             //ActorRunner.Run()
         }
-        public LoginResProto Login()
+        public LoginResProto Login(int id)
         {
             var cfg = ExampleServerApp.Instance.ProjectConf.TheActorConfigs[2];
 
@@ -52,6 +52,7 @@ namespace ExampleProjectLib
                 GameServerHost = cfg.Host,
                 GameServerPort = cfg.ResponsePort,
                 SubcribePort = cfg.PublishPort,
+                Id = id,
             };
         }
     }

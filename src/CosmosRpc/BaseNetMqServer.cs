@@ -53,7 +53,7 @@ namespace Cosmos.Rpc
             }
             _responseSocket.Options.ReceiveHighWatermark = 1024;
             _responseSocket.Options.SendHighWatermark = 1024;
-            //_responseSocket.ReceiveReady += ProcescRequestMessage;
+            _responseSocket.ReceiveReady += ProcescRequestMessage;
             new Thread(ThreadLoopReceive).Start();
             //if (publishPort != 0)
             //{
@@ -79,8 +79,9 @@ namespace Cosmos.Rpc
             _pubSocket.SendMore(topicName).Send(data);
         }
 
-        private async void ProcescRequestMessage(NetMQMessage recvMsg)
+        private async void ProcescRequestMessage(object sender, NetMQSocketEventArgs netMqSocketEventArgs)
         {
+            var recvMsg = _responseSocket.ReceiveMessage();
             var clientAddr = recvMsg[0];
             var clientData = recvMsg.Last;
             var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(clientData.Buffer);
@@ -114,14 +115,14 @@ namespace Cosmos.Rpc
         {
             while (true)
             {
+                _responseSocket.Poll();
+                //NetMQMessage recvMsg;
+                //recvMsg = _responseSocket.ReceiveMessage();
 
-                NetMQMessage recvMsg;
-                recvMsg = _responseSocket.ReceiveMessage();
+                //var startTime = DateTime.UtcNow;
+                //await Task.Run(() => { ProcescRequestMessage(recvMsg); });
 
-                var startTime = DateTime.UtcNow;
-                await Task.Run(() => { ProcescRequestMessage(recvMsg); });
-
-                Logger.Trace("Receive Msg and Send used Time: {0:F5}s", (DateTime.UtcNow - startTime).TotalSeconds);
+                //Logger.Trace("Receive Msg and Send used Time: {0:F5}s", (DateTime.UtcNow - startTime).TotalSeconds);
             }
 
         }

@@ -15,5 +15,6 @@ namespace ExampleProjectLib
         public string GameServerHost;
         public int GameServerPort;
         public int SubcribePort;
+        public int Id;
     }
 }

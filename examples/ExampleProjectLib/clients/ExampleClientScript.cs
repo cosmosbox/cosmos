@@ -17,7 +17,7 @@ namespace ExampleProjectLib
             Task = Task.Run(() =>
             {
                 int id = 0;
-                while (id < 3)
+                while (id < 2)
                 {
                     id++;
                     var id_ = id;
@@ -40,7 +40,9 @@ namespace ExampleProjectLib
                 LoginResProto loginRes;
                 using (var client = new GateClient("127.0.0.1", 14002))
                 {
-                    loginRes = await client.Login();
+                    loginRes = await client.Login(id);
+                    if (loginRes.Id != id)
+                        throw new Exception("Error id");
                     host = loginRes.GameServerHost;
                     if (host == "*")
                     {

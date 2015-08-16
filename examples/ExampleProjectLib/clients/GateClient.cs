@@ -24,9 +24,9 @@ namespace ExampleProjectLib
             //_gateClient.Call<LoginResProto>()
         }
 
-        public async Task<LoginResProto> Login()
+        public async Task<LoginResProto> Login(int id)
         {
-            var loginRes = await _gateClient.Call<LoginResProto>("Login");
+            var loginRes = await _gateClient.Call<LoginResProto>("Login", id);
 
             return loginRes;
         }
