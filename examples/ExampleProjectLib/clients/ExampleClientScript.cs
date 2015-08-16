@@ -14,21 +14,21 @@ namespace ExampleProjectLib
         public Task Task;
         public ExampleClientScript()
         {
-            
-            Task = Task.Run(() =>
+            Task.Factory.StartNew(() =>
             {
                 int id = 0;
-                while (id < 1)
+                while (id < 10)
                 {
                     id++;
                     var id_ = id;
-                    Task.Run(() =>
+                    Task.Factory.StartNew(() =>
                     {
                         ClientLoop(id_);
                     });
-                    Thread.Sleep(100); // 1秒登录一个
+                    Thread.Sleep(1); // 1秒登录一个
                 }
             });
+
         }
 
         async void ClientLoop(int id)

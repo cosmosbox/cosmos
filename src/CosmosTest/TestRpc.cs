@@ -124,7 +124,7 @@ namespace Cosmos.Test
 
                 }
             }
-            Assert.Pass();
+            //Assert.Pass();
         }
     }
 }

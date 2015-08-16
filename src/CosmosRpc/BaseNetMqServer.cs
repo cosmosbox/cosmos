@@ -44,9 +44,20 @@ namespace Cosmos.Rpc
 
             if (responsePort == -1)
             {
-                ResponsePort = _responseSocket.BindRandomPort("tcp://" + host);
-                Logger.Error("TODOrandom port");
-
+                while (true)
+                {
+                    var rand = new Random();
+                    ResponsePort = rand.Next(50000, 60000);
+                    try
+                    {
+                        _responseSocket.Bind(string.Format("tcp://{0}:{1}", host, ResponsePort));
+                        break;
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+                }
             }
             else
             {
@@ -93,10 +104,9 @@ namespace Cosmos.Rpc
                         return;    // Interrupted
                     throw new ZException(error);
                 }
+                var startTime = DateTime.UtcNow;
                 using (recvMsg)
                 {
-
-                    //var recvMsg = _responseSocket.ReceiveMessage();
                     var clientAddr = recvMsg[0];
                     var clientData = recvMsg[2];
                     var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(clientData.Read());
@@ -126,6 +136,8 @@ namespace Cosmos.Rpc
 
                     _responseSocket.SendMessage(messageToServer);
                 }
+
+                Logger.Trace("Receive Msg and Send used Time: {0:F5}s", (DateTime.UtcNow - startTime).TotalSeconds);
             }
         }
         //private async void ThreadLoopReceive()//(object sender, NetMQSocketEventArgs e)
@@ -136,10 +148,10 @@ namespace Cosmos.Rpc
         //        //NetMQMessage recvMsg;
         //        //recvMsg = _responseSocket.ReceiveMessage();
 
-        //        //var startTime = DateTime.UtcNow;
+        
         //        //await Task.Run(() => { ProcescRequestMessage(recvMsg); });
 
-        //        //Logger.Trace("Receive Msg and Send used Time: {0:F5}s", (DateTime.UtcNow - startTime).TotalSeconds);
+        
         //    }
 
         //}
