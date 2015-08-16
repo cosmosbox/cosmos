@@ -43,6 +43,10 @@
     <Reference Include="MsgPack">
       <HintPath>..\MsgPack\MsgPack.dll</HintPath>
     </Reference>
+    <Reference Include="NetMQ, Version=3.3.1.15040, Culture=neutral, PublicKeyToken=a6decef4ddc58b3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NetMQ.3.3.0.13-alpha622\lib\net40\NetMQ.dll</HintPath>
+    </Reference>
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.4.0.1\lib\net45\NLog.dll</HintPath>
     </Reference>
@@ -71,10 +75,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\netmq\src\NetMQ\NetMQ.csproj">
-      <Project>{82934bac-07fb-41ac-ae59-46fee6026a40}</Project>
-      <Name>NetMQ</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Cosmos.Utils.DotNet35\Cosmos.Utils.DotNet35.csproj">
       <Project>{9B9946EE-BEE2-4B04-9392-652545039D11}</Project>
       <Name>Cosmos.Utils.DotNet35</Name>

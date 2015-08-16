@@ -47,7 +47,7 @@ namespace Cosmos.Rpc
             get { return string.Format("{0}://{1}:{2}", Protocol, Host, SubscribePort); }
         }
 
-        //private ConcurrentDictionary<string, BaseResponseMsg> _responses = new ConcurrentDictionary<string, BaseResponseMsg>();
+        private ConcurrentDictionary<string, BaseResponseMsg> _responses = new ConcurrentDictionary<string, BaseResponseMsg>();
         public string SessionToken { get; private set; }
 
         protected BaseNetMqClient(string host, int responsePort, int subscribePort, string protocol = "tcp")
@@ -74,7 +74,7 @@ namespace Cosmos.Rpc
             // request
             _requestSocket = NetMqManager.Instance.Context.CreateRequestSocket();
             _requestSocket.Connect(ReqAddress);
-            //_requestSocket.ReceiveReady += OnRequestReceiveReady;
+            _requestSocket.ReceiveReady += OnRequestReceiveReady;
             _requestSocket.Options.ReceiveHighWatermark = 1024;
             _requestSocket.Options.SendHighWatermark = 1024;
 
@@ -124,42 +124,37 @@ namespace Cosmos.Rpc
 
                 _requestSocket.Send(bytes);
 
-                var recvMessage = _requestSocket.ReceiveMessage();
-                var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage[0].Buffer);
-                if (recvMsg.RequestToken != requestMsg.RequestToken)
-                    throw new Exception("not equal request token!");
-                var responseData = recvMsg;
+                //var recvMessage = _requestSocket.ReceiveMessage();
+                //var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage[0].Buffer);
+                //if (recvMsg.RequestToken != requestMsg.RequestToken)
+                //    throw new Exception("not equal request token!");
+                //var responseData = recvMsg;
 
-                SessionToken = recvMsg.SessionToken;
-                return responseData.Data;
+                //SessionToken = recvMsg.SessionToken;
+                //return responseData.Data;
 
-                //bool result = _requestSocket.Poll(TimeSpan.FromSeconds(5));
+                bool result = _requestSocket.Poll(TimeSpan.FromSeconds(5));
 
-                //if (result)
-                //{
-                //    //var recvMessage = _requestSocket.ReceiveMessage();
-                //    //var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage[0].Buffer);
+                if (result)
+                {
+                    BaseResponseMsg tmpMsg;
+                    _responses.TryRemove(requestMsg.RequestToken, out tmpMsg); // must true!
 
-                //    //var responseData = recvMsg;
+                    SessionToken = tmpMsg.SessionToken;
+                    if (string.IsNullOrEmpty(SessionToken))
+                        throw new Exception(string.Format("Error Session token when get response"));
 
-                //    BaseResponseMsg tmpMsg;
-                //    _responses.TryRemove(requestMsg.RequestToken, out tmpMsg); // must true!
-
-                //    SessionToken = tmpMsg.SessionToken;
-                //    if (string.IsNullOrEmpty(SessionToken))
-                //        throw new Exception(string.Format("Error Session token when get response"));
-
-                //    return tmpMsg.Data;
-                //}
-                //return null;
+                    return tmpMsg.Data;
+                }else
+                    return null;
             });
         }
-        //private void OnRequestReceiveReady(object sender, NetMQSocketEventArgs e)
-        //{
-        //    var recvMessage = _requestSocket.ReceiveMessage();
-        //    var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage[0].Buffer);
-        //    _responses[recvMsg.RequestToken] = recvMsg;
-        //}
+        private void OnRequestReceiveReady(object sender, NetMQSocketEventArgs e)
+        {
+            var recvMessage = _requestSocket.ReceiveMessage();
+            var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage[0].Buffer);
+            _responses[recvMsg.RequestToken] = recvMsg;
+        }
 
         #region Boardcast, Event listen
 

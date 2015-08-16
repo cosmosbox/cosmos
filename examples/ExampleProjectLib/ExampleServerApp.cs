@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Cosmos.Framework;
-using ExampleProjectLib.clients;
+using ExampleProjectLib;
 
 namespace ExampleProject
 {

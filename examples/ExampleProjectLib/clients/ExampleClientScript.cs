@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 
-namespace ExampleProjectLib.clients
+namespace ExampleProjectLib
 {
     public class ExampleClientScript
     {
@@ -17,7 +17,7 @@ namespace ExampleProjectLib.clients
             Task = Task.Run(() =>
             {
                 int id = 0;
-                while (id < 10)
+                while (id < 10000)
                 {
                     id++;
                     var id_ = id;
@@ -25,7 +25,7 @@ namespace ExampleProjectLib.clients
                     {
                         ClientLoop(id_);
                     });
-                    Thread.Sleep(1000); // 1秒登录一个
+                    Thread.Sleep(500); // 1秒登录一个
                 }
             });
         }
@@ -60,7 +60,7 @@ namespace ExampleProjectLib.clients
                         throw new Exception("No SessionToken Error!");
                 }
                 // 操作100次后结束客户端
-                for (var i = 0; i < 10000; i++)
+                for (var i = 0; i < int.MaxValue; i++)
                 {
                     Logger.Info("EnterLevel from Id: {0}, Loop: {1}", id, i);
                     // Enter Level
@@ -69,7 +69,7 @@ namespace ExampleProjectLib.clients
                     gameClient.EnterLevel(sessionToken, randLevelId);
 
                     // 5s in level 
-                    //Thread.Sleep(3000);
+                    Thread.Sleep(1000);
 
                     Logger.Info("FinishLevel from Id: {0}, Loop: {1}", id, i);
                     // Finish Level
