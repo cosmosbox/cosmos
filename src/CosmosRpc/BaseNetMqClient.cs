@@ -58,30 +58,13 @@ namespace Cosmos.Rpc
             SubscribePort = subscribePort;
             Protocol = protocol;
 
-            //_poller = new Poller();
-
-            // subcribe
-            //if (SubscribePort != 0)
-            //{
-            //    _subSocket = NetMqManager.Instance.Context.CreateSubscriberSocket();
-            //    _subSocket.Options.ReceiveHighWatermark = 1000;
-            //    _subSocket.Connect(SubcribeAddress);
-            //    _subSocket.ReceiveReady += OnSubscriberReceiveReady;
-            //    _poller.AddSocket(_subSocket);
-            //}
-
-
             // request
-            _requestSocket = NetMqManager.Instance.Context.CreateRequestSocket();
+            _requestSocket = NetMqManager.Instance.Context.CreateDealerSocket();
             _requestSocket.Connect(ReqAddress);
             _requestSocket.ReceiveReady += OnRequestReceiveReady;
             _requestSocket.Options.ReceiveHighWatermark = 1024;
             _requestSocket.Options.SendHighWatermark = 1024;
 
-            //_poller.AddSocket(_requestSocket);
-
-            // run poller
-            //_poller.PollTillCancelledNonBlocking();
         }
 
         public void Dispose()
@@ -113,46 +96,57 @@ namespace Cosmos.Rpc
         {
             return await Task.Run(() =>
             {
-                var requestMsg = new BaseRequestMsg()
+                while (true)
                 {
-                    SessionToken = SessionToken,
-                    RequestToken = BaseNetMqServer.GenerateRequestKey(), //Path.GetRandomFileName(),
-                    Data = obj,
-                };
 
-                var bytes = MsgPackTool.GetBytes(requestMsg);
+                    var requestMsg = new BaseRequestMsg()
+                    {
+                        SessionToken = SessionToken,
+                        RequestToken = BaseNetMqServer.GenerateRequestKey(), //Path.GetRandomFileName(),
+                        Data = obj,
+                    };
 
-                _requestSocket.Send(bytes);
+                    var bytes = MsgPackTool.GetBytes(requestMsg);
+                    var mqMsg = new NetMQMessage();
+                    //mqMsg.Append(requestMsg.RequestToken);
+                    mqMsg.AppendEmptyFrame();
+                    mqMsg.Append(bytes);
+                    _requestSocket.SendMessage(mqMsg);
 
-                //var recvMessage = _requestSocket.ReceiveMessage();
-                //var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage[0].Buffer);
-                //if (recvMsg.RequestToken != requestMsg.RequestToken)
-                //    throw new Exception("not equal request token!");
-                //var responseData = recvMsg;
+                    //var recvMessage = _requestSocket.ReceiveMessage();
+                    //var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage[0].Buffer);
+                    //if (recvMsg.RequestToken != requestMsg.RequestToken)
+                    //    throw new Exception("not equal request token!");
+                    //var responseData = recvMsg;
 
-                //SessionToken = recvMsg.SessionToken;
-                //return responseData.Data;
+                    //SessionToken = recvMsg.SessionToken;
+                    //return responseData.Data;
 
-                bool result = _requestSocket.Poll(TimeSpan.FromSeconds(5));
+                    var result = _requestSocket.Poll(TimeSpan.FromSeconds(5));
+                    if (!result)
+                    {
+                        Logger.Error("超时重试");
+                        continue;
+                    }
+                        
 
-                if (result)
-                {
                     BaseResponseMsg tmpMsg;
-                    _responses.TryRemove(requestMsg.RequestToken, out tmpMsg); // must true!
-
+                    var removeResult = _responses.TryRemove(requestMsg.RequestToken, out tmpMsg); // must true!
+                    if (!removeResult)
+                        throw new Exception(string.Format("Error TryRemove RequestToken Msg: {0}",
+                            requestMsg.RequestToken));
                     SessionToken = tmpMsg.SessionToken;
                     if (string.IsNullOrEmpty(SessionToken))
                         throw new Exception(string.Format("Error Session token when get response"));
 
                     return tmpMsg.Data;
-                }else
-                    return null;
+                }
             });
         }
         private void OnRequestReceiveReady(object sender, NetMQSocketEventArgs e)
         {
             var recvMessage = _requestSocket.ReceiveMessage();
-            var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage[0].Buffer);
+            var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage.Last.Buffer);
             _responses[recvMsg.RequestToken] = recvMsg;
         }
 
