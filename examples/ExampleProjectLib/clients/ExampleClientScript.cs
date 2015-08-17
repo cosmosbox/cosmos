@@ -17,7 +17,7 @@ namespace ExampleProjectLib
             Task.Factory.StartNew(() =>
             {
                 int id = 0;
-                while (id < 10)
+                while (id < 3)
                 {
                     id++;
                     var id_ = id;

@@ -93,6 +93,17 @@ namespace Cosmos.Rpc
             return MsgPackTool.GetMsg<TResponse>(resData);
         }
         static int Reqid = 0;
+
+        //private string _clientId = null;
+        //public string CleintId
+        //{
+        //    get
+        //    {
+        //        if (_clientId == null)
+        //            _clientId = BaseNetMqServer.GenerateSessionKey();
+        //        return _clientId;
+        //    }
+        //}
         protected async Task<byte[]> Request(byte[] obj)
         {
             return await Task.Run(() =>
@@ -111,6 +122,10 @@ namespace Cosmos.Rpc
                     ZError error;
                     //mqMsg.Append(requestMsg.RequestToken);
                     // We send a request, then we work to get a reply
+
+                    //_requestSocket.SetOption(ZSocketOption.IDENTITY, CleintId);
+                    //string idClien;
+                    //_requestSocket.GetOption(ZSocketOption.IDENTITY, out idClien);
                     using (var mqMsg = new ZMessage())
                     {
                         mqMsg.Append(ZFrame.CreateEmpty());

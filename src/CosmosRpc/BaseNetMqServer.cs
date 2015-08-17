@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -67,7 +68,7 @@ namespace Cosmos.Rpc
             //_responseSocket.Options.ReceiveHighWatermark = 1024;
             //_responseSocket.Options.SendHighWatermark = 1024;
             //_responseSocket.ReceiveReady += ProcescRequestMessage;
-            new Thread(ProcescRequestMessage).Start();
+            new Thread(LoopRecv).Start();
             //if (publishPort != 0)
             //{
             //    PublishPort = publishPort;
@@ -91,8 +92,7 @@ namespace Cosmos.Rpc
         {
             _pubSocket.SendMore(topicName).Send(data);
         }
-
-        private async void ProcescRequestMessage()
+        private void LoopRecv()
         {
             ZError error;
             while (true)
@@ -104,41 +104,47 @@ namespace Cosmos.Rpc
                         return;    // Interrupted
                     throw new ZException(error);
                 }
-                var startTime = DateTime.UtcNow;
-                using (recvMsg)
-                {
-                    var clientAddr = recvMsg[0];
-                    var clientData = recvMsg[2];
-                    var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(clientData.Read());
-                    var requestDataMsg = baseRequestMsg.Data;
-
-                    var responseMsg = await ProcessRequest(requestDataMsg);
-
-                    // if no session key, generate new
-                    var sessionToken = baseRequestMsg.SessionToken;
-                    if (string.IsNullOrEmpty(sessionToken))
-                    {
-                        sessionToken = GenerateSessionKey();
-                    }
-                    var baseResponseMsg = new BaseResponseMsg()
-                    {
-                        SessionToken = sessionToken,
-                        RequestToken = baseRequestMsg.RequestToken,
-                        Data = responseMsg,
-                    };
-
-                    var sendData = MsgPackTool.GetBytes(baseResponseMsg);
-
-                    var messageToServer = new ZMessage();
-                    messageToServer.Append(clientAddr);
-                    messageToServer.Append(ZFrame.CreateEmpty());
-                    messageToServer.Append(new ZFrame(sendData));
-
-                    _responseSocket.SendMessage(messageToServer);
-                }
-
-                Logger.Trace("Receive Msg and Send used Time: {0:F5}s", (DateTime.UtcNow - startTime).TotalSeconds);
+                ProcessRecvMsg(recvMsg);
             }
+        }
+
+        private void ProcessRecvMsg(ZMessage recvMsg)
+        {
+            var startTime = DateTime.UtcNow;
+            using (recvMsg)
+            {
+                var clientAddr = recvMsg[0];
+                var clientData = recvMsg[2];
+                var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(clientData.Read());
+                var requestDataMsg = baseRequestMsg.Data;
+
+                var responseTask = ProcessRequest(requestDataMsg);
+                responseTask.Wait();
+                var responseMsg = responseTask.Result;
+
+                // if no session key, generate new
+                var sessionToken = baseRequestMsg.SessionToken;
+                if (string.IsNullOrEmpty(sessionToken))
+                {
+                    sessionToken = GenerateSessionKey();
+                }
+                var baseResponseMsg = new BaseResponseMsg()
+                {
+                    SessionToken = sessionToken,
+                    RequestToken = baseRequestMsg.RequestToken,
+                    Data = responseMsg,
+                };
+
+                var sendData = MsgPackTool.GetBytes(baseResponseMsg);
+
+                var messageToServer = new ZMessage();
+                messageToServer.Append(clientAddr);
+                messageToServer.Append(ZFrame.CreateEmpty());
+                messageToServer.Append(new ZFrame(sendData));
+                _responseSocket.SendMessage(messageToServer);
+            }
+
+            Logger.Trace("Receive Msg and Send used Time: {0:F5}s", (DateTime.UtcNow - startTime).TotalSeconds);
         }
         //private async void ThreadLoopReceive()//(object sender, NetMQSocketEventArgs e)
         //{
@@ -148,10 +154,10 @@ namespace Cosmos.Rpc
         //        //NetMQMessage recvMsg;
         //        //recvMsg = _responseSocket.ReceiveMessage();
 
-        
+
         //        //await Task.Run(() => { ProcescRequestMessage(recvMsg); });
 
-        
+
         //    }
 
         //}
