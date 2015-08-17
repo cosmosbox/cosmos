@@ -94,23 +94,23 @@ namespace Cosmos.Rpc
         }
         static int Reqid = 0;
 
-        //private string _clientId = null;
-        //public string CleintId
-        //{
-        //    get
-        //    {
-        //        if (_clientId == null)
-        //            _clientId = BaseNetMqServer.GenerateSessionKey();
-        //        return _clientId;
-        //    }
-        //}
+        private string _clientId = null;
+        public string CleintId
+        {
+            get
+            {
+                if (_clientId == null)
+                    _clientId = BaseNetMqServer.GenerateSessionKey();
+                return _clientId;
+            }
+        }
         protected async Task<byte[]> Request(byte[] obj)
         {
             return await Task.Run(() =>
             {
                 while (true)
                 {
-
+                    _requestSocket.IdentityString = CleintId;
                     var requestMsg = new BaseRequestMsg()
                     {
                         SessionToken = SessionToken,
@@ -128,14 +128,15 @@ namespace Cosmos.Rpc
                     //_requestSocket.GetOption(ZSocketOption.IDENTITY, out idClien);
                     using (var mqMsg = new ZMessage())
                     {
-                        mqMsg.Append(ZFrame.CreateEmpty());
-                        mqMsg.Append(new ZFrame(bytes));
-                        if (!_requestSocket.SendMessage(mqMsg, out error))
-                        {
-                            if (error == ZError.ETERM)
-                                return null;    // Interrupted
-                            throw new ZException(error);
-                        }
+                        _requestSocket.SendMore(new ZFrame(_requestSocket.IdentityString));
+                        _requestSocket.SendMore(ZFrame.CreateEmpty());
+                        _requestSocket.Send(new ZFrame(bytes));
+                        //if (!_requestSocket.SendMessage(mqMsg, out error))
+                        //{
+                        //    if (error == ZError.ETERM)
+                        //        return null;    // Interrupted
+                        //    throw new ZException(error);
+                        //}
                     }
 
                     var poll = ZPollItem.CreateReceiver();

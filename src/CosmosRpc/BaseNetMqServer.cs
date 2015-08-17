@@ -104,17 +104,17 @@ namespace Cosmos.Rpc
                         return;    // Interrupted
                     throw new ZException(error);
                 }
-                ProcessRecvMsg(recvMsg);
+                OnRecvMsg(recvMsg);
             }
         }
 
-        private void ProcessRecvMsg(ZMessage recvMsg)
+        private void OnRecvMsg(ZMessage recvMsg)
         {
             var startTime = DateTime.UtcNow;
             using (recvMsg)
             {
                 var clientAddr = recvMsg[0];
-                var clientData = recvMsg[2];
+                var clientData = recvMsg[3];
                 var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(clientData.Read());
                 var requestDataMsg = baseRequestMsg.Data;
 
