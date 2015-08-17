@@ -44,7 +44,8 @@ namespace Cosmos.Rpc
         {
             get { return string.Format("inproc://{0}", ServerToken); }
         }
-        private int InitWorkerCount = 10;
+        private int InitWorkerCount = 20; // one worker one thread
+
         private List<BaseZmqWorker> _workers = new List<BaseZmqWorker>();
         
 
@@ -116,7 +117,7 @@ namespace Cosmos.Rpc
 
             while (true)
             {
-                if (_backendSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(64)))
+                if (_backendSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(1)))
                 {
                     using (incoming)
                     {
@@ -168,7 +169,7 @@ namespace Cosmos.Rpc
                 if (workerQueue.Count > 0)
                 {
                     // Poll frontend only if we have available workers
-                    if (_responseSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(64)))
+                    if (_responseSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(1)))
                     {
                         using (incoming)
                         {
@@ -209,6 +210,10 @@ namespace Cosmos.Rpc
                         if (error != ZError.EAGAIN)
                             throw new ZException(error);
                     }
+                }
+                else
+                {
+                    Logger.Warn("no idle worker....");
                 }
             }
         }
