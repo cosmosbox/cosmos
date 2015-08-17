@@ -44,7 +44,8 @@ namespace Cosmos.Rpc
         {
             get { return string.Format("inproc://{0}", ServerToken); }
         }
-        private int InitWorkerCount = 20; // one worker one thread
+        private int InitWorkerCount = 5; // one worker one thread
+        private int CurWorkerIndex = 0; // I生成
 
         private List<BaseZmqWorker> _workers = new List<BaseZmqWorker>();
         
@@ -92,11 +93,17 @@ namespace Cosmos.Rpc
         {
             for (var i = 0; i < InitWorkerCount; i++)
             {
-                var worker = new BaseZmqWorker(this, ServerBackendAddr, i);
-                _workers.Add(worker);
+                AddWorker();
             }
 
         }
+
+        void AddWorker()
+        {
+            var worker = new BaseZmqWorker(this, ServerBackendAddr, CurWorkerIndex++);
+            _workers.Add(worker);
+        }
+
         /// <summary>
         /// Do Publisher
         /// </summary>
@@ -144,7 +151,7 @@ namespace Cosmos.Rpc
                             // string reply = incoming[4].ReadString();
                             // int reply = incoming[4].ReadInt32();
 
-                            Console.WriteLine("I: ({0}) work complete", workerName);
+                            Logger.Trace("I: ({0}) work complete", workerName);
 
                             using (var outgoing = new ZMessage())
                             {
@@ -188,7 +195,7 @@ namespace Cosmos.Rpc
                             // string request = incoming[2].ReadString();
                             var requestData = incoming[2];
 
-                            Console.WriteLine("I: ({0}) working on ({1}) {2}", workerId, client_id, requestData);
+                            Logger.Trace("I: ({0}) working on ({1}) {2}", workerId, client_id, requestData);
 
                             using (var outgoing = new ZMessage())
                             {
@@ -214,6 +221,7 @@ namespace Cosmos.Rpc
                 else
                 {
                     Logger.Warn("no idle worker....");
+                    AddWorker(); // 不够worker，创建一个
                 }
             }
         }

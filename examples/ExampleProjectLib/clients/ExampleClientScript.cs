@@ -12,6 +12,8 @@ namespace ExampleProjectLib
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public Task Task;
+        private int callCount = 0;
+        private int LastCallCount = 0;
         public ExampleClientScript()
         {
             new Thread(() =>
@@ -26,6 +28,14 @@ namespace ExampleProjectLib
                         ClientLoop(id_);
                     }).Start();
                     Thread.Sleep(100); // 1秒登录一个
+                }
+
+                while (true)
+                {
+                    Logger.Info("Call Count One Second : {0}, Total: {1}", callCount - LastCallCount, callCount);
+
+                    LastCallCount = callCount;
+                    Thread.Sleep(1000);
                 }
             }).Start();
 
@@ -42,6 +52,9 @@ namespace ExampleProjectLib
                 using (var client = new GateClient("127.0.0.1", 14002))
                 {
                     loginRes = await client.Login(id);
+                    if (loginRes == null)
+                        return;
+
                     if (loginRes.Id != id)
                         throw new Exception("Error id");
                     host = loginRes.GameServerHost;
@@ -65,20 +78,21 @@ namespace ExampleProjectLib
                 // 操作100次后结束客户端
                 for (var i = 0; i < int.MaxValue; i++)
                 {
-                    Logger.Info("EnterLevel from Id: {0}, Loop: {1}", id, i);
+                    //Logger.Info("EnterLevel from Id: {0}, Loop: {1}", id, i);
                     // Enter Level
                     var rand = new Random();
                     var randLevelId = rand.Next(1, 100000);
                     gameClient.EnterLevel(sessionToken, randLevelId);
 
                     // 5s in level 
-                    Thread.Sleep(500);
+                    Thread.Sleep(1);
 
-                    Logger.Info("FinishLevel from Id: {0}, Loop: {1}", id, i);
+                    //Logger.Info("FinishLevel from Id: {0}, Loop: {1}", id, i);
                     // Finish Level
                     gameClient.FinishLevel(sessionToken, randLevelId, true);
-                    Logger.Info("next call");
 
+
+                    callCount++;
                 }
 
 

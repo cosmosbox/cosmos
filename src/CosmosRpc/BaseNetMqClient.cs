@@ -51,6 +51,8 @@ namespace Cosmos.Rpc
         private ConcurrentDictionary<string, BaseResponseMsg> _responses = new ConcurrentDictionary<string, BaseResponseMsg>();
         public string SessionToken { get; private set; }
 
+        ZError error;
+
         protected BaseNetMqClient(string host, int responsePort, int subscribePort, string protocol = "tcp")
         {
             SessionToken = null;
@@ -60,15 +62,21 @@ namespace Cosmos.Rpc
             Protocol = protocol;
 
             // request
-            _requestSocket = new ZSocket(NetMqManager.Instance.Context, ZSocketType.REQ);
-            _requestSocket.Connect(ReqAddress);
-            _requestSocket.IdentityString = BaseNetMqServer.GenerateKey("CLIENT");
-            _requestSocket.Linger = TimeSpan.FromMilliseconds(1);
+            _requestSocket = CreateSocket(out error);
+        }
 
-            //_requestSocket.ReceiveReady += OnRequestReceiveReady;
-            //_requestSocket.Options.ReceiveHighWatermark = 1024;
-            //_requestSocket.Options.SendHighWatermark = 1024;
+        ZSocket CreateSocket(out ZError error)
+        {
+            var socket = new ZSocket(NetMqManager.Instance.Context, ZSocketType.REQ);
+            socket.Connect(ReqAddress);
+            socket.IdentityString = BaseNetMqServer.GenerateKey("CLIENT");
+            socket.Linger = TimeSpan.FromMilliseconds(1);
 
+            if (!socket.Connect(ReqAddress, out error))
+            {
+                return null;
+            }
+            return socket;
         }
 
         public void Dispose()
@@ -92,7 +100,8 @@ namespace Cosmos.Rpc
         {
             var reqData = MsgPackTool.GetBytes(obj);
             var resData = await Request(reqData);
-
+            if (resData == null)
+                return default(TResponse);
             return MsgPackTool.GetMsg<TResponse>(resData);
         }
 
@@ -100,7 +109,8 @@ namespace Cosmos.Rpc
         {
             return await Task.Run(() =>
             {
-                while (true)
+                var retryCount = 5;
+                while (retryCount > 0)
                 {
                     var requestMsg = new BaseRequestMsg()
                     {
@@ -111,29 +121,50 @@ namespace Cosmos.Rpc
 
 
                     var bytes = MsgPackTool.GetBytes(requestMsg);
-                    ZError error;
                     //mqMsg.Append(requestMsg.RequestToken);
                     // We send a request, then we work to get a reply
 
-                    //using (var mqMsg = new ZMessage())
+                    if (!_requestSocket.Send(new ZFrame(bytes), out error))
                     {
-                        //_requestSocket.SendMore(new ZFrame(_requestSocket.IdentityString));
-                        //_requestSocket.SendMore(ZFrame.CreateEmpty());
-                        if (!_requestSocket.Send(new ZFrame(bytes), out error))
-                        {
-                            if (error == ZError.ETERM)
-                                continue;    // Interrupted
-                            throw new ZException(error);
-                        }
+                        if (error == ZError.ETERM)
+                            continue;    // Interrupted
+                        throw new ZException(error);
                     }
-
                     var poll = ZPollItem.CreateReceiver();
                     ZMessage incoming;
-                    var result = _requestSocket.PollIn(poll, out incoming, out error, TimeSpan.FromSeconds(500)); //(TimeSpan.FromSeconds(5));
+                    var result = _requestSocket.PollIn(poll, out incoming, out error, TimeSpan.FromSeconds(5)); //(TimeSpan.FromSeconds(5));
                     if (!result)
                     {
                         Logger.Error("超时重试");
-                        continue;
+                        if (error == ZError.EAGAIN)
+                        {
+                            if (--retryCount == 0)
+                            {
+                                Console.WriteLine("E: server seems to be offline, abandoning");
+                                break;
+                            }
+                            // Old socket is confused; close it and open a new one
+                            _requestSocket.Dispose();
+                            if (null == (_requestSocket = CreateSocket(out error)))
+                            {
+                                if (error == ZError.ETERM)
+                                {
+                                    Logger.Error("ETERM!");
+                                    break; // Interrupted
+                                }
+                                throw new ZException(error);
+                            }
+
+                            Console.WriteLine("I: reconnected");
+
+                            continue;
+                        }
+                        if (error == ZError.ETERM)
+                        {
+                            Logger.Error("ETERM!!");
+                            break; // Interrupted
+                        }
+                        throw new ZException(error);
                     }
                     else
                     {
@@ -164,6 +195,8 @@ namespace Cosmos.Rpc
                     //    Thread.Sleep(1);
                     //}
                 }
+
+                return null;
             });
         }
         //private void OnRequestReceiveReady(object sender, NetMQSocketEventArgs e)

@@ -67,7 +67,7 @@ namespace ExampleProjectLib
             _entity.State = PlayerState.UI;
 	        _entity.StateArg = null;
 
-            Logger.Info("Now player: {0} Exp: {1}", this._playerToken, _entity.Exp);
+            Logger.Trace("Now player: {0} Exp: {1}", this._playerToken, _entity.Exp);
 	        return true;
 	    }
 
