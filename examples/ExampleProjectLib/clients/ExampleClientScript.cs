@@ -19,7 +19,7 @@ namespace ExampleProjectLib
             new Thread(() =>
             {
                 int id = 0;
-                while (id < 10)
+                while (id < 50)
                 {
                     id++;
                     var id_ = id;
@@ -27,7 +27,7 @@ namespace ExampleProjectLib
                     {
                         ClientLoop(id_);
                     }).Start();
-                    Thread.Sleep(100); // 1秒登录一个
+                    //Thread.Sleep(100); // 1秒登录一个
                 }
 
                 while (true)
@@ -85,7 +85,7 @@ namespace ExampleProjectLib
                     gameClient.EnterLevel(sessionToken, randLevelId);
 
                     // 5s in level 
-                    Thread.Sleep(1);
+                    Thread.Sleep(100);
 
                     //Logger.Info("FinishLevel from Id: {0}, Loop: {1}", id, i);
                     // Finish Level
