@@ -65,22 +65,8 @@ namespace Cosmos.Rpc
                 ResponsePort = responsePort;
                 _responseSocket.Bind(string.Format("tcp://{0}:{1}", host, ResponsePort));
             }
-            //_responseSocket.Options.ReceiveHighWatermark = 1024;
-            //_responseSocket.Options.SendHighWatermark = 1024;
-            //_responseSocket.ReceiveReady += ProcescRequestMessage;
+
             new Thread(LoopRecv).Start();
-            //if (publishPort != 0)
-            //{
-            //    PublishPort = publishPort;
-            //    _pubSocket = NetMqManager.Instance.Context.CreatePublisherSocket();
-            //    // Bind ? Connect? 
-            //    _pubSocket.Bind(string.Format("tcp://{0}:{1}", Host, publishPort));
-
-            //    _poller.AddSocket(_pubSocket);
-            //}
-
-
-            //_poller.PollTillCancelledNonBlocking();
         }
 
         /// <summary>
@@ -146,21 +132,6 @@ namespace Cosmos.Rpc
 
             Logger.Trace("Receive Msg and Send used Time: {0:F5}s", (DateTime.UtcNow - startTime).TotalSeconds);
         }
-        //private async void ThreadLoopReceive()//(object sender, NetMQSocketEventArgs e)
-        //{
-        //    while (true)
-        //    {
-        //        _responseSocket.Poll();
-        //        //NetMQMessage recvMsg;
-        //        //recvMsg = _responseSocket.ReceiveMessage();
-
-
-        //        //await Task.Run(() => { ProcescRequestMessage(recvMsg); });
-
-
-        //    }
-
-        //}
 
         protected abstract Task<byte[]> ProcessRequest(byte[] requestDataMsg);
 

@@ -14,10 +14,10 @@ namespace ExampleProjectLib
         public Task Task;
         public ExampleClientScript()
         {
-            Task.Factory.StartNew(() =>
+            new Thread(() =>
             {
                 int id = 0;
-                while (id < 3)
+                while (id < 50)
                 {
                     id++;
                     var id_ = id;
@@ -25,9 +25,9 @@ namespace ExampleProjectLib
                     {
                         ClientLoop(id_);
                     });
-                    Thread.Sleep(1); // 1秒登录一个
+                    //Thread.Sleep(5000); // 1秒登录一个
                 }
-            });
+            }).Start();
 
         }
 
