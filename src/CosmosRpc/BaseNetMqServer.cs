@@ -29,7 +29,9 @@ namespace Cosmos.Rpc
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private ZSocket _responseSocket;
-        private PublisherSocket _pubSocket;
+        private ZSocket _backendSocket;  // backend
+
+        //private PublisherSocket _pubSocket;
         public int ResponsePort { get; private set; }
         public int PublishPort { get; private set; }
         public string Host { get; private set; }
@@ -37,11 +39,27 @@ namespace Cosmos.Rpc
         //private Task _pollerTask;
 
         //public Poller _poller;
+        public string ServerToken;
+        private string ServerBackendAddr
+        {
+            get { return string.Format("inproc://{0}", ServerToken); }
+        }
+        private int InitWorkerCount = 10;
+        private List<BaseZmqWorker> _workers = new List<BaseZmqWorker>();
+        
 
         protected BaseNetMqServer(int responsePort = -1, int publishPort = 0, string host = "*")
         {
             Host = host;
+
+            ServerToken = GenerateKey("Server");
+
+            _backendSocket = new ZSocket(NetMqManager.Instance.Context, ZSocketType.ROUTER);
+            _backendSocket.Bind(ServerBackendAddr);
+            InitWorkers();
+
             _responseSocket = new ZSocket(NetMqManager.Instance.Context, ZSocketType.ROUTER);
+            
 
             if (responsePort == -1)
             {
@@ -66,42 +84,143 @@ namespace Cosmos.Rpc
                 _responseSocket.Bind(string.Format("tcp://{0}:{1}", host, ResponsePort));
             }
 
-            new Thread(LoopRecv).Start();
+            new Thread(MainLoop).Start();
         }
 
+        void InitWorkers()
+        {
+            for (var i = 0; i < InitWorkerCount; i++)
+            {
+                var worker = new BaseZmqWorker(this, ServerBackendAddr, i);
+                _workers.Add(worker);
+            }
+
+        }
         /// <summary>
         /// Do Publisher
         /// </summary>
         /// <param name="topicName"></param>
         /// <param name="data"></param>
-        public void Publish(string topicName, byte[] data)
+        //public void Publish(string topicName, byte[] data)
+        //{
+        //    _pubSocket.SendMore(topicName).Send(data);
+        //}
+
+        private void MainLoop()
         {
-            _pubSocket.SendMore(topicName).Send(data);
-        }
-        private void LoopRecv()
-        {
+            var workerQueue = new List<string>();
+
             ZError error;
+            ZMessage incoming;
+            var poll = ZPollItem.CreateReceiver();
+
             while (true)
             {
-                ZMessage recvMsg;
-                if (null == (recvMsg = _responseSocket.ReceiveMessage(out error)))
+                if (_backendSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(64)))
+                {
+                    using (incoming)
+                    {
+                        // Handle worker activity on backend
+
+                        // incoming[0] is worker_id
+                        string workerName = incoming[0].ReadString();
+                        // Queue worker identity for load-balancing
+                        workerQueue.Add(workerName);
+
+                        // incoming[1] is empty
+
+                        // incoming[2] is READY or else client_id
+                        var client_id = incoming[2];
+                        var clientIdString = client_id.ToString();
+                        if (client_id.ToString() == "READY")
+                        {
+                            Logger.Warn("I: ({0}) worker ready!!!", workerName);
+                        }
+                        else
+                        {
+                            // incoming[3] is empty
+                            // incoming[4] is reply
+                            // string reply = incoming[4].ReadString();
+                            // int reply = incoming[4].ReadInt32();
+
+                            Console.WriteLine("I: ({0}) work complete", workerName);
+
+                            using (var outgoing = new ZMessage())
+                            {
+                                outgoing.Add(client_id);
+                                outgoing.Add(new ZFrame());
+                                outgoing.Add(incoming[4]);
+
+                                // Send
+                                _responseSocket.Send(outgoing);
+                            }
+                        }
+                    }
+                }
+                else
                 {
                     if (error == ZError.ETERM)
-                        return;    // Interrupted
-                    throw new ZException(error);
+                        return;
+                    if (error != ZError.EAGAIN)
+                        throw new ZException(error);
                 }
-                OnRecvMsg(recvMsg);
+
+                if (workerQueue.Count > 0)
+                {
+                    // Poll frontend only if we have available workers
+                    if (_responseSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(64)))
+                    {
+                        using (incoming)
+                        {
+                            // Here is how we handle a client request
+
+                            // Dequeue the next worker identity
+                            string workerId = workerQueue[0];
+                            workerQueue.RemoveAt(0);
+
+                            // incoming[0] is client_id
+                            var client_id = incoming[0];
+                            var clientIdStr = client_id.ToString();
+                            // incoming[1] is empty
+
+                            // incoming[2] is request
+                            // string request = incoming[2].ReadString();
+                            var requestData = incoming[2];
+
+                            Console.WriteLine("I: ({0}) working on ({1}) {2}", workerId, client_id, requestData);
+
+                            using (var outgoing = new ZMessage())
+                            {
+                                outgoing.Add(new ZFrame(workerId));
+                                outgoing.Add(new ZFrame());
+                                outgoing.Add(client_id);
+                                outgoing.Add(new ZFrame());
+                                outgoing.Add(requestData);
+
+                                // Send
+                                _backendSocket.Send(outgoing);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (error == ZError.ETERM)
+                            return;
+                        if (error != ZError.EAGAIN)
+                            throw new ZException(error);
+                    }
+                }
             }
         }
 
-        private void OnRecvMsg(ZMessage recvMsg)
+        internal void OnRecvMsg(BaseZmqWorker worker, ZMessage recvMsg)
         {
             var startTime = DateTime.UtcNow;
             using (recvMsg)
             {
                 var clientAddr = recvMsg[0];
-                var clientData = recvMsg[3];
-                var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(clientData.Read());
+                var clientData = recvMsg[2].Read();
+                var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(clientData);
                 var requestDataMsg = baseRequestMsg.Data;
 
                 var responseTask = ProcessRequest(requestDataMsg);
@@ -127,7 +246,7 @@ namespace Cosmos.Rpc
                 messageToServer.Append(clientAddr);
                 messageToServer.Append(ZFrame.CreateEmpty());
                 messageToServer.Append(new ZFrame(sendData));
-                _responseSocket.SendMessage(messageToServer);
+                worker.workerSocket.SendMessage(messageToServer);
             }
 
             Logger.Trace("Receive Msg and Send used Time: {0:F5}s", (DateTime.UtcNow - startTime).TotalSeconds);
@@ -140,8 +259,13 @@ namespace Cosmos.Rpc
             //_poller.RemoveSocket(_responseSocket);
 
             //_responseSocket.Disconnect();
-            _responseSocket.Close();
-
+            _responseSocket.Dispose();
+            _backendSocket.Dispose();
+            foreach (var worker in _workers)
+            {
+                worker.Dispose();
+            }
+            _workers.Clear();
 
             //_poller.CancelAndJoin();
             //_poller.Dispose();
@@ -161,11 +285,16 @@ namespace Cosmos.Rpc
         {
             return GenerateKey("REQ");
         }
+        public static string GenerateWorkerKey()
+        {
+            return GenerateKey("WORKER");
+        }
 
-        static string GenerateKey(string suffix)
+        private static int RandomSeed = 0;
+        public static string GenerateKey(string suffix)
         {
             var now = DateTime.UtcNow;
-            var random = new Random(now.Millisecond);
+            var random = new Random(RandomSeed++);
             var pureKeyStr = string.Format("{0}{1}{2}", suffix, now.Ticks, random.Next(int.MinValue, int.MaxValue));
 
             return Md5Util.String16(pureKeyStr);

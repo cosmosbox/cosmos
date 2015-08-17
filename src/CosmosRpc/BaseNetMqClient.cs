@@ -60,8 +60,11 @@ namespace Cosmos.Rpc
             Protocol = protocol;
 
             // request
-            _requestSocket = new ZSocket(NetMqManager.Instance.Context, ZSocketType.DEALER);
+            _requestSocket = new ZSocket(NetMqManager.Instance.Context, ZSocketType.REQ);
             _requestSocket.Connect(ReqAddress);
+            _requestSocket.IdentityString = BaseNetMqServer.GenerateKey("CLIENT");
+            _requestSocket.Linger = TimeSpan.FromMilliseconds(1);
+
             //_requestSocket.ReceiveReady += OnRequestReceiveReady;
             //_requestSocket.Options.ReceiveHighWatermark = 1024;
             //_requestSocket.Options.SendHighWatermark = 1024;
@@ -76,14 +79,14 @@ namespace Cosmos.Rpc
             //_requestSocket.Close();
         }
 
-        private void OnSubscriberReceiveReady(object sender, NetMQSocketEventArgs e)
-        {
-            string messageTopicReceived = _subSocket.ReceiveString();
-            byte[] messageReceived = _subSocket.Receive();
+        //private void OnSubscriberReceiveReady(object sender, NetMQSocketEventArgs e)
+        //{
+        //    string messageTopicReceived = _subSocket.ReceiveString();
+        //    byte[] messageReceived = _subSocket.Receive();
 
-            Console.WriteLine("Topic: {0}", messageTopicReceived);
-            Console.WriteLine("Message: {0}", messageReceived);
-        }
+        //    Console.WriteLine("Topic: {0}", messageTopicReceived);
+        //    Console.WriteLine("Message: {0}", messageReceived);
+        //}
 
         protected async Task<TResponse> Request<TRequest, TResponse>(TRequest obj)
         {
@@ -92,25 +95,13 @@ namespace Cosmos.Rpc
 
             return MsgPackTool.GetMsg<TResponse>(resData);
         }
-        static int Reqid = 0;
 
-        private string _clientId = null;
-        public string CleintId
-        {
-            get
-            {
-                if (_clientId == null)
-                    _clientId = BaseNetMqServer.GenerateSessionKey();
-                return _clientId;
-            }
-        }
         protected async Task<byte[]> Request(byte[] obj)
         {
             return await Task.Run(() =>
             {
                 while (true)
                 {
-                    _requestSocket.IdentityString = CleintId;
                     var requestMsg = new BaseRequestMsg()
                     {
                         SessionToken = SessionToken,
@@ -118,30 +109,27 @@ namespace Cosmos.Rpc
                         Data = obj,
                     };
 
+
                     var bytes = MsgPackTool.GetBytes(requestMsg);
                     ZError error;
                     //mqMsg.Append(requestMsg.RequestToken);
                     // We send a request, then we work to get a reply
 
-                    //_requestSocket.SetOption(ZSocketOption.IDENTITY, CleintId);
-                    //string idClien;
-                    //_requestSocket.GetOption(ZSocketOption.IDENTITY, out idClien);
-                    using (var mqMsg = new ZMessage())
+                    //using (var mqMsg = new ZMessage())
                     {
-                        _requestSocket.SendMore(new ZFrame(_requestSocket.IdentityString));
-                        _requestSocket.SendMore(ZFrame.CreateEmpty());
-                        _requestSocket.Send(new ZFrame(bytes));
-                        //if (!_requestSocket.SendMessage(mqMsg, out error))
-                        //{
-                        //    if (error == ZError.ETERM)
-                        //        return null;    // Interrupted
-                        //    throw new ZException(error);
-                        //}
+                        //_requestSocket.SendMore(new ZFrame(_requestSocket.IdentityString));
+                        //_requestSocket.SendMore(ZFrame.CreateEmpty());
+                        if (!_requestSocket.Send(new ZFrame(bytes), out error))
+                        {
+                            if (error == ZError.ETERM)
+                                continue;    // Interrupted
+                            throw new ZException(error);
+                        }
                     }
 
                     var poll = ZPollItem.CreateReceiver();
                     ZMessage incoming;
-                    var result = _requestSocket.PollIn(poll, out incoming, out error, TimeSpan.FromSeconds(5)); //(TimeSpan.FromSeconds(5));
+                    var result = _requestSocket.PollIn(poll, out incoming, out error, TimeSpan.FromSeconds(500)); //(TimeSpan.FromSeconds(5));
                     if (!result)
                     {
                         Logger.Error("超时重试");
@@ -154,7 +142,7 @@ namespace Cosmos.Rpc
                             // We got a reply from the server
                             //int incoming_sequence = incoming[0].ReadInt32();
                             //var recvMessage = _requestSocket.ReceiveMessage();
-                            var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(incoming[1].Read());
+                            var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(incoming[0].Read());
                             _responses[recvMsg.RequestToken] = recvMsg;
                             SessionToken = recvMsg.SessionToken;
                             if (string.IsNullOrEmpty(SessionToken))

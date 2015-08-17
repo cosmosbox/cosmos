@@ -57,6 +57,7 @@
     <Compile Include="BaseNetMqClient.cs" />
     <Compile Include="BaseNetMqMsg.cs" />
     <Compile Include="BaseNetMqServer.cs" />
+    <Compile Include="BaseZMQWorker.cs" />
     <Compile Include="MsgPackTool.cs" />
     <Compile Include="NetMqManager.cs" />
     <Compile Include="RpcClient.cs" />

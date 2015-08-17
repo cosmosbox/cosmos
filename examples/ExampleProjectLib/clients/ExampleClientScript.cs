@@ -17,7 +17,7 @@ namespace ExampleProjectLib
             new Thread(() =>
             {
                 int id = 0;
-                while (id < 50)
+                while (id < 1)
                 {
                     id++;
                     var id_ = id;
