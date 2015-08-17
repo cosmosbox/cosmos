@@ -10,6 +10,7 @@ using NetMQ.Sockets;
 using MsgPack.Serialization;
 using System.IO;
 using System.Threading;
+using Cosmos.Utils;
 using NLog;
 
 namespace Cosmos.Rpc
@@ -22,7 +23,7 @@ namespace Cosmos.Rpc
         {
         }
 
-        public async Task<RpcCallResult<T>> CallResult<T>(string funcName, params object[] arguments)
+        public IEnumerator<RpcCallResult<T>> CallResult<T>(string funcName, params object[] arguments)
         {
             var startTime = DateTime.UtcNow;
             
@@ -33,18 +34,23 @@ namespace Cosmos.Rpc
                 FuncName = funcName,
                 Arguments = arguments,
             };
-            var responseMsg = await Request<RequestMsg, ResponseMsg>(proto);
+            var responseMsg = Coroutine<ResponseMsg>.Start(Request<RequestMsg, ResponseMsg>(proto));
+
+            while (!responseMsg.IsFinished)
+                yield return null;
 
             Logger.Trace("[Finish]CallResult: {0} used time: {1:F5}s", funcName, (DateTime.UtcNow - startTime).TotalSeconds);
 
-            return new RpcCallResult<T>(responseMsg);
+            yield return new RpcCallResult<T>(responseMsg.Result);
 
         }
-        public async Task<T> Call<T>(string funcName, params object[] arguments)
+        public IEnumerator<T> Call<T>(string funcName, params object[] arguments)
         {
-            var result = await CallResult<T>(funcName, arguments);
+            var result = Coroutine<RpcCallResult<T>>.Start(CallResult<T>(funcName, arguments));
+            while (!result.IsFinished)
+                yield return default(T);
 
-            return result.Value;
+            yield return result.Result.Value;
         }
     }
 }

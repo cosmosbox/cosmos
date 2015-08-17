@@ -1,10 +1,12 @@
 
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using Cosmos.Rpc;
 using System.Threading.Tasks;
 using System.IO;
 using Cosmos.Actor;
+using Cosmos.Utils;
 using MsgPack.Serialization;
 namespace Cosmos.Test
 {
@@ -84,6 +86,11 @@ namespace Cosmos.Test
         [Test()]
         public void TestCallRpc()
         {
+            Coroutine<object>.Start(CoTestCallRpc());
+        }
+
+        public IEnumerator<object> CoTestCallRpc()
+        {
             using (var server = new RpcServer(new TestActorService()))
             {
                 Assert.AreEqual(server.ResponsePort.GetType(), typeof(int));
@@ -95,19 +102,24 @@ namespace Cosmos.Test
 
                 using (var client = new RpcClient("127.0.0.1", server.ResponsePort))
                 {
-                    var result = client.Call<string>("TestFunc", "ABC", "DEFG");
-                    result.Wait();
+                    var result = Coroutine<string>.Start(client.Call<string>("TestFunc", "ABC", "DEFG"));
+                    while (!result.IsFinished)
+                        yield return null;
+
                     Assert.AreEqual(result.Result, "ABCDEFG");
 
                     // continue client 1
-                    var result2 = client.CallResult<string>("TestFunc2", "ABC", 123);
-                    result2.Wait();
+                    var result2 = Coroutine<RpcCallResult<string>>.Start(client.CallResult<string>("TestFunc2", "ABC", 123));
+                    while (!result2.IsFinished)
+                        yield return null;
+
                     Assert.AreEqual(result2.Result.Value, "ABC123");
 
-                    var result3 = client.Call<string>("TestFunc3");
-                    result3.Wait();
-                    Assert.AreEqual(result3.IsCanceled, false);
-                    Assert.AreEqual(result3.IsFaulted, false);
+                    var result3 = Coroutine<string>.Start(client.Call<string>("TestFunc3"));
+                    while (!result3.IsFinished)
+                        yield return null;
+                    //Assert.AreEqual(result3.IsCanceled, false);
+                    //Assert.AreEqual(result3.IsFaulted, false);
                     Assert.AreEqual(result3.Result, null);
 
 
@@ -124,7 +136,6 @@ namespace Cosmos.Test
 
                 }
             }
-            //Assert.Pass();
         }
     }
 }

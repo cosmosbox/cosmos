@@ -14,16 +14,16 @@ using System.Threading;
 
 namespace Cosmos.Utils
 {
-    internal class CoroutineRunner
+    internal class CoroutineRunner<T>
     {
         /// <summary>
         /// 25 frame every seconds
         /// 1000ms / 25ms = 40
         /// </summary>
-        private static int HeartbeatMilliseconds = 40;
+        private static int HeartbeatMilliseconds = 1;
 
-        private static CoroutineRunner Instance = new CoroutineRunner();
-        private static LinkedList<Coroutine> _coroutines = new LinkedList<Coroutine>();
+        private static CoroutineRunner<T> Instance = new CoroutineRunner<T>();
+        private static LinkedList<Coroutine<T>> _coroutines = new LinkedList<Coroutine<T>>();
         private Thread _coroutineRunnerThread;
         private CoroutineRunner()
         {
@@ -36,29 +36,33 @@ namespace Cosmos.Utils
             {
                 while (true)
                 {
-                    var node = _coroutines.First;
-                    if (node != null)
+                    lock (_coroutines)
                     {
-                        do
+                        var node = _coroutines.First;
+                        if (node != null)
                         {
-                            var co = node.Value;
-                            if (!co.MoveNext())
+                            do
                             {
-                                co.IsFinished = true;
-                                var lastNode = node;
-                                node = node.Next;
-                                _coroutines.Remove(lastNode);
-                            }
-                            else
-                            {
-                                if (co.OnYield != null)
-                                    co.OnYield(co.Current);
+                                var co = node.Value;
+                                if (!co.MoveNext())
+                                {
+                                    co.IsFinished = true;
+                                    var lastNode = node;
+                                    node = node.Next;
+                                    _coroutines.Remove(lastNode);
+                                }
+                                else
+                                {
+                                    if (co.OnYield != null)
+                                        co.OnYield(co.Current);
 
-                                node = node.Next;
-                            }
+                                    node = node.Next;
+                                }
 
+                            }
+                            while (node != null);
                         }
-                        while (node != null);
+
                     }
 
                     Thread.Sleep(HeartbeatMilliseconds);
@@ -78,10 +82,14 @@ namespace Cosmos.Utils
             HeartbeatMilliseconds = ms;
         }
 
-        public static Coroutine Start(IEnumerator enumtor)
+        public static Coroutine<T> Start(IEnumerator<T> enumtor)
         {
-            var co = new EnumtorCoroutine(enumtor);
-            _coroutines.AddLast(co);
+            var co = new Coroutine<T>(enumtor);
+            lock (_coroutines)
+            {
+                _coroutines.AddLast(co);
+            }
+            
             return co;
         }
     }

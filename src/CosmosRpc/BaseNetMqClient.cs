@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Cosmos.Utils;
 using MsgPack.Serialization;
 using NetMQ;
 using NetMQ.Sockets;
@@ -96,109 +98,120 @@ namespace Cosmos.Rpc
         //    Console.WriteLine("Message: {0}", messageReceived);
         //}
 
-        protected async Task<TResponse> Request<TRequest, TResponse>(TRequest obj)
+        protected IEnumerator<TResponse> Request<TRequest, TResponse>(TRequest obj)
         {
             var reqData = MsgPackTool.GetBytes(obj);
-            var resData = await Request(reqData);
-            if (resData == null)
-                return default(TResponse);
-            return MsgPackTool.GetMsg<TResponse>(resData);
-        }
+            var resData = Coroutine<byte[]>.Start(Request(reqData));
+            while (!resData.IsFinished)
+                yield return default(TResponse);
 
-        protected async Task<byte[]> Request(byte[] obj)
-        {
-            return await Task.Run(() =>
+            if (resData.Result == null)
             {
-                var retryCount = 5;
-                while (retryCount > 0)
-                {
-                    var requestMsg = new BaseRequestMsg()
-                    {
-                        SessionToken = SessionToken,
-                        RequestToken = BaseNetMqServer.GenerateRequestKey(), //Path.GetRandomFileName(),
-                        Data = obj,
-                    };
-
-
-                    var bytes = MsgPackTool.GetBytes(requestMsg);
-                    //mqMsg.Append(requestMsg.RequestToken);
-                    // We send a request, then we work to get a reply
-
-                    if (!_requestSocket.Send(new ZFrame(bytes), out error))
-                    {
-                        if (error == ZError.ETERM)
-                            continue;    // Interrupted
-                        throw new ZException(error);
-                    }
-                    var poll = ZPollItem.CreateReceiver();
-                    ZMessage incoming;
-                    var result = _requestSocket.PollIn(poll, out incoming, out error, TimeSpan.FromSeconds(5)); //(TimeSpan.FromSeconds(5));
-                    if (!result)
-                    {
-                        Logger.Error("超时重试");
-                        if (error == ZError.EAGAIN)
-                        {
-                            if (--retryCount == 0)
-                            {
-                                Console.WriteLine("E: server seems to be offline, abandoning");
-                                break;
-                            }
-                            // Old socket is confused; close it and open a new one
-                            _requestSocket.Dispose();
-                            if (null == (_requestSocket = CreateSocket(out error)))
-                            {
-                                if (error == ZError.ETERM)
-                                {
-                                    Logger.Error("ETERM!");
-                                    break; // Interrupted
-                                }
-                                throw new ZException(error);
-                            }
-
-                            Console.WriteLine("I: reconnected");
-
-                            continue;
-                        }
-                        if (error == ZError.ETERM)
-                        {
-                            Logger.Error("ETERM!!");
-                            break; // Interrupted
-                        }
-                        throw new ZException(error);
-                    }
-                    else
-                    {
-                        using (incoming)
-                        {
-                            // We got a reply from the server
-                            //int incoming_sequence = incoming[0].ReadInt32();
-                            //var recvMessage = _requestSocket.ReceiveMessage();
-                            var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(incoming[0].Read());
-                            _responses[recvMsg.RequestToken] = recvMsg;
-                            SessionToken = recvMsg.SessionToken;
-                            if (string.IsNullOrEmpty(SessionToken))
-                                throw new Exception(string.Format("Error Session token when get response"));
-
-                            return recvMsg.Data;
-                        }
-                    }
-
-                    //BaseResponseMsg tmpMsg;
-                    //while (!_responses.TryGetValue(requestMsg.RequestToken, out tmpMsg))
-                    //{
-                    //    // must true!
-                    //    //if (!removeResult)
-                    //    //    throw new Exception(string.Format("Error TryRemove RequestToken Msg: {0}",
-                    //    // TODO: remove
-
-                    //    // requestMsg.RequestToken));
-                    //    Thread.Sleep(1);
-                    //}
-                }
-
-                return null;
-            });
+                yield return default(TResponse);
+                yield break;
+            }
+            yield return MsgPackTool.GetMsg<TResponse>(resData.Result);
         }
+
+        protected IEnumerator<byte[]> Request(byte[] obj)
+        {
+            var retryCount = 5;
+            while (retryCount > 0)
+            {
+                var requestMsg = new BaseRequestMsg()
+                {
+                    SessionToken = SessionToken,
+                    RequestToken = BaseNetMqServer.GenerateRequestKey(), //Path.GetRandomFileName(),
+                    Data = obj,
+                };
+
+
+                var bytes = MsgPackTool.GetBytes(requestMsg);
+                //mqMsg.Append(requestMsg.RequestToken);
+                // We send a request, then we work to get a reply
+
+                if (!_requestSocket.Send(new ZFrame(bytes), out error))
+                {
+                    if (error == ZError.ETERM)
+                        continue;    // Interrupted
+                    throw new ZException(error);
+                }
+                var poll = ZPollItem.CreateReceiver();
+                ZMessage incoming;
+
+                yield return null;
+
+                bool result = false;
+                var pollStartTime = DateTime.UtcNow;
+                var timeoutTime = 5f;
+                do
+                {
+                    result = _requestSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(1000));
+
+                    if (result)
+                    {
+                        int i;
+                        i = 0;
+                    }
+                } while (
+                    !result && 
+                    (DateTime.UtcNow - pollStartTime).TotalSeconds < timeoutTime); // timeout
+
+                if (!result)
+                {
+                    Logger.Error("超时重试");
+                    if (error == ZError.EAGAIN)
+                    {
+                        if (--retryCount == 0)
+                        {
+                            Console.WriteLine("E: server seems to be offline, abandoning");
+                            break;
+                        }
+                        // Old socket is confused; close it and open a new one
+                        _requestSocket.Dispose();
+                        if (null == (_requestSocket = CreateSocket(out error)))
+                        {
+                            if (error == ZError.ETERM)
+                            {
+                                Logger.Error("ETERM!");
+                                break; // Interrupted
+                            }
+                            throw new ZException(error);
+                        }
+
+                        Console.WriteLine("I: reconnected");
+
+                        continue;
+                    }
+                    if (error == ZError.ETERM)
+                    {
+                        Logger.Error("ETERM!!");
+                        break; // Interrupted
+                    }
+                    throw new ZException(error);
+                }
+                else
+                {
+                    using (incoming)
+                    {
+                        // We got a reply from the server
+                        //int incoming_sequence = incoming[0].ReadInt32();
+                        //var recvMessage = _requestSocket.ReceiveMessage();
+                        var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(incoming[0].Read());
+                        _responses[recvMsg.RequestToken] = recvMsg;
+                        SessionToken = recvMsg.SessionToken;
+                        if (string.IsNullOrEmpty(SessionToken))
+                            throw new Exception(string.Format("Error Session token when get response"));
+
+                        yield return recvMsg.Data;
+                        yield break;
+                    }
+                }
+            }
+
+            yield return null;
+        }
+
         //private void OnRequestReceiveReady(object sender, NetMQSocketEventArgs e)
         //{
         //    var recvMessage = _requestSocket.ReceiveMessage();

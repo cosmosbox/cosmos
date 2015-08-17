@@ -8,6 +8,7 @@ using Cosmos;
 using Cosmos.Actor;
 using Cosmos.Framework;
 using Cosmos.Framework.Components;
+using Cosmos.Utils;
 using ExampleProject;
 using NUnit.Framework;
 
@@ -27,8 +28,9 @@ namespace CosmosTest
             app.StartActor("gate-actor-1");
 
             var client = new HandlerClient("127.0.0.1", 13001);
-            var result = await client.Call<string>("TestHandler");
-            Assert.AreEqual(result, "TestHandlerString");
+            var result = Coroutine<string>.Start(client.Call<string>("TestHandler"));
+
+            Assert.AreEqual(result.Result, "TestHandlerString");
             Assert.Pass();
         }
     }

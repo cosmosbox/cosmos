@@ -46,10 +46,13 @@ namespace Cosmos.Actor
         private ActorRunner(ActorNodeConfig conf)
         {
             Conf = conf;
+
+            
+            State = ActorRunState.Running;
+
             ActorThread = Task.Run(() =>
             {
                 Actor = ActorFactory.Create(conf);
-                State = ActorRunState.Running;
                 while (Actor.IsActive)
                 {
                     Thread.Sleep(1000);

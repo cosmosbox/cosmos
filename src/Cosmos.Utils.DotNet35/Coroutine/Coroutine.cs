@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections;
-
+using System.Collections.Generic;
+using System.Threading;
 #if DOTNET45
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -11,7 +11,7 @@ namespace Cosmos.Utils
     /// <summary>
     /// TODO: yield return 一个协程，本协程挂起等待
     /// </summary>
-    public abstract class Coroutine
+    public class Coroutine<T>
 #if DOTNET45
         // Make Coroutine can be with async/await 
         //
@@ -25,28 +25,66 @@ namespace Cosmos.Utils
         public Action<object> OnYield;
 
         public bool IsFinished { get; internal set; }
-        internal abstract bool MoveNext();
-        public abstract object Current { get; }
+
+        //internal abstract bool MoveNext();
+        //public abstract object Current { get; }
 
         internal Coroutine()
         {
         }
-
-        public static Coroutine Start(IEnumerator em)
+        private IEnumerator<T> Enumtor;
+        internal Coroutine(IEnumerator<T> enumtor)
         {
-            return CoroutineRunner.Start(em);
+            Enumtor = enumtor;
+        }
+
+        internal bool MoveNext()
+        {
+            var r = Enumtor.MoveNext();
+            if (!r)
+                IsFinished = true;
+            else
+            {
+                LastReturn = Current;
+            }
+            return r;
+        }
+
+        private T LastReturn;
+
+        public T Result
+        {
+            get
+            {
+                if (IsFinished)
+                    return LastReturn;
+                return default(T);
+            }
+        }
+        public T Current
+        {
+            get
+            {
+                return Enumtor.Current;
+            }
+        }
+
+        public static Coroutine<T> Start(IEnumerator<T> em)
+        {
+            return CoroutineRunner<T>.Start(em);
         }
 
 #if DOTNET45  // async/await support,      await coroutine
         
         public bool IsCompleted { get; private set; }
 
-        public Coroutine GetAwaiter()
+        public Coroutine<T> GetAwaiter()
         {
             Task.Run(() =>
             {
                 while (!IsFinished)
                 {
+                    Thread.Sleep(1);
                 }
                 IsCompleted = true;
             });
@@ -65,29 +103,8 @@ namespace Cosmos.Utils
     /// <summary>
     /// 枚举
     /// </summary>
-    class EnumtorCoroutine : Coroutine
-    {
-        private IEnumerator Enumtor;
-        internal EnumtorCoroutine(IEnumerator enumtor)
-        {
-            Enumtor = enumtor;
-        }
+    //class EnumtorCoroutine : Coroutine
+    //{
 
-        internal override bool MoveNext()
-        {
-            var r = Enumtor.MoveNext();
-            if (!r)
-                IsFinished = true;
-
-            return r;
-        }
-
-        public override object Current
-        {
-            get
-            {
-                return Enumtor.Current;
-            }
-        }
-    }
+    //}
 }

@@ -31,11 +31,10 @@
     <DefineConstants>DOTNET45</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AsyncIO, Version=0.1.17.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8, processorArchitecture=MSIL">
-      <HintPath>..\packages\AsyncIO.0.1.17.0\lib\net40\AsyncIO.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
+    <Reference Include="AsyncIO, Version=0.1.17.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8">
+      <HintPath>..\packages\AsyncIO.0.1.17.0\lib\net40\AsyncIO.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Cosmos.Utils.DotNet35\Coroutine\Coroutine.cs">
@@ -45,6 +44,8 @@
       <Link>Coroutine\CoroutineRunner.cs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Md5Util.cs" />
+    <Compile Include="NetTool.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Cosmos.Framework.Components;
+using Cosmos.Utils;
 
 namespace ExampleProjectLib
 {
@@ -28,28 +30,37 @@ namespace ExampleProjectLib
 
         public bool EnterLevel(string sessionToken, int levelTypeId)
         {
-            var task = _handlerClient.CallResult<bool>("EnterLevel", sessionToken, levelTypeId);
-            task.Wait();
-            return task.Result.Value;
+            var task = Coroutine<bool>.Start(_handlerClient.Call<bool>("EnterLevel", sessionToken, levelTypeId));
+            while (!task.IsFinished)
+            {
+                Thread.Sleep(1);
+            }
+            return task.Result;
         }
 
         public bool FinishLevel(string sessionToken, int levelTypeId, bool isSuccess)
         {
-            var task = _handlerClient.CallResult<bool>("FinishLevel", sessionToken, levelTypeId, isSuccess);
-            task.Wait();
-            return task.Result.Value;
+            var task = Coroutine<bool>.Start(_handlerClient.Call<bool>("FinishLevel", sessionToken, levelTypeId, isSuccess));
+            while (!task.IsFinished)
+            {
+                Thread.Sleep(1);
+            }
+            return task.Result;
         }
 
         /// <summary>
         /// 随机请求一次，获取SessionToken
         /// </summary>
         /// <returns></returns>
-        public async void Handshake()
+        public void Handshake()
         {
             if (string.IsNullOrEmpty(SessionToken))
             {
-                var task = _handlerClient.CallResult<object>("Handshake");
-                task.Wait();
+                var task = Coroutine<object>.Start(_handlerClient.Call<object>("Handshake"));
+                while (!task.IsFinished)
+                {
+                    Thread.Sleep(1);
+                }
             }
         }
     }

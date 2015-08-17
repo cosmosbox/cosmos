@@ -18,7 +18,7 @@ namespace CosmosTest
         [Test()]
         public async void TestCoroutine()
         {
-            var co = Coroutine.Start(CoTester());
+            var co = Coroutine<int>.Start(CoTester());
             var i = 0;
             co.OnYield += (obj) =>
             {
@@ -37,7 +37,7 @@ namespace CosmosTest
             });
         }
 
-        IEnumerator CoTester()
+        IEnumerator<int> CoTester()
         {
 			// 25 tick for 1 seconds
             for (var i = 0; i < 25; i++)

@@ -11,7 +11,11 @@ namespace ExampleProject
 
         private ExampleServerApp()
         {
-            var clientScript = new ExampleClientScript();
+            Task.Run(() =>
+            {
+                var clientScript = new ExampleClientScript();
+            });
+            
         }
     }
 }

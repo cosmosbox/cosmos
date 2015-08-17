@@ -57,7 +57,7 @@ namespace CosmosTest
             {
                 Name = "Actor-Test-A",
                 DiscoveryParam = discoverServers,
-                ActorClass = "CosmosTest.SampleActor, CosmosTest",
+                ActorClass = "CosmosTest.SampleActor, Cosmos.Test",
             };
             _actorA = ActorRunner.Run(actorConf);
             Assert.AreEqual(_actorA.State, ActorRunState.Running);
@@ -67,7 +67,7 @@ namespace CosmosTest
             {
                 Name = "Actor-Test-B",
                 DiscoveryParam = discoverServers,
-                ActorClass = "CosmosTest.SampleActor, CosmosTest",
+                ActorClass = "CosmosTest.SampleActor, Cosmos.Test",
             };
             _actorB = ActorRunner.Run(actorConfB);
             Assert.AreEqual(_actorB.State, ActorRunState.Running);
@@ -78,8 +78,18 @@ namespace CosmosTest
         /// 创建一个Actor，并且使用客户端联系之
         /// </summary>
         [Test]
-        public async void TestFrontendActor()
+        public void TestFrontendActor()
         {
+            var co = Coroutine<object>.Start(CoTestFrontendActor());
+            while (!co.IsFinished)
+            {
+                Thread.Sleep(1);
+            }
+        }
+
+        IEnumerator<object> CoTestFrontendActor()
+        {
+
             var actorConf = new ActorNodeConfig
             {
                 AppToken = "TestApp",
@@ -99,22 +109,29 @@ namespace CosmosTest
 
             // Handler
             var client = new HandlerClient("127.0.0.1", 12311);
-            var result = await client.Call<string>("Test");
-            Assert.AreEqual(result, "TestString");
+            var result = Coroutine<string>.Start(client.Call<string>("Test"));
+            while (!result.IsFinished)
+            {
+                yield return null;
+            }
+            Assert.AreEqual(result.Result, "TestString");
             Assert.Pass();
         }
 
 
         [Test]
-        public async void CreateActorByCode()
+        public void CreateActorByCode()
         {
-            var co = Coroutine.Start(WaitRunner());
-            await co;
-            
+            var co = Coroutine<object>.Start(WaitRunner());
+            while (!co.IsFinished)
+            {
+                Thread.Sleep(1);
+            }
+
             Assert.AreEqual(1, 1);
         }
 
-        IEnumerator WaitRunner()
+        IEnumerator<object> WaitRunner()
         {
             var actorConf = new ActorNodeConfig
             {

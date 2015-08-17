@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cosmos.Framework.Components;
+using Cosmos.Utils;
 
 namespace ExampleProjectLib
 {
@@ -24,11 +25,13 @@ namespace ExampleProjectLib
             //_gateClient.Call<LoginResProto>()
         }
 
-        public async Task<LoginResProto> Login(int id)
+        public IEnumerator<LoginResProto> Login(int id)
         {
-            var loginRes = await _gateClient.Call<LoginResProto>("Login", id);
+            var loginRes = Coroutine<LoginResProto>.Start(_gateClient.Call<LoginResProto>("Login", id));
+            while (!loginRes.IsFinished)
+                yield return null;
 
-            return loginRes;
+            yield return loginRes.Result;
         }
 
         public void Dispose()

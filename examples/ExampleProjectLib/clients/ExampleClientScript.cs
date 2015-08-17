@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Cosmos.Utils;
 using NLog;
 
 namespace ExampleProjectLib
@@ -19,7 +20,7 @@ namespace ExampleProjectLib
             new Thread(() =>
             {
                 int id = 0;
-                while (id < 50)
+                while (id < 100)
                 {
                     id++;
                     var id_ = id;
@@ -41,7 +42,7 @@ namespace ExampleProjectLib
 
         }
 
-        async void ClientLoop(int id)
+        void ClientLoop(int id)
         {
             Logger.Warn("Now Start Client: {0}", id);
             //while (true)
@@ -51,7 +52,10 @@ namespace ExampleProjectLib
                 LoginResProto loginRes;
                 using (var client = new GateClient("127.0.0.1", 14002))
                 {
-                    loginRes = await client.Login(id);
+                    var co = Coroutine<LoginResProto>.Start(client.Login(id));
+                    while(!co.IsFinished)
+                        Thread.Sleep(1);
+                    loginRes = co.Result;
                     if (loginRes == null)
                         return;
 
