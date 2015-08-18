@@ -92,6 +92,14 @@ namespace Cosmos.Utils
             
             return co;
         }
+
+        public static Coroutine<object> StartCo<T>(CoroutineDelegate<T> coroutine, params object[] args)
+        {
+            var coResult= new CoroutineResult<T>();
+            var enumtor = coroutine(coResult, args);
+            var co = new Coroutine<object>(enumtor);
+            return co;
+        }
     }
 }
 

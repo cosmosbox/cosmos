@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 #if DOTNET45
@@ -8,6 +9,20 @@ using System.Threading.Tasks;
 
 namespace Cosmos.Utils
 {
+    public enum CoroutineState
+    {
+        Error,
+        Timeout,
+        Finish,
+    }
+    public class CoroutineResult<T>
+    {
+        public CoroutineState State;
+        public T Result;
+    }
+
+    public delegate IEnumerator<object> CoroutineDelegate<T>(CoroutineResult<T> result, object[] args);
+
     /// <summary>
     /// TODO: yield return 一个协程，本协程挂起等待
     /// </summary>
@@ -22,6 +37,7 @@ namespace Cosmos.Utils
 #endif
 
     {
+        
         public Action<object> OnYield;
 
         public bool IsFinished { get; internal set; }
@@ -74,7 +90,12 @@ namespace Cosmos.Utils
             return CoroutineRunner<T>.Start(em);
         }
 
-#if DOTNET45  // async/await support,      await coroutine
+        public static Coroutine<object> StartCo(CoroutineDelegate<T> coroutine)
+        {
+            return CoroutineRunner<object>.StartCo(coroutine);
+        }
+
+#if DOTNET45 // async/await support,      await coroutine
         
         public bool IsCompleted { get; private set; }
 
