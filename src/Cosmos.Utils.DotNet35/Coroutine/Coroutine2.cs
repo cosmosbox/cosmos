@@ -76,6 +76,10 @@ namespace Cosmos.Utils
         {
             return CoroutineRunner2.Start<object, object>(coroutineFunc, param);
         }
+        public static Coroutine2 Start(IEnumerator enumtor)
+        {
+            return CoroutineRunner2.Start(enumtor);
+        }
     }
 
     //public enum CoroutineState

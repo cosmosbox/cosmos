@@ -23,6 +23,9 @@ namespace Cosmos.Rpc
             //Poller.PollTillCancelledNonBlocking();
 
             Context = new ZContext();
+
+            //Context.SetOption(ZContextOption.IO_THREADS, 1);
+            
             //Context.MaxSockets = 10240;
             //Context.ThreadPoolSize = 128;
         }

@@ -4,9 +4,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+#if DOTNET45
+using System.Threading.Tasks;
+#endif
 
 namespace Cosmos.Utils
 {
+    internal class CoroutineContext
+    {
+        CoroutineContext()
+        {
+
+            var id2 = Thread.CurrentThread.ManagedThreadId;
+        }
+    }
+
     internal class CoroutineRunner2
     {
         /// <summary>
@@ -17,69 +29,93 @@ namespace Cosmos.Utils
 
         private static CoroutineRunner2 Instance = new CoroutineRunner2();
         private static LinkedList<Coroutine2> _coroutines = new LinkedList<Coroutine2>();
-        private Thread _coroutineRunnerThread;
+        private
+#if DOTNET45ABC
+            Task
+#else
+            Thread
+#endif
+            _coroutineRunnerThread;
+
         private CoroutineRunner2()
         {
             DoLoopTaskAsync();
         }
 
+        /// <summary>
+        /// 使用Task和Thread的区别：
+        /// Task时，单进程性能会更高（比Thread多50%），可能由于跟其它Task拼抢切换原因，多进程时会大大影响速度
+        /// Thread时，由于独霸一个线程，在多进程时性能更好
+        /// </summary>
         void DoLoopTaskAsync()
         {
-            _coroutineRunnerThread = new Thread(() =>
-            {
-                while (true)
+            _coroutineRunnerThread =
+#if DOTNET45ABC
+                Task.Run(() =>
+
+#else
+                new Thread(()=>
+#endif
                 {
-                    lock (_coroutines)
+                    while (true)
                     {
-                        var node = _coroutines.First;
-                        if (node != null)
+                        lock (_coroutines)
                         {
-                            do
+                            var node = _coroutines.First;
+                            if (node != null)
                             {
-                                var co = node.Value;
-                                if (!co.MoveNext())
+                                do
                                 {
-                                    // 恢复父协程
-                                    if (co.ParentCoroutine != null)
+                                    var co = node.Value;
+                                    if (!co.MoveNext())
                                     {
-                                        _coroutines.AddAfter(node, co.ParentCoroutine);
-                                    }
+                                        // 恢复父协程
+                                        if (co.ParentCoroutine != null)
+                                        {
+                                            _coroutines.AddAfter(node, co.ParentCoroutine);
+                                        }
 
-                                    // 删除当前完成协程
-                                    var lastNode = node;
-                                    node = node.Next;  // 紧接着继续父协程
-                                    _coroutines.Remove(lastNode);
-                                }
-                                else
-                                {
-                                    
-                                    if (co.OnYield != null)
-                                        co.OnYield(co.Current);
-                                    if (co.Current is Coroutine2)
-                                    {
-                                        // 如果Current是一个Coroutine，当前Coroutine离队，作为它的NextCoroutine...
-                                        // 父协程存起来, 移除父协程
-                                        // 这里没必要重新AddAfter 子协程，因为子协程的启动(Coroutine.Start)已经自动加入到队列了
-                                        var subCoroutine = co.Current as Coroutine2;
-                                        subCoroutine.ParentCoroutine = co; 
-
+                                        // 删除当前完成协程
                                         var lastNode = node;
+                                        node = node.Next;  // 紧接着继续父协程
                                         _coroutines.Remove(lastNode);
-
                                     }
-                                    node = node.Next;
+                                    else
+                                    {
+
+                                        if (co.OnYield != null)
+                                            co.OnYield(co.Current);
+                                        if (co.Current is Coroutine2)
+                                        {
+                                            // 如果Current是一个Coroutine，当前Coroutine离队，作为它的NextCoroutine...
+                                            // 父协程存起来, 移除父协程
+                                            // 这里没必要重新AddAfter 子协程，因为子协程的启动(Coroutine.Start)已经自动加入到队列了
+                                            var subCoroutine = co.Current as Coroutine2;
+                                            subCoroutine.ParentCoroutine = co;
+
+                                            var lastNode = node;
+                                            _coroutines.Remove(lastNode);
+
+                                        }
+                                        node = node.Next;
+                                    }
+
                                 }
-
+                                while (node != null);
                             }
-                            while (node != null);
+
                         }
-
+#if DOTNET45ABC
+                        Task.Delay(HeartbeatMilliseconds);
+#else
+                        Thread.Sleep(HeartbeatMilliseconds);
+#endif
                     }
+                });
 
-                    Thread.Sleep(HeartbeatMilliseconds);
-                }
-            });
+#if !DOTNET45ABC
             _coroutineRunnerThread.Start();
+#endif
         }
 
         /// <summary>

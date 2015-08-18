@@ -28,11 +28,9 @@ namespace ExampleProjectLib
 
         public async Task<LoginResProto> Login(int id)
         {
-            var loginRes = Coroutine<LoginResProto>.Start(_gateClient.Call<LoginResProto>("Login", id));
-            while (!loginRes.IsFinished)
-                await Task.Delay(1);
-
-            return loginRes.Result;
+            var loginRes = await _gateClient.CallAsync<LoginResProto>("Login", id);
+            
+            return loginRes;
         }
 
         public IEnumerator Login(CoroutineResult<LoginResProto> result, int id)

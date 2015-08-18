@@ -97,7 +97,19 @@ namespace Cosmos.Rpc
         //    Console.WriteLine("Topic: {0}", messageTopicReceived);
         //    Console.WriteLine("Message: {0}", messageReceived);
         //}
+        protected async Task<TResponse> RequestAsync<TRequest, TResponse>(TRequest obj)
+        {
+            var reqData = MsgPackTool.GetBytes(obj);
+            var resData = Coroutine<byte[]>.Start(Request(reqData));
+            while (!resData.IsFinished)
+                await Task.Delay(1);
 
+            if (resData.Result == null)
+            {
+                return default(TResponse);
+            }
+            return MsgPackTool.GetMsg<TResponse>(resData.Result);
+        }
         protected IEnumerator<TResponse> Request<TRequest, TResponse>(TRequest obj)
         {
             var reqData = MsgPackTool.GetBytes(obj);
@@ -113,23 +125,31 @@ namespace Cosmos.Rpc
             yield return MsgPackTool.GetMsg<TResponse>(resData.Result);
         }
 
+        /// <summary>
+        /// 创建请求消息
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private byte[] CreateRequestMsg(byte[] obj)
+        {
+            var requestMsg = new BaseRequestMsg()
+            {
+                SessionToken = SessionToken,
+                RequestToken = BaseNetMqServer.GenerateRequestKey(), //Path.GetRandomFileName(),
+                Data = obj,
+            };
+
+            return MsgPackTool.GetBytes(requestMsg);
+        } 
+
         protected IEnumerator<byte[]> Request(byte[] obj)
         {
             var retryCount = 5;
             while (retryCount > 0)
             {
-                var requestMsg = new BaseRequestMsg()
-                {
-                    SessionToken = SessionToken,
-                    RequestToken = BaseNetMqServer.GenerateRequestKey(), //Path.GetRandomFileName(),
-                    Data = obj,
-                };
+                var bytes = CreateRequestMsg(obj);
 
-
-                var bytes = MsgPackTool.GetBytes(requestMsg);
-                //mqMsg.Append(requestMsg.RequestToken);
                 // We send a request, then we work to get a reply
-
                 if (!_requestSocket.Send(new ZFrame(bytes), out error))
                 {
                     if (error == ZError.ETERM)
@@ -139,20 +159,12 @@ namespace Cosmos.Rpc
                 var poll = ZPollItem.CreateReceiver();
                 ZMessage incoming;
 
-                yield return null;
-
                 bool result = false;
                 var pollStartTime = DateTime.UtcNow;
                 var timeoutTime = 5f;
                 do
                 {
-                    result = _requestSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(1000));
-
-                    if (result)
-                    {
-                        int i;
-                        i = 0;
-                    }
+                    result = _requestSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(1));
                 } while (
                     !result && 
                     (DateTime.UtcNow - pollStartTime).TotalSeconds < timeoutTime); // timeout
@@ -212,12 +224,89 @@ namespace Cosmos.Rpc
             yield return null;
         }
 
-        //private void OnRequestReceiveReady(object sender, NetMQSocketEventArgs e)
-        //{
-        //    var recvMessage = _requestSocket.ReceiveMessage();
-        //    var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(recvMessage.Last.Buffer);
-        //    _responses[recvMsg.RequestToken] = recvMsg;
-        //}
+        protected async Task<byte[]> RequestAsync(byte[] obj)
+        {
+            var retryCount = 5;
+            while (retryCount > 0)
+            {
+                var bytes = CreateRequestMsg(obj);
+
+                // We send a request, then we work to get a reply
+                if (!_requestSocket.Send(new ZFrame(bytes), out error))
+                {
+                    if (error == ZError.ETERM)
+                        continue;    // Interrupted
+                    throw new ZException(error);
+                }
+                var poll = ZPollItem.CreateReceiver();
+                ZMessage incoming;
+
+
+                bool result = false;
+                var pollStartTime = DateTime.UtcNow;
+                var timeoutTime = 5f;
+                do
+                {
+                    await Task.Delay(1);
+
+                    result = _requestSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(1));
+                } while (
+                    !result &&
+                    (DateTime.UtcNow - pollStartTime).TotalSeconds < timeoutTime); // timeout
+
+                if (!result)
+                {
+                    Logger.Error("超时重试");
+                    if (error == ZError.EAGAIN)
+                    {
+                        if (--retryCount == 0)
+                        {
+                            Console.WriteLine("E: server seems to be offline, abandoning");
+                            break;
+                        }
+                        // Old socket is confused; close it and open a new one
+                        _requestSocket.Dispose();
+                        if (null == (_requestSocket = CreateSocket(out error)))
+                        {
+                            if (error == ZError.ETERM)
+                            {
+                                Logger.Error("ETERM!");
+                                break; // Interrupted
+                            }
+                            throw new ZException(error);
+                        }
+
+                        Console.WriteLine("I: reconnected");
+
+                        continue;
+                    }
+                    if (error == ZError.ETERM)
+                    {
+                        Logger.Error("ETERM!!");
+                        break; // Interrupted
+                    }
+                    throw new ZException(error);
+                }
+                else
+                {
+                    using (incoming)
+                    {
+                        // We got a reply from the server
+                        //int incoming_sequence = incoming[0].ReadInt32();
+                        //var recvMessage = _requestSocket.ReceiveMessage();
+                        var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(incoming[0].Read());
+                        _responses[recvMsg.RequestToken] = recvMsg;
+                        SessionToken = recvMsg.SessionToken;
+                        if (string.IsNullOrEmpty(SessionToken))
+                            throw new Exception(string.Format("Error Session token when get response"));
+
+                        return recvMsg.Data;
+                    }
+                }
+            }
+
+            return null;
+        }
 
         #region Boardcast, Event listen
 
