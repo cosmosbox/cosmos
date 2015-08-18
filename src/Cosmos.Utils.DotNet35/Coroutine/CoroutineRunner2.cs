@@ -6,13 +6,6 @@ using System.Threading;
 
 namespace Cosmos.Utils
 {
-    public enum CoroutineState
-    {
-        Error,
-        Timeout,
-        Finish
-    }
-
     internal class CoroutineRunner2
     {
         /// <summary>

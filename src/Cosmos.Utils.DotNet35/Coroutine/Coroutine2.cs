@@ -70,9 +70,16 @@ namespace Cosmos.Utils
 
     }
 
+    //public enum CoroutineState
+    //{
+    //    Error,
+    //    Timeout,
+    //    Finish
+    //}
+
     public class CoroutineResult
     {
-        public CoroutineState State;
+        //public CoroutineState State;
         internal protected object InnerResult;
     }
     public class CoroutineResult<T> : CoroutineResult
