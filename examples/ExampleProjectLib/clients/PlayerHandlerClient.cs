@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -9,7 +11,7 @@ using Cosmos.Utils;
 
 namespace ExampleProjectLib
 {
-    public class PlayerHandlerClient : IGameHandler
+    public class PlayerHandlerClient
     {
         private HandlerClient _handlerClient;
         public PlayerHandlerClient(string host, int port, int subcribePort)
@@ -28,24 +30,37 @@ namespace ExampleProjectLib
             _handlerClient.Subcribe("player-xxxxx");
         }
 
-        public bool EnterLevel(string sessionToken, int levelTypeId)
+        public class EnterLevelParam
         {
-            var task = Coroutine<bool>.Start(_handlerClient.Call<bool>("EnterLevel", sessionToken, levelTypeId));
-            while (!task.IsFinished)
-            {
-                Thread.Sleep(1);
-            }
-            return task.Result;
+            public string SessionToken;
+            public int LevelTypeId;
         }
 
-        public bool FinishLevel(string sessionToken, int levelTypeId, bool isSuccess)
+        public IEnumerator EnterLevel(CoroutineResult<bool> result, EnterLevelParam param)//string sessionToken, int levelTypeId)
         {
-            var task = Coroutine<bool>.Start(_handlerClient.Call<bool>("FinishLevel", sessionToken, levelTypeId, isSuccess));
+            var task = Coroutine<bool>.Start(_handlerClient.Call<bool>("EnterLevel", param.SessionToken, param.LevelTypeId));
             while (!task.IsFinished)
             {
-                Thread.Sleep(1);
+                yield return null;
             }
-            return task.Result;
+
+            result.Result = task.Result;
+        }
+
+        public class FinishLevelParam
+        {
+            public string SessionToken;
+            public int LevelTypeId;
+            public bool IsSuccess;
+        }
+        public IEnumerator FinishLevel(CoroutineResult<bool> result, FinishLevelParam param)
+        {
+            var task = Coroutine<bool>.Start(_handlerClient.Call<bool>("FinishLevel", param.SessionToken, param.LevelTypeId, param.IsSuccess));
+            while (!task.IsFinished)
+            {
+                yield return null;
+            }
+            result.Result = task.Result;
         }
 
         /// <summary>

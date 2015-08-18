@@ -20,7 +20,7 @@ namespace ExampleProjectLib
             new Thread(() =>
             {
                 int id = 0;
-                while (id < 1)
+                while (id < 200)
                 {
                     id++;
                     var id_ = id;
@@ -81,15 +81,28 @@ namespace ExampleProjectLib
                 // Enter Level
                 var rand = new Random();
                 var randLevelId = rand.Next(1, 100000);
-                gameClient.EnterLevel(sessionToken, randLevelId);
+                yield return Coroutine2.Start<bool, PlayerHandlerClient.EnterLevelParam>(
+                    gameClient.EnterLevel,
+                    new PlayerHandlerClient.EnterLevelParam
+                    {
+                        SessionToken = sessionToken,
+                        LevelTypeId = randLevelId
+                    });
+
+                _callCount++;
 
                 // 5s in level 
                 yield return null;
 
                 //Logger.Info("FinishLevel from Id: {0}, Loop: {1}", id, i);
                 // Finish Level
-                gameClient.FinishLevel(sessionToken, randLevelId, true);
-
+                yield return Coroutine2.Start<bool, PlayerHandlerClient.FinishLevelParam>(gameClient.FinishLevel,
+                        new PlayerHandlerClient.FinishLevelParam()
+                        {
+                            SessionToken = sessionToken,
+                            IsSuccess = true,
+                            LevelTypeId = randLevelId,
+                        });
 
                 _callCount++;
             }
