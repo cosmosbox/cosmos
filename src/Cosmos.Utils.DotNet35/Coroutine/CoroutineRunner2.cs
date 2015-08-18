@@ -91,11 +91,10 @@ namespace Cosmos.Utils
         {
             HeartbeatMilliseconds = ms;
         }
-
-        public static Coroutine2<T> StartCo<T>(Coroutine2.CoroutineDelegate<T> coroutine, object[] args)
+        public static Coroutine2<T> StartCo<T, P>(Coroutine2.CoroutineDelegate<T, P> coroutine, P param)
         {
             var coResult = new CoroutineResult<T>();
-            var enumtor = coroutine(coResult, args);
+            var enumtor = coroutine(coResult, param);
             var co = new Coroutine2<T>(enumtor, coResult);
 
             lock (_coroutines)

@@ -1,18 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Cosmos.Utils;
-using MsgPack.Serialization;
-using NetMQ;
-using NetMQ.Actors;
-using NetMQ.Sockets;
 using NLog;
-using NLog.LayoutRenderers;
 using ZeroMQ;
 
 namespace Cosmos.Rpc
@@ -114,10 +105,10 @@ namespace Cosmos.Rpc
         //    _pubSocket.SendMore(topicName).Send(data);
         //}
 
+        List<string> workerQueue = new List<string>();
+
         private void MainLoop()
         {
-            var workerQueue = new List<string>();
-
             ZError error;
             ZMessage incoming;
             var poll = ZPollItem.CreateReceiver();
@@ -269,9 +260,6 @@ namespace Cosmos.Rpc
 
         public void Dispose()
         {
-            //_poller.RemoveSocket(_responseSocket);
-
-            //_responseSocket.Disconnect();
             _responseSocket.Dispose();
             _backendSocket.Dispose();
             foreach (var worker in _workers)
@@ -279,11 +267,6 @@ namespace Cosmos.Rpc
                 worker.Dispose();
             }
             _workers.Clear();
-
-            //_poller.CancelAndJoin();
-            //_poller.Dispose();
-
-            //_pollerTask.Dispose();
         }
 
         /// <summary>

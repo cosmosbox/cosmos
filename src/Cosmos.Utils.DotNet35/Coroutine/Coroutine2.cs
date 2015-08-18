@@ -36,7 +36,7 @@ namespace Cosmos.Utils
 
         public bool IsFinished { get; private set; }
 
-        public delegate IEnumerator CoroutineDelegate<T>(CoroutineResult<T> result, object param);
+        public delegate IEnumerator CoroutineDelegate<T, P>(CoroutineResult<T> result, P param);
 
         internal bool MoveNext()
         {
@@ -63,11 +63,19 @@ namespace Cosmos.Utils
                 return Enumtor.Current;
             }
         }
-        public static Coroutine2<T> Start<T>(CoroutineDelegate<T> coroutineFunc, params object[] args)
+        public static Coroutine2<T> Start<T, P>(CoroutineDelegate<T, P> coroutineFunc, P param = default(P))
         {
-            return CoroutineRunner2.StartCo<T>(coroutineFunc, args);
+            return CoroutineRunner2.StartCo<T, P>(coroutineFunc, param);
         }
 
+        public static Coroutine2<T> Start<T>(CoroutineDelegate<T, object> coroutineFunc, object param = default(object))
+        {
+            return CoroutineRunner2.StartCo<T, object>(coroutineFunc, param);
+        }
+        public static Coroutine2 Start(CoroutineDelegate<object, object> coroutineFunc, object param = default(object))
+        {
+            return CoroutineRunner2.StartCo<object, object>(coroutineFunc, param);
+        }
     }
 
     //public enum CoroutineState
