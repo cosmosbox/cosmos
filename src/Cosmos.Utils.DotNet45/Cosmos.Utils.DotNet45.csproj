@@ -40,12 +40,22 @@
     <Compile Include="..\Cosmos.Utils.DotNet35\Coroutine\Coroutine.cs">
       <Link>Coroutine\Coroutine.cs</Link>
     </Compile>
+    <Compile Include="..\Cosmos.Utils.DotNet35\Coroutine\Coroutine2.cs">
+      <Link>Coroutine\Coroutine2.cs</Link>
+    </Compile>
     <Compile Include="..\Cosmos.Utils.DotNet35\Coroutine\CoroutineRunner.cs">
       <Link>Coroutine\CoroutineRunner.cs</Link>
     </Compile>
+    <Compile Include="..\Cosmos.Utils.DotNet35\Coroutine\CoroutineRunner2.cs">
+      <Link>Coroutine\CoroutineRunner2.cs</Link>
+    </Compile>
+    <Compile Include="..\Cosmos.Utils.DotNet35\Md5Util.cs">
+      <Link>Md5Util.cs</Link>
+    </Compile>
+    <Compile Include="..\Cosmos.Utils.DotNet35\NetTool.cs">
+      <Link>NetTool.cs</Link>
+    </Compile>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Md5Util.cs" />
-    <Compile Include="NetTool.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
