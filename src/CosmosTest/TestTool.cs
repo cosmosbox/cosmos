@@ -21,9 +21,12 @@ namespace CosmosTest
             var i = 0;
             co.OnYield += (obj) =>
             {
-                var ret = (int)obj;
-                Assert.AreEqual(ret, i);  // 约4秒
-                i++;
+                if (obj is int)
+                {
+                    var ret = (int)obj;
+                    Assert.AreEqual(ret, i);  // 约4秒
+                    i++;
+                }
             };
 
             await Task.Run(() =>
@@ -46,7 +49,7 @@ namespace CosmosTest
             }
             var co2 = Coroutine2.Start<string>(Co2);
             yield return co2;
-            Assert.AreEqual("TestString", co2.Result2);
+            Assert.AreEqual("TestString", co2.Result);
 
             result.Result = 100;
         }
@@ -58,6 +61,19 @@ namespace CosmosTest
                 yield return i;
             }
             result.Result = "TestString";
+
+            var co = Coroutine2.Start<long>(Co3);
+            yield return co;
+            Assert.AreEqual(long.MaxValue, co.Result);
+        }
+
+        IEnumerator Co3(CoroutineResult<long> resulter, object param)
+        {
+            for (var i = 0; i < 100; i++)
+            {
+                yield return i;
+            }
+            resulter.Result = long.MaxValue;
         }
 
         [Test()]

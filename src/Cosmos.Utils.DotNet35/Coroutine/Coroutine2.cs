@@ -14,14 +14,15 @@ namespace Cosmos.Utils
         {
         }
 
-        public T Result2
+        public T Result
         {
-            get { return (T) Result; }
+            get { return (T) InnerResult; }
         }
     }
 
     public class Coroutine2
     {
+        internal Coroutine2 ParentCoroutine;
         internal IEnumerator Enumtor;
         protected Coroutine2(IEnumerator enumtor, CoroutineResult resulter)
         {
@@ -33,7 +34,7 @@ namespace Cosmos.Utils
          
         public Action<object> OnYield;
 
-        public bool IsFinished { get; internal set; }
+        public bool IsFinished { get; private set; }
 
         public delegate IEnumerator CoroutineDelegate<T>(CoroutineResult<T> result, object param);
 
@@ -46,7 +47,7 @@ namespace Cosmos.Utils
             return r;
         }
 
-        public object Result
+        protected object InnerResult
         {
             get
             {

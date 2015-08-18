@@ -45,17 +45,34 @@ namespace Cosmos.Utils
                                 var co = node.Value;
                                 if (!co.MoveNext())
                                 {
-                                    co.IsFinished = true;
+                                    // 恢复父协程
+                                    if (co.ParentCoroutine != null)
+                                    {
+                                        _coroutines.AddAfter(node, co.ParentCoroutine);
+                                    }
+
+                                    // 删除当前完成协程
                                     var lastNode = node;
-                                    node = node.Next;
+                                    node = node.Next;  // 紧接着继续父协程
                                     _coroutines.Remove(lastNode);
                                 }
                                 else
                                 {
-                                    // TODO: 如果Current是一个Coroutine，塞进队列，当前Coroutine离队，作为它的NextCoroutine...
+                                    
                                     if (co.OnYield != null)
                                         co.OnYield(co.Current);
+                                    if (co.Current is Coroutine2)
+                                    {
+                                        // 如果Current是一个Coroutine，当前Coroutine离队，作为它的NextCoroutine...
+                                        // 父协程存起来, 移除父协程
+                                        // 这里没必要重新AddAfter 子协程，因为子协程的启动(Coroutine.Start)已经自动加入到队列了
+                                        var subCoroutine = co.Current as Coroutine2;
+                                        subCoroutine.ParentCoroutine = co; 
 
+                                        var lastNode = node;
+                                        _coroutines.Remove(lastNode);
+
+                                    }
                                     node = node.Next;
                                 }
 
