@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,13 +26,23 @@ namespace ExampleProjectLib
             //_gateClient.Call<LoginResProto>()
         }
 
-        public IEnumerator<LoginResProto> Login(int id)
+        public async Task<LoginResProto> Login(int id)
         {
             var loginRes = Coroutine<LoginResProto>.Start(_gateClient.Call<LoginResProto>("Login", id));
             while (!loginRes.IsFinished)
+                await Task.Delay(1);
+
+            return loginRes.Result;
+        }
+
+        public IEnumerator Login(CoroutineResult<LoginResProto> result, int id)
+        {
+            var loginRes = Coroutine<LoginResProto>.Start(_gateClient.Call<LoginResProto>("Login", id));
+
+            while (!loginRes.IsFinished)
                 yield return null;
 
-            yield return loginRes.Result;
+            result.Result = loginRes.Result;
         }
 
         public void Dispose()

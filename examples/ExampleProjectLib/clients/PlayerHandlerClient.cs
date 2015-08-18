@@ -30,21 +30,15 @@ namespace ExampleProjectLib
             _handlerClient.Subcribe("player-xxxxx");
         }
 
-        public class EnterLevelParam
+        public async Task<bool> EnterLevel(string sessionToken, int levelTypeId)//string sessionToken, int levelTypeId)
         {
-            public string SessionToken;
-            public int LevelTypeId;
-        }
-
-        public IEnumerator EnterLevel(CoroutineResult<bool> result, EnterLevelParam param)//string sessionToken, int levelTypeId)
-        {
-            var task = Coroutine<bool>.Start(_handlerClient.Call<bool>("EnterLevel", param.SessionToken, param.LevelTypeId));
+            var task = Coroutine<bool>.Start(_handlerClient.Call<bool>("EnterLevel", sessionToken, levelTypeId));
             while (!task.IsFinished)
             {
-                yield return null;
+                await Task.Delay(0);
             }
 
-            result.Result = task.Result;
+            return task.Result;
         }
 
         public class FinishLevelParam
@@ -53,8 +47,20 @@ namespace ExampleProjectLib
             public int LevelTypeId;
             public bool IsSuccess;
         }
-        public IEnumerator FinishLevel(CoroutineResult<bool> result, FinishLevelParam param)
+
+        public async Task<bool> FinishLevel(FinishLevelParam param)
         {
+            var task = Coroutine<bool>.Start(_handlerClient.Call<bool>("FinishLevel", param.SessionToken, param.LevelTypeId, param.IsSuccess));
+            while (!task.IsFinished)
+            {
+                await Task.Delay(1);
+            }
+            return task.Result;
+        }
+
+        public IEnumerator FinishLevel(CoroutineResult<bool> result, object param_)
+        {
+            var param = (PlayerHandlerClient.FinishLevelParam)param_;
             var task = Coroutine<bool>.Start(_handlerClient.Call<bool>("FinishLevel", param.SessionToken, param.LevelTypeId, param.IsSuccess));
             while (!task.IsFinished)
             {
@@ -67,14 +73,14 @@ namespace ExampleProjectLib
         /// 随机请求一次，获取SessionToken
         /// </summary>
         /// <returns></returns>
-        public void Handshake()
+        public async Task Handshake()
         {
             if (string.IsNullOrEmpty(SessionToken))
             {
                 var task = Coroutine<object>.Start(_handlerClient.Call<object>("Handshake"));
                 while (!task.IsFinished)
                 {
-                    Thread.Sleep(1);
+                    await Task.Delay(1);
                 }
             }
         }

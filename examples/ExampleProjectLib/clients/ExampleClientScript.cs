@@ -20,11 +20,11 @@ namespace ExampleProjectLib
             new Thread(() =>
             {
                 int id = 0;
-                while (id < 200)
+                while (id < 1)
                 {
                     id++;
                     var id_ = id;
-                    Coroutine2.Start<object, int>(ClientLoop);
+                    ClientLoop(id_);
                     //Thread.Sleep(100); // 1秒登录一个
                 }
 
@@ -39,7 +39,7 @@ namespace ExampleProjectLib
 
         }
 
-        IEnumerator ClientLoop(CoroutineResult<object> result, int id)
+        async void ClientLoop(int id)
         {
             Logger.Warn("Now Start Client: {0}", id);
             // Login
@@ -47,12 +47,9 @@ namespace ExampleProjectLib
             LoginResProto loginRes;
             using (var client = new GateClient("127.0.0.1", 14002))
             {
-                var co = Coroutine<LoginResProto>.Start(client.Login(id));
-                while (!co.IsFinished)
-                    yield return null;
-                loginRes = co.Result;
+                loginRes = await client.Login(id);
                 if (loginRes == null)
-                    yield break;
+                    return;
 
                 if (loginRes.Id != id)
                     throw new Exception("Error id");
@@ -68,7 +65,7 @@ namespace ExampleProjectLib
             var sessionToken = gameClient.SessionToken;
             if (string.IsNullOrEmpty(sessionToken))
             {
-                gameClient.Handshake();
+                await gameClient.Handshake();
                 sessionToken = gameClient.SessionToken;
 
                 if (string.IsNullOrEmpty(sessionToken))
@@ -77,26 +74,15 @@ namespace ExampleProjectLib
             // 操作100次后结束客户端
             for (var i = 0; i < int.MaxValue; i++)
             {
-                //Logger.Info("EnterLevel from Id: {0}, Loop: {1}", id, i);
-                // Enter Level
                 var rand = new Random();
                 var randLevelId = rand.Next(1, 100000);
-                yield return Coroutine2.Start<bool, PlayerHandlerClient.EnterLevelParam>(
-                    gameClient.EnterLevel,
-                    new PlayerHandlerClient.EnterLevelParam
-                    {
-                        SessionToken = sessionToken,
-                        LevelTypeId = randLevelId
-                    });
+                await gameClient.EnterLevel(sessionToken, randLevelId);
 
                 _callCount++;
 
                 // 5s in level 
-                yield return null;
-
-                //Logger.Info("FinishLevel from Id: {0}, Loop: {1}", id, i);
-                // Finish Level
-                yield return Coroutine2.Start<bool, PlayerHandlerClient.FinishLevelParam>(gameClient.FinishLevel,
+                await Task.Delay(0);
+                var co2 = Coroutine2.Start<bool>(gameClient.FinishLevel,
                         new PlayerHandlerClient.FinishLevelParam()
                         {
                             SessionToken = sessionToken,
@@ -104,11 +90,14 @@ namespace ExampleProjectLib
                             LevelTypeId = randLevelId,
                         });
 
+                while (!co2.IsFinished)
+                    await Task.Delay(0);
+
                 _callCount++;
             }
             // Logout, Append player result
             Logger.Warn("Now End Client.................. {0}", id);
-            yield break;
+            
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Cosmos.Utils
     {
         internal Coroutine2 ParentCoroutine;
         internal IEnumerator Enumtor;
-        protected Coroutine2(IEnumerator enumtor, CoroutineResult resulter)
+        internal Coroutine2(IEnumerator enumtor, CoroutineResult resulter)
         {
             Enumtor = enumtor;
             Resulter = resulter;
@@ -65,16 +65,16 @@ namespace Cosmos.Utils
         }
         public static Coroutine2<T> Start<T, P>(CoroutineDelegate<T, P> coroutineFunc, P param = default(P))
         {
-            return CoroutineRunner2.StartCo<T, P>(coroutineFunc, param);
+            return CoroutineRunner2.Start<T, P>(coroutineFunc, param);
         }
 
         public static Coroutine2<T> Start<T>(CoroutineDelegate<T, object> coroutineFunc, object param = default(object))
         {
-            return CoroutineRunner2.StartCo<T, object>(coroutineFunc, param);
+            return CoroutineRunner2.Start<T, object>(coroutineFunc, param);
         }
         public static Coroutine2 Start(CoroutineDelegate<object, object> coroutineFunc, object param = default(object))
         {
-            return CoroutineRunner2.StartCo<object, object>(coroutineFunc, param);
+            return CoroutineRunner2.Start<object, object>(coroutineFunc, param);
         }
     }
 

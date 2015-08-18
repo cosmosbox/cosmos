@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -91,11 +92,21 @@ namespace Cosmos.Utils
         {
             HeartbeatMilliseconds = ms;
         }
-        public static Coroutine2<T> StartCo<T, P>(Coroutine2.CoroutineDelegate<T, P> coroutine, P param)
+        public static Coroutine2<TResult> Start<TResult, TParam>(Coroutine2.CoroutineDelegate<TResult, TParam> coroutine, TParam param)
         {
-            var coResult = new CoroutineResult<T>();
+            var coResult = new CoroutineResult<TResult>();
             var enumtor = coroutine(coResult, param);
-            var co = new Coroutine2<T>(enumtor, coResult);
+            var co = new Coroutine2<TResult>(enumtor, coResult);
+
+            lock (_coroutines)
+            {
+                _coroutines.AddLast(co);
+            }
+            return co;
+        }
+        public static Coroutine2 Start(IEnumerator enumtor)
+        {
+            var co = new Coroutine2(enumtor, null);
 
             lock (_coroutines)
             {
