@@ -20,9 +20,11 @@ namespace Cosmos.Rpc
             workerSocket.Connect(backendAddr);
 
             new Thread(MainLoop).Start();
+            //ThreadPool.QueueUserWorkItem(new WaitCallback(MainLoop), null);
+
         }
 
-        void MainLoop()
+        void MainLoop(object obj)
         {
             using (var outgoing = new ZFrame("READY"))
             {
@@ -47,6 +49,7 @@ namespace Cosmos.Rpc
                     // Send message back
                     //worker.Send(incoming);
                     _server.OnRecvMsg(this, incoming);
+                    
                 }
             }
         }

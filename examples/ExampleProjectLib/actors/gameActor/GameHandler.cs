@@ -56,6 +56,11 @@ namespace ExampleProjectLib
         /// <param name="isSuccess"></param>
         public bool FinishLevel(string sessionToken, int levelTypeId, bool isSuccess)
         {
+            //var abc = 0;
+            //for (var i = 0; i < 1000000; i++)
+            //{
+            //    abc += i;
+            //}
             return GetSession(sessionToken).Player.FinishLevel(levelTypeId, isSuccess);
         }
 

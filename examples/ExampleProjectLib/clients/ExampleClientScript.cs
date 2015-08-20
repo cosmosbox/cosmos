@@ -20,12 +20,14 @@ namespace ExampleProjectLib
             new Thread(() =>
             {
                 int id = 0;
-                while (id < 30)
+                while (id < 200)
                 {
                     id++;
                     var id_ = id;
                     //ClientLoopAsync(id_);  // 10 client -> 200 - 250 per second,  30 clients -> 450 - 500 per seconds, not stable
                     Coroutine2.Start(ClientLoopCo(id_));  // 10 clients -> 200 - 250 per second, 30 clients -> 300 per seconds(one thread, more thread the same)
+
+                    //new Thread(ClientLoopThread).Start(id_);
 
                     //Thread.Sleep(100); // 1秒登录一个
                 }
@@ -40,7 +42,68 @@ namespace ExampleProjectLib
             }).Start();
 
         }
+        void ClientLoopThread(object oid)
+        {
+            var id = (int) oid;
 
+            Logger.Warn("Now Start Client: {0}", id);
+            // Login
+            string host;
+            LoginResProto loginRes;
+            using (var client = new GateClient("127.0.0.1", 14002))
+            {
+                var t = client.Login(id);
+                t.Wait();
+                loginRes = t.Result;
+                if (loginRes == null)
+                    return;
+
+                if (loginRes.Id != id)
+                    throw new Exception("Error id");
+                host = loginRes.GameServerHost;
+                if (host == "*")
+                {
+                    host = "127.0.0.1";
+                }
+            }
+
+            // Connect game server
+            var gameClient = new PlayerHandlerClient(host, loginRes.GameServerPort, loginRes.SubcribePort);
+            var sessionToken = gameClient.SessionToken;
+            if (string.IsNullOrEmpty(sessionToken))
+            {
+                gameClient.HandshakeAsync().Wait();
+                sessionToken = gameClient.SessionToken;
+
+                if (string.IsNullOrEmpty(sessionToken))
+                    throw new Exception("No SessionToken Error!");
+            }
+            // 操作100次后结束客户端
+            for (var i = 0; i < int.MaxValue; i++)
+            {
+                var rand = new Random();
+                var randLevelId = rand.Next(1, 100000);
+                gameClient.EnterLevel(sessionToken, randLevelId).Wait();
+
+                _callCount++;
+
+                // 5s in level 
+                //await Task.Delay(1);
+                Thread.Sleep(1);
+                gameClient.FinishLevel(sessionToken, randLevelId, true).Wait();
+
+                //var co2 = Coroutine2.Start<bool>(gameClient.FinishLevel,
+                //        );
+
+                //while (!co2.IsFinished)
+                //    await Task.Delay(0);
+
+                _callCount++;
+            }
+            // Logout, Append player result
+            Logger.Warn("Now End Client.................. {0}", id);
+
+        }
         async void ClientLoopAsync(int id)
         {
             Logger.Warn("Now Start Client: {0}", id);

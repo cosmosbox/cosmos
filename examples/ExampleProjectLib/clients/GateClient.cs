@@ -35,12 +35,13 @@ namespace ExampleProjectLib
 
         public IEnumerator Login(CoroutineResult<LoginResProto> result, int id)
         {
-            var loginRes = Coroutine<LoginResProto>.Start(_gateClient.Call<LoginResProto>("Login", id));
+            var resulter = new CoroutineResult<LoginResProto>();
+            var loginRes = Coroutine2.Start(_gateClient.Call<LoginResProto>(resulter, "Login", id));
 
             while (!loginRes.IsFinished)
                 yield return null;
 
-            result.Result = loginRes.Result;
+            result.Result = resulter.Result;
         }
 
         public void Dispose()

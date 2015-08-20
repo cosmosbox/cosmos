@@ -31,24 +31,26 @@ namespace ExampleProjectLib
         }
         public IEnumerator EnterLevel(CoroutineResult<bool> result, string sessionToken, int levelTypeId)//string sessionToken, int levelTypeId)
         {
-            var task = Coroutine<bool>.Start(_handlerClient.Call<bool>("EnterLevel", sessionToken, levelTypeId));
+            var resulter = new CoroutineResult<bool>();
+            var task = Coroutine2.Start(_handlerClient.Call<bool>(resulter, "EnterLevel", sessionToken, levelTypeId));
             while (!task.IsFinished)
             {
                 yield return null;
             }
 
-            result.Result = task.Result;
+            result.Result = resulter.Result;
         }
 
         public async Task<bool> EnterLevel(string sessionToken, int levelTypeId)//string sessionToken, int levelTypeId)
         {
-            var task = Coroutine<bool>.Start(_handlerClient.Call<bool>("EnterLevel", sessionToken, levelTypeId));
+            var resulter = new CoroutineResult<bool>();
+            var task = Coroutine2.Start(_handlerClient.Call<bool>(resulter, "EnterLevel", sessionToken, levelTypeId));
             while (!task.IsFinished)
             {
                 await Task.Delay(1);
             }
 
-            return task.Result;
+            return  resulter.Result;
         }
 
         public class FinishLevelParam
@@ -68,12 +70,13 @@ namespace ExampleProjectLib
         public IEnumerator FinishLevel(CoroutineResult<bool> result, FinishLevelParam param_)
         {
             var param = (PlayerHandlerClient.FinishLevelParam)param_;
-            var task = Coroutine<bool>.Start(_handlerClient.Call<bool>("FinishLevel", param.SessionToken, param.LevelTypeId, param.IsSuccess));
+            var resulter = new CoroutineResult<bool>();
+            var task = Coroutine2.Start(_handlerClient.Call<bool>(resulter, "FinishLevel", param.SessionToken, param.LevelTypeId, param.IsSuccess));
             while (!task.IsFinished)
             {
                 yield return null;
             }
-            result.Result = task.Result;
+            result.Result = resulter.Result;
         }
 
         /// <summary>
@@ -84,7 +87,8 @@ namespace ExampleProjectLib
         {
             if (string.IsNullOrEmpty(SessionToken))
             {
-                var task = Coroutine<object>.Start(_handlerClient.Call<object>("Handshake"));
+                var resulter = new CoroutineResult<object>();
+                var task = Coroutine2.Start(_handlerClient.Call<object>(resulter, "Handshake"));
                 while (!task.IsFinished)
                 {
                     await Task.Delay(1);
@@ -95,7 +99,8 @@ namespace ExampleProjectLib
         {
             if (string.IsNullOrEmpty(SessionToken))
             {
-                var task = Coroutine<object>.Start(_handlerClient.Call<object>("Handshake"));
+                var resulter = new CoroutineResult<object>();
+                var task = Coroutine2.Start(_handlerClient.Call<object>(resulter, "Handshake"));
                 while (!task.IsFinished)
                 {
                     yield return null;

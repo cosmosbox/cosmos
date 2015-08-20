@@ -39,7 +39,7 @@ namespace Cosmos.Rpc
         private int CurWorkerIndex = 0; // I生成
 
         private List<BaseZmqWorker> _workers = new List<BaseZmqWorker>();
-        
+
 
         protected BaseNetMqServer(int responsePort = -1, int publishPort = 0, string host = "*")
         {
@@ -52,7 +52,7 @@ namespace Cosmos.Rpc
             InitWorkers();
 
             _responseSocket = new ZSocket(NetMqManager.Instance.Context, ZSocketType.ROUTER);
-            
+
 
             if (responsePort == -1)
             {
@@ -219,41 +219,45 @@ namespace Cosmos.Rpc
 
         internal void OnRecvMsg(BaseZmqWorker worker, ZMessage recvMsg)
         {
-            var startTime = DateTime.UtcNow;
             using (recvMsg)
             {
-                var clientAddr = recvMsg[0];
-                var clientData = recvMsg[2].Read();
-                var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(clientData);
-                var requestDataMsg = baseRequestMsg.Data;
-
-                var responseTask = ProcessRequest(requestDataMsg);
-                responseTask.Wait();
-                var responseMsg = responseTask.Result;
-
-                // if no session key, generate new
-                var sessionToken = baseRequestMsg.SessionToken;
-                if (string.IsNullOrEmpty(sessionToken))
+                var startTime = DateTime.UtcNow;
+                using (recvMsg)
                 {
-                    sessionToken = GenerateSessionKey();
+                    var clientAddr = recvMsg[0];
+                    var clientData = recvMsg[2].Read();
+                    var baseRequestMsg = MsgPackTool.GetMsg<BaseRequestMsg>(clientData);
+                    var requestDataMsg = baseRequestMsg.Data;
+
+                    var responseTask = ProcessRequest(requestDataMsg);
+                    responseTask.Wait();
+                    var responseMsg = responseTask.Result;
+
+                    // if no session key, generate new
+                    var sessionToken = baseRequestMsg.SessionToken;
+                    if (string.IsNullOrEmpty(sessionToken))
+                    {
+                        sessionToken = GenerateSessionKey();
+                    }
+                    var baseResponseMsg = new BaseResponseMsg()
+                    {
+                        SessionToken = sessionToken,
+                        RequestToken = baseRequestMsg.RequestToken,
+                        Data = responseMsg,
+                    };
+
+                    var sendData = MsgPackTool.GetBytes(baseResponseMsg);
+
+                    var messageToServer = new ZMessage();
+                    messageToServer.Append(clientAddr);
+                    messageToServer.Append(ZFrame.CreateEmpty());
+                    messageToServer.Append(new ZFrame(sendData));
+                    worker.workerSocket.SendMessage(messageToServer);
                 }
-                var baseResponseMsg = new BaseResponseMsg()
-                {
-                    SessionToken = sessionToken,
-                    RequestToken = baseRequestMsg.RequestToken,
-                    Data = responseMsg,
-                };
 
-                var sendData = MsgPackTool.GetBytes(baseResponseMsg);
-
-                var messageToServer = new ZMessage();
-                messageToServer.Append(clientAddr);
-                messageToServer.Append(ZFrame.CreateEmpty());
-                messageToServer.Append(new ZFrame(sendData));
-                worker.workerSocket.SendMessage(messageToServer);
+                Logger.Trace("Receive Msg and Send used Time: {0:F5}s", (DateTime.UtcNow - startTime).TotalSeconds);
             }
 
-            Logger.Trace("Receive Msg and Send used Time: {0:F5}s", (DateTime.UtcNow - startTime).TotalSeconds);
         }
 
         protected abstract Task<byte[]> ProcessRequest(byte[] requestDataMsg);

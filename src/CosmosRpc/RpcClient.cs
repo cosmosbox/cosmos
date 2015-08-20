@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -65,13 +66,14 @@ namespace Cosmos.Rpc
             yield return new RpcCallResult<T>(responseMsg.Result);
 
         }
-        public IEnumerator<T> Call<T>(string funcName, params object[] arguments)
+        public IEnumerator Call<T>(CoroutineResult<T> resulter, string funcName, params object[] arguments)
         {
             var result = Coroutine<RpcCallResult<T>>.Start(CallResult<T>(funcName, arguments));
             while (!result.IsFinished)
                 yield return default(T);
 
-            yield return result.Result.Value;
+            resulter.Result = result.Result.Value;
+            //yield return result.Result.Value;
         }
 
         public async Task<T> CallAsync<T>(string funcName, params object[] arguments)
