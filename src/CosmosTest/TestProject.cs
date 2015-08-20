@@ -28,9 +28,10 @@ namespace CosmosTest
             app.StartActor("gate-actor-1");
 
             var client = new HandlerClient("127.0.0.1", 13001);
-            var result = Coroutine<string>.Start(client.Call<string>("TestHandler"));
+            var resulter = new CoroutineResult<string>();
+            Coroutine2.Start(client.Call<string>(resulter, "TestHandler"));
 
-            Assert.AreEqual(result.Result, "TestHandlerString");
+            Assert.AreEqual(resulter.Result, "TestHandlerString");
             Assert.Pass();
         }
     }

@@ -109,12 +109,13 @@ namespace CosmosTest
 
             // Handler
             var client = new HandlerClient("127.0.0.1", 12311);
-            var result = Coroutine<string>.Start(client.Call<string>("Test"));
+            var resulter = new CoroutineResult<string>();
+            var result = Coroutine2.Start(client.Call<string>(resulter, "Test"));
             while (!result.IsFinished)
             {
                 yield return null;
             }
-            Assert.AreEqual(result.Result, "TestString");
+            Assert.AreEqual(resulter.Result, "TestString");
             Assert.Pass();
         }
 

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 #if DOTNET45
 using System.Threading.Tasks;
@@ -10,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace Cosmos.Utils
 {
-    internal class CoroutineContext
-    {
-        CoroutineContext()
-        {
+    //internal class CoroutineContext
+    //{
+    //    CoroutineContext()
+    //    {
 
-            var id2 = Thread.CurrentThread.ManagedThreadId;
-        }
-    }
+    //        var id2 = Thread.CurrentThread.ManagedThreadId;
+    //    }
+    //}
 
     internal class CoroutineRunner2
     {
@@ -27,8 +25,10 @@ namespace Cosmos.Utils
         /// </summary>
         private static int HeartbeatMilliseconds = 1;
 
-        private static CoroutineRunner2 Instance = new CoroutineRunner2();
-        private static LinkedList<Coroutine2> _coroutines = new LinkedList<Coroutine2>();
+        private static Dictionary<int, CoroutineRunner2> Pool = new Dictionary<int, CoroutineRunner2>();
+
+        private Queue<Coroutine2> _waitQueue = new Queue<Coroutine2>();
+        private LinkedList<Coroutine2> _coroutines = new LinkedList<Coroutine2>();
         private
 #if DOTNET45ABC
             Task
@@ -61,6 +61,15 @@ namespace Cosmos.Utils
                     {
                         lock (_coroutines)
                         {
+
+                            lock (_waitQueue)
+                            {
+                                while (_waitQueue.Count > 0)
+                                {
+                                    _coroutines.AddLast(_waitQueue.Dequeue());
+                                }
+                            }
+
                             var node = _coroutines.First;
                             if (node != null)
                             {
@@ -128,26 +137,44 @@ namespace Cosmos.Utils
         {
             HeartbeatMilliseconds = ms;
         }
+
+        static CoroutineRunner2 runner;
+        private static CoroutineRunner2 Get()
+        {
+            //CoroutineRunner2 runner;
+            //var tId = Thread.CurrentThread.ManagedThreadId;
+            //if (!Pool.TryGetValue(tId, out runner))
+            //{
+            //    runner = Pool[tId] = new CoroutineRunner2();
+            //}
+            if (runner == null)
+                runner = new CoroutineRunner2();
+            return runner;
+        }
         public static Coroutine2<TResult> Start<TResult, TParam>(Coroutine2.CoroutineDelegate<TResult, TParam> coroutine, TParam param)
         {
             var coResult = new CoroutineResult<TResult>();
             var enumtor = coroutine(coResult, param);
             var co = new Coroutine2<TResult>(enumtor, coResult);
-
-            lock (_coroutines)
+            var runner = Get();
+            lock (runner._coroutines)
             {
-                _coroutines.AddLast(co);
+                runner._coroutines.AddLast(co);
             }
             return co;
         }
         public static Coroutine2 Start(IEnumerator enumtor)
         {
             var co = new Coroutine2(enumtor, null);
-
-            lock (_coroutines)
+            var runner = Get();
+            lock (runner._waitQueue)
             {
-                _coroutines.AddLast(co);
+                runner._waitQueue.Enqueue(co);
             }
+            //lock (_coroutines)
+            //{
+            //    _coroutines.AddLast(co);
+            //}
             return co;
         }
     }

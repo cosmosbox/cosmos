@@ -2,12 +2,16 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Cosmos.Rpc;
 using System.Threading.Tasks;
 using System.IO;
+using System.Threading;
 using Cosmos.Actor;
 using Cosmos.Utils;
 using MsgPack.Serialization;
+using NLog;
+
 namespace Cosmos.Test
 {
     [TestFixture()]
@@ -86,7 +90,9 @@ namespace Cosmos.Test
         [Test()]
         public void TestCallRpc()
         {
-            Coroutine<object>.Start(CoTestCallRpc());
+            var task = Coroutine<object>.Start(CoTestCallRpc());
+            while (!task.IsFinished)
+                Thread.Sleep(1);
         }
 
         public IEnumerator<object> CoTestCallRpc()
@@ -102,25 +108,26 @@ namespace Cosmos.Test
 
                 using (var client = new RpcClient("127.0.0.1", server.ResponsePort))
                 {
-                    var result = Coroutine<string>.Start(client.Call<string>("TestFunc", "ABC", "DEFG"));
+                    var resulter = new CoroutineResult<string>();
+                    var result = Coroutine2.Start(client.Call<string>(resulter, "TestFunc", "ABC", "DEFG"));
                     while (!result.IsFinished)
                         yield return null;
 
-                    Assert.AreEqual(result.Result, "ABCDEFG");
+                    Assert.AreEqual(resulter.Result, "ABCDEFG");
 
                     // continue client 1
                     var result2 = Coroutine<RpcCallResult<string>>.Start(client.CallResult<string>("TestFunc2", "ABC", 123));
                     while (!result2.IsFinished)
                         yield return null;
-
                     Assert.AreEqual(result2.Result.Value, "ABC123");
 
-                    var result3 = Coroutine<string>.Start(client.Call<string>("TestFunc3"));
+                    var resulter3 = new CoroutineResult<string>();
+                    var result3 = Coroutine2.Start(client.Call<string>(resulter, "TestFunc3"));
                     while (!result3.IsFinished)
                         yield return null;
                     //Assert.AreEqual(result3.IsCanceled, false);
                     //Assert.AreEqual(result3.IsFaulted, false);
-                    Assert.AreEqual(result3.Result, null);
+                    Assert.AreEqual(resulter.Result, null);
 
 
                     // client 2
