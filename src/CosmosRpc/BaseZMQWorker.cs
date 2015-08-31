@@ -12,6 +12,7 @@ namespace Cosmos.Rpc
     {
         internal ZSocket workerSocket;
         private BaseNetMqServer _server;
+        private Thread _workerThread;
         public BaseZmqWorker(BaseNetMqServer server, string backendAddr, int workerIndex)
         {
             _server = server;
@@ -19,7 +20,8 @@ namespace Cosmos.Rpc
             workerSocket.IdentityString = string.Format("{0}-{1}", server.ServerToken, workerIndex);
             workerSocket.Connect(backendAddr);
 
-            new Thread(MainLoop).Start();
+            _workerThread = new Thread(MainLoop);
+            _workerThread.Start();
             //ThreadPool.QueueUserWorkItem(new WaitCallback(MainLoop), null);
 
         }

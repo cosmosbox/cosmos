@@ -17,7 +17,10 @@ namespace Cosmos.Utils
     //    }
     //}
 
-    internal class CoroutineRunner2
+    /// <summary>
+    /// for coroutine2
+    /// </summary>
+    internal class CoroutineContext
     {
         /// <summary>
         /// 25 frame every seconds
@@ -25,7 +28,7 @@ namespace Cosmos.Utils
         /// </summary>
         private static int HeartbeatMilliseconds = 1;
 
-        private static Dictionary<int, CoroutineRunner2> Pool = new Dictionary<int, CoroutineRunner2>();
+        //private static Dictionary<int, CoroutineContext> Pool = new Dictionary<int, CoroutineContext>();
 
         private Queue<Coroutine2> _waitQueue = new Queue<Coroutine2>();
         private LinkedList<Coroutine2> _coroutines = new LinkedList<Coroutine2>();
@@ -37,7 +40,7 @@ namespace Cosmos.Utils
 #endif
             _coroutineRunnerThread;
 
-        private CoroutineRunner2()
+        private CoroutineContext()
         {
             DoLoopTaskAsync();
         }
@@ -54,20 +57,29 @@ namespace Cosmos.Utils
                 Task.Run(() =>
 
 #else
-                new Thread(()=>
+                new Thread(() =>
 #endif
                 {
                     while (true)
                     {
                         lock (_coroutines)
                         {
-
                             lock (_waitQueue)
                             {
                                 while (_waitQueue.Count > 0)
                                 {
                                     _coroutines.AddLast(_waitQueue.Dequeue());
                                 }
+                            }
+
+                            if (_coroutines.Count == 0)
+                            {
+#if DOTNET45ABC
+                                Task.Delay(HeartbeatMilliseconds);
+#else
+                                Thread.Sleep(HeartbeatMilliseconds);
+#endif
+                                continue;
                             }
 
                             var node = _coroutines.First;
@@ -114,11 +126,6 @@ namespace Cosmos.Utils
                             }
 
                         }
-#if DOTNET45ABC
-                        Task.Delay(HeartbeatMilliseconds);
-#else
-                        Thread.Sleep(HeartbeatMilliseconds);
-#endif
                     }
                 });
 
@@ -138,17 +145,17 @@ namespace Cosmos.Utils
             HeartbeatMilliseconds = ms;
         }
 
-        static CoroutineRunner2 runner;
-        private static CoroutineRunner2 Get()
+        static CoroutineContext runner;
+        private static CoroutineContext Get()
         {
-            //CoroutineRunner2 runner;
+            //CoroutineContext runner;
             //var tId = Thread.CurrentThread.ManagedThreadId;
             //if (!Pool.TryGetValue(tId, out runner))
             //{
-            //    runner = Pool[tId] = new CoroutineRunner2();
+            //    runner = Pool[tId] = new CoroutineContext();
             //}
             if (runner == null)
-                runner = new CoroutineRunner2();
+                runner = new CoroutineContext();
             return runner;
         }
         public static Coroutine2<TResult> Start<TResult, TParam>(Coroutine2.CoroutineDelegate<TResult, TParam> coroutine, TParam param)

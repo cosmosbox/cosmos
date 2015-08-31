@@ -20,12 +20,13 @@ namespace ExampleProjectLib
             new Thread(() =>
             {
                 int id = 0;
-                while (id < 50)
+                while (id < 10)
                 {
                     id++;
                     var id_ = id;
                     //ClientLoopAsync(id_);  // 10 client -> 200 - 250 per second,  30 clients -> 450 - 500 per seconds, not stable
-                    Coroutine2.Start(ClientLoopCo(id_));  // 10 clients -> 200 - 250 per second, 30 clients -> 300 per seconds(one thread, more thread the same)
+                    //Coroutine2.Start(ClientLoopCo(id_));  // 10 clients -> 200 - 250 per second, 30 clients -> 300 per seconds(one thread, more thread the same)
+                    Coroutine2.Start(TestLoop(id_));
 
                     //new Thread(ClientLoopThread).Start(id_);
 
@@ -160,6 +161,35 @@ namespace ExampleProjectLib
             // Logout, Append player result
             Logger.Warn("Now End Client.................. {0}", id);
             
+        }
+
+        private IEnumerator TestLoop(int id)
+        {
+            Logger.Warn("Now Start Client: {0}", id);
+            // Login
+            string host;
+            LoginResProto loginRes;
+            using (var client = new GateClient("127.0.0.1", 14002))
+            {
+                while (true)
+                {
+                    var co = Coroutine2.Start<LoginResProto, int>(client.Login, id);
+                    yield return co;
+                    loginRes = co.Result;
+                    if (loginRes == null)
+                        yield break;
+
+                    if (loginRes.Id != id)
+                        throw new Exception("Error id");
+                    host = loginRes.GameServerHost;
+                    if (host == "*")
+                    {
+                        host = "127.0.0.1";
+                    }
+                    _callCount++;
+                }
+
+            }
         }
 
         IEnumerator ClientLoopCo(int id)

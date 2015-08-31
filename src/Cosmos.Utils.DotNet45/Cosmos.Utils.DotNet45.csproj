@@ -43,11 +43,11 @@
     <Compile Include="..\Cosmos.Utils.DotNet35\Coroutine\Coroutine2.cs">
       <Link>Coroutine\Coroutine2.cs</Link>
     </Compile>
+    <Compile Include="..\Cosmos.Utils.DotNet35\Coroutine\CoroutineContext.cs">
+      <Link>Coroutine\CoroutineContext.cs</Link>
+    </Compile>
     <Compile Include="..\Cosmos.Utils.DotNet35\Coroutine\CoroutineRunner.cs">
       <Link>Coroutine\CoroutineRunner.cs</Link>
-    </Compile>
-    <Compile Include="..\Cosmos.Utils.DotNet35\Coroutine\CoroutineRunner2.cs">
-      <Link>Coroutine\CoroutineRunner2.cs</Link>
     </Compile>
     <Compile Include="..\Cosmos.Utils.DotNet35\Md5Util.cs">
       <Link>Md5Util.cs</Link>

@@ -40,7 +40,7 @@
     <Compile Include="Coroutine\Coroutine.cs" />
     <Compile Include="Coroutine\Coroutine2.cs" />
     <Compile Include="Coroutine\CoroutineRunner.cs" />
-    <Compile Include="Coroutine\CoroutineRunner2.cs" />
+    <Compile Include="Coroutine\CoroutineContext.cs" />
     <Compile Include="Md5Util.cs" />
     <Compile Include="NetTool.cs" />
   </ItemGroup>
