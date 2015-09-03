@@ -35,14 +35,11 @@ namespace Cosmos.Rpc
                 FuncName = funcName,
                 Arguments = arguments,
             };
-            var responseMsg = Coroutine<ResponseMsg>.Start(Request<RequestMsg, ResponseMsg>(proto));
-
-            while (!responseMsg.IsFinished)
-                await Task.Delay(1);
+            var responseMsg = await RequestAsync<RequestMsg, ResponseMsg>(proto);
 
             Logger.Trace("[Finish]CallResult: {0} used time: {1:F5}s", funcName, (DateTime.UtcNow - startTime).TotalSeconds);
 
-            return new RpcCallResult<T>(responseMsg.Result);
+            return new RpcCallResult<T>(responseMsg);
         }
 
         public IEnumerator<RpcCallResult<T>> CallResult<T>(string funcName, params object[] arguments)
@@ -78,11 +75,8 @@ namespace Cosmos.Rpc
 
         public async Task<T> CallAsync<T>(string funcName, params object[] arguments)
         {
-            var result = Coroutine<RpcCallResult<T>>.Start(CallResult<T>(funcName, arguments));
-            while (!result.IsFinished)
-                await Task.Delay(1);
-
-            return result.Result.Value;
+            var result = await CallResultAsync<T>(funcName, arguments);
+            return result.Value;
         }
     }
 }

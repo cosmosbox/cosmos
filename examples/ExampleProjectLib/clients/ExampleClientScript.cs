@@ -17,17 +17,17 @@ namespace ExampleProjectLib
         private int _lastCallCount = 0;
         public ExampleClientScript()
         {
-            new Thread(() =>
+            Task.Run(async () =>
             {
                 int id = 0;
-                while (id < 10)
+                while (id < 1)
                 {
                     id++;
                     var id_ = id;
                     //ClientLoopAsync(id_);  // 10 client -> 200 - 250 per second,  30 clients -> 450 - 500 per seconds, not stable
                     //Coroutine2.Start(ClientLoopCo(id_));  // 10 clients -> 200 - 250 per second, 30 clients -> 300 per seconds(one thread, more thread the same)
-                    Coroutine2.Start(TestLoop(id_));
-
+                    //Coroutine2.Start(TestLoop(id_));
+                    TestLoopAsync(id_);
                     //new Thread(ClientLoopThread).Start(id_);
 
                     //Thread.Sleep(100); // 1秒登录一个
@@ -38,9 +38,9 @@ namespace ExampleProjectLib
                     Logger.Info("Call Count One Second : {0}, Total: {1}", _callCount - _lastCallCount, _callCount);
 
                     _lastCallCount = _callCount;
-                    Thread.Sleep(1000);
+                    await Task.Delay(1000);
                 }
-            }).Start();
+            });//.Start();
 
         }
         void ClientLoopThread(object oid)
@@ -105,6 +105,34 @@ namespace ExampleProjectLib
             Logger.Warn("Now End Client.................. {0}", id);
 
         }
+
+        private async void TestLoopAsync(int id)
+        {
+            Logger.Warn("Now Start Client: {0}", id);
+            // Login
+            string host;
+            LoginResProto loginRes;
+            using (var client = new GateClient("127.0.0.1", 14002))
+            {
+                while (true)
+                {
+                    loginRes = await client.Login(id);
+                    if (loginRes == null)
+                        return;
+
+                    if (loginRes.Id != id)
+                        throw new Exception("Error id");
+                    host = loginRes.GameServerHost;
+                    if (host == "*")
+                    {
+                        host = "127.0.0.1";
+                    }
+                    _callCount++;
+                }
+
+            }
+        }
+
         async void ClientLoopAsync(int id)
         {
             Logger.Warn("Now Start Client: {0}", id);

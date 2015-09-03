@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Cosmos.Framework;
 using ExampleProjectLib;
@@ -11,10 +12,7 @@ namespace ExampleProject
 
         private ExampleServerApp()
         {
-            Task.Run(() =>
-            {
-                var clientScript = new ExampleClientScript();
-            });
+            new ExampleClientScript();
             
         }
     }

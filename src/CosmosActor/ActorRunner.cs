@@ -50,12 +50,12 @@ namespace Cosmos.Actor
             
             State = ActorRunState.Running;
 
-            ActorThread = Task.Run(() =>
+            ActorThread = Task.Run(async () =>
             {
                 Actor = ActorFactory.Create(conf);
                 while (Actor.IsActive)
                 {
-                    Thread.Sleep(1000);
+                    await Task.Delay(1000);
                     SecondsTick++;
                 }
             });

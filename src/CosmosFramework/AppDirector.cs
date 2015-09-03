@@ -45,10 +45,10 @@ namespace Cosmos.Framework
             }
         }
 
-        public void Wait()
+        public async Task Wait()
         {
-            while(true)
-                Thread.Sleep(1);
+            while (true)
+                await Task.Delay(1);
         }
         public virtual void StartActor(string actorName)
         {

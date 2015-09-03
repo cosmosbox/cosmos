@@ -9,7 +9,8 @@ namespace ExampleProject
 		{
 		    ExampleServerApp.Instance.StartAll();
 
-            ExampleServerApp.Instance.Wait();
+            var task = ExampleServerApp.Instance.Wait();
+		    task.Wait();
 		}
 	}
 }

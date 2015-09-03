@@ -44,12 +44,10 @@ namespace ExampleProjectLib
 
 		async void MainLoop()
 		{
-			await Task.Run (()=> {
-				while(true)
-				{
-					Thread.Sleep(40);  // 1 / 25
-				}
-			});
+            while (true)
+            {
+                await Task.Delay(40);  // 1 / 25
+            }
 
             Console.WriteLine("Finish main loop!");
         }

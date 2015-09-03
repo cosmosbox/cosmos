@@ -100,15 +100,13 @@ namespace Cosmos.Rpc
         protected async Task<TResponse> RequestAsync<TRequest, TResponse>(TRequest obj)
         {
             var reqData = MsgPackTool.GetBytes(obj);
-            var resData = Coroutine<byte[]>.Start(Request(reqData));
-            while (!resData.IsFinished)
-                await Task.Delay(1);
+            var resData = await RequestAsync(reqData);
 
-            if (resData.Result == null)
+            if (resData == null)
             {
                 return default(TResponse);
             }
-            return MsgPackTool.GetMsg<TResponse>(resData.Result);
+            return MsgPackTool.GetMsg<TResponse>(resData);
         }
         protected IEnumerator<TResponse> Request<TRequest, TResponse>(TRequest obj)
         {

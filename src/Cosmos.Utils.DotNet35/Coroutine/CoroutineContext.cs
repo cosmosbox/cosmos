@@ -33,7 +33,7 @@ namespace Cosmos.Utils
         private Queue<Coroutine2> _waitQueue = new Queue<Coroutine2>();
         private LinkedList<Coroutine2> _coroutines = new LinkedList<Coroutine2>();
         private
-#if DOTNET45ABC
+#if DOTNET45
             Task
 #else
             Thread
@@ -53,7 +53,7 @@ namespace Cosmos.Utils
         void DoLoopTaskAsync()
         {
             _coroutineRunnerThread =
-#if DOTNET45ABC
+#if DOTNET45
                 Task.Run(() =>
 
 #else
@@ -74,7 +74,7 @@ namespace Cosmos.Utils
 
                             if (_coroutines.Count == 0)
                             {
-#if DOTNET45ABC
+#if DOTNET45
                                 Task.Delay(HeartbeatMilliseconds);
 #else
                                 Thread.Sleep(HeartbeatMilliseconds);
@@ -129,7 +129,7 @@ namespace Cosmos.Utils
                     }
                 });
 
-#if !DOTNET45ABC
+#if !DOTNET45
             _coroutineRunnerThread.Start();
 #endif
         }

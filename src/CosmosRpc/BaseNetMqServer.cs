@@ -77,8 +77,7 @@ namespace Cosmos.Rpc
                 _responseSocket.Bind(string.Format("tcp://{0}:{1}", host, ResponsePort));
             }
 
-            _mainLoppThread = new Thread(MainLoop);
-            _mainLoppThread.Start();
+            MainLoop();
         }
 
         void InitWorkers()
@@ -108,7 +107,7 @@ namespace Cosmos.Rpc
 
         List<string> workerQueue = new List<string>();
 
-        private void MainLoop()
+        private async void MainLoop()
         {
             ZError error;
             ZMessage incoming;
@@ -116,7 +115,7 @@ namespace Cosmos.Rpc
 
             while (true)
             {
-                //await Task.Delay(1);
+                await Task.Delay(1);
                 if (_backendSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(1)))
                 {
                     using (incoming)
