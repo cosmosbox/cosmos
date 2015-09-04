@@ -4,12 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using NLog;
 using ZeroMQ;
 
 namespace Cosmos.Rpc
 {
     class BaseZmqWorker : IDisposable
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         internal ZSocket workerSocket;
         private BaseNetMqServer _server;
         private Thread _workerThread;
@@ -20,13 +23,14 @@ namespace Cosmos.Rpc
             workerSocket.IdentityString = string.Format("{0}-{1}", server.ServerToken, workerIndex);
             workerSocket.Connect(backendAddr);
 
-            _workerThread = new Thread(MainLoop);
-            _workerThread.Start();
+            //_workerThread = new Thread(MainLoop);
+            //_workerThread.Start();
+            MainLoop(null);
             //ThreadPool.QueueUserWorkItem(new WaitCallback(MainLoop), null);
 
         }
 
-        void MainLoop(object obj)
+        async void MainLoop(object obj)
         {
             using (var outgoing = new ZFrame("READY"))
             {
@@ -35,24 +39,52 @@ namespace Cosmos.Rpc
 
             ZError error;
             ZMessage incoming;
-
+            var poll = ZPollItem.CreateReceiver();
             while (true)
             {
-                if (null == (incoming = workerSocket.ReceiveMessage(out error)))
+                while (true)
                 {
-                    if (error == ZError.ETERM)
-                        return;
-
-                    throw new ZException(error);
+                    var result = workerSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(1));
+                    if (!result)
+                    {
+                        if (error == ZError.EAGAIN)
+                        {
+                            await Task.Delay(1);
+                            continue;
+                        }
+                        if (error == ZError.ETERM)
+                        {
+                            Logger.Error("ETERM!");
+                            return; // Interrupted
+                        }
+                        throw new ZException(error);
+                    }
+                    else
+                    {
+                        using (incoming)
+                        {
+                            // Send message back
+                            //worker.Send(incoming);
+                            _server.OnRecvMsg(this, incoming);
+                            break;
+                        }
+                    }
                 }
+                //if (null == (incoming = workerSocket.ReceiveMessage(out error)))
+                //{
+                //    if (error == ZError.ETERM)
+                //        return;
 
-                using (incoming)
-                {
-                    // Send message back
-                    //worker.Send(incoming);
-                    _server.OnRecvMsg(this, incoming);
+                //    throw new ZException(error);
+                //}
+
+                //using (incoming)
+                //{
+                //    // Send message back
+                //    //worker.Send(incoming);
+                //    _server.OnRecvMsg(this, incoming);
                     
-                }
+                //}
             }
         }
 

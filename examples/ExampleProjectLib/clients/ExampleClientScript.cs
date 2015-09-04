@@ -20,7 +20,7 @@ namespace ExampleProjectLib
             Task.Run(async () =>
             {
                 int id = 0;
-                while (id < 1)
+                while (id < 10)
                 {
                     id++;
                     var id_ = id;

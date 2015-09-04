@@ -246,7 +246,6 @@ namespace Cosmos.Rpc
                 do
                 {
                     await Task.Delay(1);
-
                     result = _requestSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(1));
                 } while (
                     !result &&
