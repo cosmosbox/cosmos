@@ -36,7 +36,7 @@ namespace Cosmos.Rpc
         {
             get { return string.Format("inproc://{0}", ServerToken); }
         }
-        private int InitWorkerCount = 3; // one worker one thread
+        private int InitWorkerCount = 5; // one worker one thread
         private int CurWorkerIndex = 0; // I生成
 
         private List<BaseZmqWorker> _workers = new List<BaseZmqWorker>();
@@ -79,7 +79,9 @@ namespace Cosmos.Rpc
             }
 
             //Coroutine2.Start(MainLoop());
-            MainLoop();
+            //MainLoop();
+            _mainLoppThread = new Thread(MainLoop);
+            _mainLoppThread.Start();
         }
 
         void InitWorkers()
@@ -109,7 +111,7 @@ namespace Cosmos.Rpc
 
         List<string> workerQueue = new List<string>();
 
-        private async void MainLoop()
+        private void MainLoop()
         {
             ZError error;
             ZMessage incoming;
@@ -117,7 +119,7 @@ namespace Cosmos.Rpc
 
             while (true)
             {
-                await Task.Delay(1);
+                //await Task.Delay(1);
                 //yield return null;
 
                 if (_backendSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(1)))

@@ -25,15 +25,15 @@ namespace Cosmos.Rpc
             workerSocket.IdentityString = string.Format("{0}-{1}", server.ServerToken, workerIndex);
             workerSocket.Connect(backendAddr);
 
-            //_workerThread = new Thread(MainLoop);
-            //_workerThread.Start();
+            _workerThread = new Thread(MainLoop);
+            _workerThread.Start();
             //Coroutine2.Start(MainLoop(null));
-            MainLoop(null);
+            //MainLoop(null);
             //ThreadPool.QueueUserWorkItem(new WaitCallback(MainLoop), null);
 
         }
 
-        async void MainLoop(object obj)
+        void MainLoop(object obj)
         {
             using (var outgoing = new ZFrame("READY"))
             {
@@ -52,7 +52,7 @@ namespace Cosmos.Rpc
                     {
                         if (error == ZError.EAGAIN)
                         {
-                            await Task.Delay(1);
+                            //await Task.Delay(1);
                             //yield return null;
                             continue;
                         }
