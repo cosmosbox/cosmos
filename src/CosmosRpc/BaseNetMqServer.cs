@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,6 +78,7 @@ namespace Cosmos.Rpc
                 _responseSocket.Bind(string.Format("tcp://{0}:{1}", host, ResponsePort));
             }
 
+            //Coroutine2.Start(MainLoop());
             MainLoop();
         }
 
@@ -116,6 +118,8 @@ namespace Cosmos.Rpc
             while (true)
             {
                 await Task.Delay(1);
+                //yield return null;
+
                 if (_backendSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(1)))
                 {
                     using (incoming)
@@ -161,6 +165,7 @@ namespace Cosmos.Rpc
                 {
                     if (error == ZError.ETERM)
                         return;
+                        //yield break;
                     if (error != ZError.EAGAIN)
                         throw new ZException(error);
                 }
@@ -206,6 +211,7 @@ namespace Cosmos.Rpc
                     {
                         if (error == ZError.ETERM)
                             return;
+                            //yield break;
                         if (error != ZError.EAGAIN)
                             throw new ZException(error);
                     }

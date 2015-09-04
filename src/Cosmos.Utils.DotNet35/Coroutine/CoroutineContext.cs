@@ -20,7 +20,7 @@ namespace Cosmos.Utils
     /// <summary>
     /// for coroutine2
     /// </summary>
-    internal class CoroutineContext
+    public class CoroutineContext
     {
         /// <summary>
         /// 25 frame every seconds

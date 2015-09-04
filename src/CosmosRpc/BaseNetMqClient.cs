@@ -224,7 +224,7 @@ namespace Cosmos.Rpc
 
         protected async Task<byte[]> RequestAsync(byte[] obj)
         {
-            var retryCount = 5;
+            var retryCount = 50;
             while (retryCount > 0)
             {
                 var bytes = CreateRequestMsg(obj);

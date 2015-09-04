@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Cosmos.Utils;
 using NLog;
 using ZeroMQ;
 
@@ -25,6 +27,7 @@ namespace Cosmos.Rpc
 
             //_workerThread = new Thread(MainLoop);
             //_workerThread.Start();
+            //Coroutine2.Start(MainLoop(null));
             MainLoop(null);
             //ThreadPool.QueueUserWorkItem(new WaitCallback(MainLoop), null);
 
@@ -50,12 +53,14 @@ namespace Cosmos.Rpc
                         if (error == ZError.EAGAIN)
                         {
                             await Task.Delay(1);
+                            //yield return null;
                             continue;
                         }
                         if (error == ZError.ETERM)
                         {
                             Logger.Error("ETERM!");
                             return; // Interrupted
+                            //yield break;
                         }
                         throw new ZException(error);
                     }
