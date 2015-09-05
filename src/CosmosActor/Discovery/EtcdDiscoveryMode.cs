@@ -9,6 +9,9 @@
 //------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using etcetera;
 using NLog;
 
@@ -23,7 +26,36 @@ namespace Cosmos.Actor
 
         private EtcdClient _etcdClient;
 
-        public EtcdDiscoveryMode (string[] discoveryServers)
+        /// <summary>
+        /// etcd get to async
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public Task<EtcdResponse> GetAsync(string key)
+	    {
+	        TaskCompletionSource<EtcdResponse> tcs = new TaskCompletionSource<EtcdResponse>();
+            
+            Task.Factory.StartNew(()=>
+            {
+                tcs.SetResult(_etcdClient.Get(key));
+            });
+
+
+	        return tcs.Task;
+	    }
+        public Task<EtcdResponse> SetAsync(string key, string value)
+        {
+            TaskCompletionSource<EtcdResponse> tcs = new TaskCompletionSource<EtcdResponse>();
+            Task.Factory.StartNew(() =>
+            {
+                tcs.SetResult(_etcdClient.Set(key, value));
+            });
+
+
+            return tcs.Task;
+        }
+
+        public EtcdDiscoveryMode (params string[] discoveryServers)
 		{
             foreach (var etcdUrl in discoveryServers)
             {
@@ -46,7 +78,7 @@ namespace Cosmos.Actor
         }
 		public override IList<ActorNodeConfig> GetNodes()
 		{
-			return null;
+            return null;
 		}
 	}
 }

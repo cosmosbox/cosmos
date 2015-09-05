@@ -116,6 +116,16 @@ namespace Cosmos.Test
             Assert.AreEqual(dis.Nodes[0].Name, "actor-1");
 
         }
+
+        [Test]
+        public async void TestEtcdDiscoveryMode()
+        {
+            var dis = new EtcdDiscoveryMode("http://localhost:2379");
+            var res = await dis.SetAsync("testasynckey", "okvalue");
+            Assert.AreEqual(res.Node.Value, "okvalue");
+            res = await dis.GetAsync("testasynckey");
+            Assert.AreEqual(res.Node.Value, "okvalue");
+        }
         
     }
 }
