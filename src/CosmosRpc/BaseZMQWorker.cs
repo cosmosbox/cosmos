@@ -27,6 +27,7 @@ namespace Cosmos.Rpc
 
             _workerThread = new Thread(MainLoop);
             _workerThread.Start();
+
             //Coroutine2.Start(MainLoop(null));
             //MainLoop(null);
             //ThreadPool.QueueUserWorkItem(new WaitCallback(MainLoop), null);

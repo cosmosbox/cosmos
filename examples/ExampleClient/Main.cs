@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using ExampleProjectLib;
 
 namespace ExampleClient
@@ -9,6 +10,10 @@ namespace ExampleClient
 		{
 
             var clientScript = new ExampleClientScript();
+		    while (true)
+		    {
+		        Thread.Sleep(1000);
+		    }
         }
 	}
 }

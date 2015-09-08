@@ -220,8 +220,8 @@ namespace Cosmos.Rpc
                 }
                 else
                 {
-                    Logger.Warn("no idle worker....");
-                    AddWorker(); // 不够worker，创建一个
+                    //Logger.Warn("no idle worker....");
+                    //AddWorker(); // 不够worker，创建一个
                 }
             }
         }
