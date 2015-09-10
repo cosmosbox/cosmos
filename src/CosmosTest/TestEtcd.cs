@@ -112,21 +112,34 @@ namespace Cosmos.Test
         public void TestJsonDiscoveryMode()
         {
             var dis = new JsonDiscoveryMode("config/actors.json");
-            Assert.AreEqual(dis.Nodes.Count, 2);
-            Assert.AreEqual(dis.Nodes[0].Name, "actor-1");
+            Assert.AreEqual(3, dis.Nodes.Count);
+            Assert.AreEqual("http-fronend-actor", dis.Nodes[0].Name);
 
         }
 
         [Test]
         public async void TestEtcdDiscoveryMode()
         {
-            var dis = new EtcdDiscoveryMode("http://localhost:2379");
+            var dis = new EtcdDiscoveryMode("testTopTopKey", "http://localhost:2379");
             var res = await dis.SetAsync("testasynckey", "okvalue");
             Assert.AreEqual(res.Node.Value, "okvalue");
             res = await dis.GetAsync("testasynckey");
             Assert.AreEqual(res.Node.Value, "okvalue");
         }
-        
+
+        [Test]
+        public async void RegisterEtcdNode()
+        {
+            var dis = new EtcdDiscoveryMode("testTopKey", "http://localhost:2379");
+            var testNode = new ActorNodeConfig();
+            testNode.Name = "TestNodeDir/TestNodeKey1";
+            testNode.Host = "TestHost";
+
+            var result = await dis.RegisterActor(testNode);
+            Assert.IsTrue(result);
+            var nodes = await dis.GetNodes();
+            Assert.AreEqual(nodes["TestNodeDir/TestNodeKey1"].Host, "TestHost");
+        }
     }
 }
 

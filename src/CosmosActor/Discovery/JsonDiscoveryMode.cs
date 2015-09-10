@@ -25,10 +25,25 @@ namespace Cosmos.Actor
             var text = File.ReadAllText(jsonFile);
             Nodes = JsonConvert.DeserializeObject<ActorNodeConfig[]>(text);
         }
-        public override IList<ActorNodeConfig> GetNodes()
+
+        public override Task<IDictionary<string, ActorNodeConfig>> GetNodes()
         {
-            return Nodes;
+            TaskCompletionSource<IDictionary<string, ActorNodeConfig>> taskSrc =
+                new TaskCompletionSource<IDictionary<string, ActorNodeConfig>>();
+            var dict = new Dictionary<string, ActorNodeConfig>();
+            foreach (var node in Nodes)
+            {
+                dict[node.Name] = node;
+            }
+            taskSrc.SetResult(dict);
+            return taskSrc.Task;
         }
+
+        //public override IList<ActorNodeConfig> GetNodes()
+        //{
+        //    var 
+        //    return Nodes;
+        //}
     }
 
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json;
 namespace Cosmos.Actor
 {
     /// <summary>
@@ -21,6 +21,8 @@ namespace Cosmos.Actor
         {
             get
             {
+                if (string.IsNullOrEmpty(ActorClass))
+                    return null;
                 return Type.GetType(ActorClass);
             }
         }
@@ -32,7 +34,7 @@ namespace Cosmos.Actor
         public object DiscoveryParam;
 
 
-        
+
         public int PublishPort;
 
 
@@ -44,6 +46,16 @@ namespace Cosmos.Actor
         public ActorNodeConfig Clone()
         {
             return (ActorNodeConfig)this.MemberwiseClone();
+        }
+
+        public static ActorNodeConfig FromJson(string json)
+        {
+            return JsonConvert.DeserializeObject<ActorNodeConfig>(json);
+        }
+        
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this);
         }
     }
 }

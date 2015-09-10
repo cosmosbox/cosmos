@@ -15,6 +15,7 @@ namespace ExampleProjectLib
         public Task Task;
         private int _callCount = 0;
         private int _lastCallCount = 0;
+        private int _lastDozenCount = 0;
         public ExampleClientScript()
         {
             Task.Run(async () =>
@@ -33,19 +34,26 @@ namespace ExampleProjectLib
                     //Thread.Sleep(100); // 1秒登录一个
                 }
 
+                var timeCount = 0;
                 while (true)
                 {
                     Logger.Info("Call Count One Second : {0}, Total: {1}", _callCount - _lastCallCount, _callCount);
 
                     _lastCallCount = _callCount;
                     await Task.Delay(1000);
+                    timeCount += 1000;
+                    if (timeCount % 10000 == 0)
+                    {
+                        Logger.Info("Last 10 Secs, every sec: {0}", (_callCount - _lastDozenCount) / 10f);
+                        _lastDozenCount = _callCount;
+                    }
                 }
             });//.Start();
 
         }
         void ClientLoopThread(object oid)
         {
-            var id = (int) oid;
+            var id = (int)oid;
 
             Logger.Warn("Now Start Client: {0}", id);
             // Login
@@ -177,7 +185,7 @@ namespace ExampleProjectLib
                 // 5s in level 
                 await Task.Delay(1);
                 await gameClient.FinishLevel(sessionToken, randLevelId, true);
-                
+
                 //var co2 = Coroutine2.Start<bool>(gameClient.FinishLevel,
                 //        );
 
@@ -188,7 +196,7 @@ namespace ExampleProjectLib
             }
             // Logout, Append player result
             Logger.Warn("Now End Client.................. {0}", id);
-            
+
         }
 
         private IEnumerator TestLoop(int id)
