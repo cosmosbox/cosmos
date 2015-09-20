@@ -99,7 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cosmos.Utils.DotNet45\Cosmos.Utils.DotNet45.csproj">
-      <Project>{2b4e04e5-6bb8-4e8b-a83a-501180939a9d}</Project>
+      <Project>{2B4E04E5-6BB8-4E8B-A83A-501180939A9D}</Project>
       <Name>Cosmos.Utils.DotNet45</Name>
     </ProjectReference>
   </ItemGroup>

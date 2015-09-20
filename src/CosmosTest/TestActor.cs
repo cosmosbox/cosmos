@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -119,6 +120,19 @@ namespace CosmosTest
             Assert.Pass();
         }
 
+        [Test]
+        public void TestTypeStringName()
+        {
+            var typeName = typeof (TestType).AssemblyQualifiedName;
+            Assert.IsTrue(!string.IsNullOrEmpty(typeName));
+            Console.Write(string.Format("TestType Name: {0}", typeName));
+            Assert.IsTrue(typeName.StartsWith("CosmosTest.TestType, Cosmos.Test"));
+
+            var getType = Type.GetType("CosmosTest.TestType, Cosmos.Test");
+            Assert.AreEqual(typeof(TestType), getType);
+            var getType2 = Type.GetType("CosmosTest.TestType");
+            Assert.AreEqual(typeof(TestType), getType2);
+        }
 
         [Test]
         public void CreateActorByCode()
@@ -151,4 +165,10 @@ namespace CosmosTest
             Assert.AreEqual(runner2.ActorName, "Actor-Test-1");
         }
     }
+
+    public class TestType
+    {
+
+    }
+
 }

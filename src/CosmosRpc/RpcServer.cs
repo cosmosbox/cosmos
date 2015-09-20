@@ -31,44 +31,43 @@ namespace Cosmos.Rpc
 
         protected override async Task<byte[]> ProcessRequest(byte[] reqData)
         {
-            return await Task.Run(() =>
+            var t = new TaskCompletionSource<byte[]>();
+            var requestMsg = MsgPackTool.GetMsg<RequestMsg>(reqData);
+
+            var resMsg = new ResponseMsg();
+            resMsg.IsError = false;
+
+            var method = _rpcService.GetType().GetMethod(requestMsg.FuncName);
+            byte[] executeResult = null;
+
+            if (method != null)
             {
-                var requestMsg = MsgPackTool.GetMsg<RequestMsg>(reqData);
+                var arguments = MsgPackTool.ConvertMsgPackObjectArray(requestMsg.Arguments);
 
-                var resMsg = new ResponseMsg();
-                resMsg.IsError = false;
-
-                var method = _rpcService.GetType().GetMethod(requestMsg.FuncName);
-                byte[] executeResult = null;
-
-                if (method != null)
+                try
                 {
-                    var arguments = MsgPackTool.ConvertMsgPackObjectArray(requestMsg.Arguments);
-
-                    try
-                    {
-                        var result = method.Invoke(_rpcService, arguments);
-                        if (result != null)
-                            executeResult = MsgPackTool.GetBytes(method.ReturnType, result);
-                    }
-                    catch (Exception e)
-                    {
-                        resMsg.IsError = true;
-                        resMsg.ErrorMessage = string.Format("[ERROR]Method '{0}' Exception: {1}", requestMsg.FuncName, e);
-                        Logger.Error(resMsg.ErrorMessage);
-                    }
+                    var result = method.Invoke(_rpcService, arguments);
+                    if (result != null)
+                        executeResult = MsgPackTool.GetBytes(method.ReturnType, result);
                 }
-                else
+                catch (Exception e)
                 {
                     resMsg.IsError = true;
-                    resMsg.ErrorMessage = string.Format("[ERROR]Not found method: {0}", requestMsg.FuncName);
+                    resMsg.ErrorMessage = string.Format("[ERROR]Method '{0}' Exception: {1}", requestMsg.FuncName, e);
                     Logger.Error(resMsg.ErrorMessage);
-                    Thread.Sleep(1);
                 }
+            }
+            else
+            {
+                resMsg.IsError = true;
+                resMsg.ErrorMessage = string.Format("[ERROR]Not found method: {0}", requestMsg.FuncName);
+                Logger.Error(resMsg.ErrorMessage);
+            }
 
-                resMsg.Value = executeResult;
-                return MsgPackTool.GetBytes(resMsg);
-            });
+            resMsg.Value = executeResult;
+            t.SetResult(MsgPackTool.GetBytes(resMsg));
+
+            return await t.Task;
         }
 
     }

@@ -10,7 +10,6 @@
     <RootNamespace>ExampleClient</RootNamespace>
     <AssemblyName>ExampleClient</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>
@@ -43,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ExampleProjectLib\ExampleProjectLib.csproj">
-      <Project>{bff6fb3e-e2f1-494b-963c-c5a5c0db5b08}</Project>
+      <Project>{BFF6FB3E-E2F1-494B-963C-C5A5C0DB5B08}</Project>
       <Name>ExampleProjectLib</Name>
     </ProjectReference>
   </ItemGroup>
