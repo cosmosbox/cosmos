@@ -8,15 +8,13 @@ using MsgPack.Serialization;
 
 namespace Cosmos.Rpc
 {
+    /// <summary>
+    /// a method mark with this Attribute will be as a rpc function
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public class ServiceFuncAttribute : Attribute
     {
-
-    }
-    public class RpcShare
-    {
-        public static MessagePackSerializer<RequestMsg> RequestSerializer = MessagePackSerializer.Get<RequestMsg>();
-        public static MessagePackSerializer<ResponseMsg> ResponseSerializer = MessagePackSerializer.Get<ResponseMsg>();
+        public string Tag { get; set; }
     }
 
     /// <summary>

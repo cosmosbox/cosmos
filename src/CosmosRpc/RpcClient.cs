@@ -24,54 +24,54 @@ namespace Cosmos.Rpc
         {
         }
 
-        public async Task<RES> CallResultAsync<REQ, RES>(REQ request)
+        public async Task<TRes> CallResultAsync<TReq, TRes>(TReq request)
         {
             var startTime = DateTime.UtcNow;
 
-            Logger.Trace("[Start]Request: {0}, Response: {1}", request, typeof(RES));
+            Logger.Trace("[Start]Request: {0}, Response: {1}", request, typeof(TRes));
 
             //var proto = new RequestMsg
             //{
             //    FuncName = funcName,
             //    Arguments = arguments,
             //};
-            var responseMsg = await RequestAsync<REQ, RES>(request);
+            var responseMsg = await RequestAsync<TReq, TRes>(request);
 
             Logger.Trace("[Finish]CallResult: {0} used time: {1:F5}s", request, (DateTime.UtcNow - startTime).TotalSeconds);
 
             return responseMsg;
         }
 
-        public IEnumerator<RpcCallResult<T>> CallResult<T>(string funcName, params object[] arguments)
-        {
-            var startTime = DateTime.UtcNow;
+        //public IEnumerator<RpcCallResult<T>> CallResult<T>(string funcName, params object[] arguments)
+        //{
+        //    var startTime = DateTime.UtcNow;
             
-            Logger.Trace("[Start]CallResult: {0}, Arguments: {1}", funcName, arguments);
+        //    Logger.Trace("[Start]CallResult: {0}, Arguments: {1}", funcName, arguments);
 
-            var proto = new RequestMsg
-            {
-                FuncName = funcName,
-                Arguments = arguments,
-            };
-            var responseMsg = Coroutine<ResponseMsg>.Start(Request<RequestMsg, ResponseMsg>(proto));
+        //    var proto = new RequestMsg
+        //    {
+        //        FuncName = funcName,
+        //        Arguments = arguments,
+        //    };
+        //    var responseMsg = Coroutine<ResponseMsg>.Start(Request<RequestMsg, ResponseMsg>(proto));
 
-            while (!responseMsg.IsFinished)
-                yield return null;
+        //    while (!responseMsg.IsFinished)
+        //        yield return null;
 
-            Logger.Trace("[Finish]CallResult: {0} used time: {1:F5}s", funcName, (DateTime.UtcNow - startTime).TotalSeconds);
+        //    Logger.Trace("[Finish]CallResult: {0} used time: {1:F5}s", funcName, (DateTime.UtcNow - startTime).TotalSeconds);
 
-            yield return new RpcCallResult<T>(responseMsg.Result);
+        //    yield return new RpcCallResult<T>(responseMsg.Result);
 
-        }
-        public IEnumerator Call<T>(CoroutineResult<T> resulter, string funcName, params object[] arguments)
-        {
-            var result = Coroutine<RpcCallResult<T>>.Start(CallResult<T>(funcName, arguments));
-            while (!result.IsFinished)
-                yield return default(T);
+        //}
+        //public IEnumerator Call<T>(CoroutineResult<T> resulter, string funcName, params object[] arguments)
+        //{
+        //    var result = Coroutine<RpcCallResult<T>>.Start(CallResult<T>(funcName, arguments));
+        //    while (!result.IsFinished)
+        //        yield return default(T);
 
-            resulter.Result = result.Result.Value;
-            //yield return result.Result.Data;
-        }
+        //    resulter.Result = result.Result.Value;
+        //    //yield return result.Result.Data;
+        //}
 
         public async Task<RES> CallAsync<T, RES>(T request)
         {

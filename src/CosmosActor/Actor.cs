@@ -50,29 +50,30 @@ namespace Cosmos.Actor
 
         #region Router Call RPC
 
-        public IEnumerator<TReturn> CallByClass<TActor, TReturn>(string funcName, params object[] arguments) where TActor : Actor
-        {
-            ActorClassFilterRouteFunc routeFunc;
-            if (!FilterRoutes.TryGetValue(typeof (TActor), out routeFunc))
-            {
-                Logger.Error("Not yet set the Route Rule of actor type: {0}", typeof(TActor));
-                yield return default(TReturn);
-                yield break;
-            }
+        // TODO:CallByClass
+        //public IEnumerator<TReturn> CallByClass<TActor, TReturn>(string funcName, params object[] arguments) where TActor : Actor
+        //{
+        //    ActorClassFilterRouteFunc routeFunc;
+        //    if (!FilterRoutes.TryGetValue(typeof (TActor), out routeFunc))
+        //    {
+        //        Logger.Error("Not yet set the Route Rule of actor type: {0}", typeof(TActor));
+        //        yield return default(TReturn);
+        //        yield break;
+        //    }
 
-            var actorConfig = routeFunc(FriendActors);
-            if (actorConfig == null)
-            {
-                Logger.Error("Router get actor config is Null of actor type: {0}", typeof(TActor));
-                yield return default(TReturn);
-                yield break;
-            }
-            var co = Coroutine<TReturn>.Start(Call<TReturn>(actorConfig.Name, funcName, arguments));
-            while (!co.IsFinished)
-                yield return default(TReturn);
+        //    var actorConfig = routeFunc(FriendActors);
+        //    if (actorConfig == null)
+        //    {
+        //        Logger.Error("Router get actor config is Null of actor type: {0}", typeof(TActor));
+        //        yield return default(TReturn);
+        //        yield break;
+        //    }
+        //    var co = Coroutine<TReturn>.Start(Call<TReturn>(actorConfig.Name, funcName, arguments));
+        //    while (!co.IsFinished)
+        //        yield return default(TReturn);
 
-            yield return co.Result;
-        }
+        //    yield return co.Result;
+        //}
 
         public ActorNodeConfig SetRouteRule<T>(ActorClassFilterRouteFunc route) where T : Actor
         {
@@ -87,32 +88,32 @@ namespace Cosmos.Actor
         }
         #endregion
 
-        public IEnumerator<T> Call<T>(string actorName, string funcName, params object[] arguments)
-        {
-            RpcClient client;
-            if (RpcClients.TryGetValue(actorName, out client))
-            {
-                var resultCo = Coroutine<RpcCallResult<T>>.Start(client.CallResult<T>("Add", 1, 2));
-                while (!resultCo.IsFinished)
-                    yield return default(T);
+        //public IEnumerator<T> Call<T>(string actorName, string funcName, params object[] arguments)
+        //{
+        //    RpcClient client;
+        //    if (RpcClients.TryGetValue(actorName, out client))
+        //    {
+        //        var resultCo = Coroutine<RpcCallResult<T>>.Start(client.CallResult<T>("Add", 1, 2));
+        //        while (!resultCo.IsFinished)
+        //            yield return default(T);
 
-                var result = resultCo.Result;
-                if (result.IsError)
-                {
-                    Logger.Error("RPC Call Error: {0}", result.ErrorMessage);
-                }
+        //        var result = resultCo.Result;
+        //        if (result.IsError)
+        //        {
+        //            Logger.Error("RPC Call Error: {0}", result.ErrorMessage);
+        //        }
 
-                yield return result.Value;
+        //        yield return result.Value;
                 
-            }
-            else
-            {
-                Logger.Error("Not Found Actor By Name: '{0}'", actorName);
+        //    }
+        //    else
+        //    {
+        //        Logger.Error("Not Found Actor By Name: '{0}'", actorName);
 
-                yield return default(T);
-            }
+        //        yield return default(T);
+        //    }
 
-        }
+        //}
         abstract public IActorService NewRpcCaller();
     }
 }

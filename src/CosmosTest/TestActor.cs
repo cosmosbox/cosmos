@@ -78,47 +78,47 @@ namespace CosmosTest
         /// <summary>
         /// 创建一个Actor，并且使用客户端联系之
         /// </summary>
-        [Test]
-        public void TestFrontendActor()
-        {
-            var co = Coroutine<object>.Start(CoTestFrontendActor());
-            while (!co.IsFinished)
-            {
-                Thread.Sleep(1);
-            }
-        }
+        //[Test]
+        //public void TestFrontendActor()
+        //{
+        //    var co = Coroutine<object>.Start(CoTestFrontendActor());
+        //    while (!co.IsFinished)
+        //    {
+        //        Thread.Sleep(1);
+        //    }
+        //}
 
-        IEnumerator<object> CoTestFrontendActor()
-        {
+        //IEnumerator<object> CoTestFrontendActor()
+        //{
 
-            var actorConf = new ActorNodeConfig
-            {
-                AppToken = "TestApp",
-                Name = "Actor-Test-1",
-                ActorClass = "CosmosTest.SampleActor, CosmosTest",
-                Host = "*",
-                RpcPort = 12300,
+        //    var actorConf = new ActorNodeConfig
+        //    {
+        //        AppToken = "TestApp",
+        //        Name = "Actor-Test-1",
+        //        ActorClass = "CosmosTest.SampleActor, CosmosTest",
+        //        Host = "*",
+        //        RpcPort = 12300,
 
-                DiscoveryMode = "Json",
-                DiscoveryParam = "config/actors.json",
+        //        DiscoveryMode = "Json",
+        //        DiscoveryParam = "config/actors.json",
 
 
-                ResponsePort = 12311,
+        //        ResponsePort = 12311,
 
-            };
-            ActorRunner.Run(actorConf);
+        //    };
+        //    ActorRunner.Run(actorConf);
 
-            // Handler
-            var client = new HandlerClient("127.0.0.1", 12311);
-            var resulter = new CoroutineResult<string>();
-            var result = Coroutine2.Start(client.Call<string>(resulter, "Test"));
-            while (!result.IsFinished)
-            {
-                yield return null;
-            }
-            Assert.AreEqual(resulter.Result, "TestString");
-            Assert.Pass();
-        }
+        //    // Handler
+        //    var client = new HandlerClient("127.0.0.1", 12311);
+        //    var resulter = new CoroutineResult<string>();
+        //    var result = Coroutine2.Start(client.Call<string>(resulter, "Test"));
+        //    while (!result.IsFinished)
+        //    {
+        //        yield return null;
+        //    }
+        //    Assert.AreEqual(resulter.Result, "TestString");
+        //    Assert.Pass();
+        //}
 
         [Test]
         public void TestTypeStringName()

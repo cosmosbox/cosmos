@@ -112,20 +112,20 @@ namespace Cosmos.Rpc
 
             return MsgPackTool.GetMsg<TResponse>(resMsg.Data);
         }
-        protected IEnumerator<TResponse> Request<TRequest, TResponse>(TRequest obj)
-        {
-            var reqData = MsgPackTool.GetBytes(obj);
-            var resData = Coroutine<byte[]>.Start(Request(reqData));
-            while (!resData.IsFinished)
-                yield return default(TResponse);
+        //protected IEnumerator<TResponse> Request<TRequest, TResponse>(TRequest obj)
+        //{
+        //    var reqData = MsgPackTool.GetBytes(obj);
+        //    var resData = Coroutine<byte[]>.Start(Request(reqData));
+        //    while (!resData.IsFinished)
+        //        yield return default(TResponse);
 
-            if (resData.Result == null)
-            {
-                yield return default(TResponse);
-                yield break;
-            }
-            yield return MsgPackTool.GetMsg<TResponse>(resData.Result);
-        }
+        //    if (resData.Result == null)
+        //    {
+        //        yield return default(TResponse);
+        //        yield break;
+        //    }
+        //    yield return MsgPackTool.GetMsg<TResponse>(resData.Result);
+        //}
 
         /// <summary>
         /// 创建请求消息
@@ -144,87 +144,87 @@ namespace Cosmos.Rpc
             return MsgPackTool.GetBytes(requestMsg);
         } 
 
-        protected IEnumerator<byte[]> Request(byte[] obj)
-        {
-            var retryCount = 5;
-            while (retryCount > 0)
-            {
-                var bytes = CreateRequestMsg(obj);
+        //protected IEnumerator<byte[]> Request(byte[] obj)
+        //{
+        //    var retryCount = 5;
+        //    while (retryCount > 0)
+        //    {
+        //        var bytes = CreateRequestMsg(obj);
 
-                // We send a request, then we work to get a reply
-                if (!_requestSocket.Send(new ZFrame(bytes), out error))
-                {
-                    if (error == ZError.ETERM)
-                        continue;    // Interrupted
-                    throw new ZException(error);
-                }
-                var poll = ZPollItem.CreateReceiver();
-                ZMessage incoming;
+        //        // We send a request, then we work to get a reply
+        //        if (!_requestSocket.Send(new ZFrame(bytes), out error))
+        //        {
+        //            if (error == ZError.ETERM)
+        //                continue;    // Interrupted
+        //            throw new ZException(error);
+        //        }
+        //        var poll = ZPollItem.CreateReceiver();
+        //        ZMessage incoming;
 
-                bool result = false;
-                var pollStartTime = DateTime.UtcNow;
-                var timeoutTime = 5f;
-                do
-                {
-                    result = _requestSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(1));
-                } while (
-                    !result && 
-                    (DateTime.UtcNow - pollStartTime).TotalSeconds < timeoutTime); // timeout
+        //        bool result = false;
+        //        var pollStartTime = DateTime.UtcNow;
+        //        var timeoutTime = 5f;
+        //        do
+        //        {
+        //            result = _requestSocket.PollIn(poll, out incoming, out error, TimeSpan.FromMilliseconds(1));
+        //        } while (
+        //            !result && 
+        //            (DateTime.UtcNow - pollStartTime).TotalSeconds < timeoutTime); // timeout
 
-                if (!result)
-                {
-                    Logger.Error("超时重试");
-                    if (error == ZError.EAGAIN)
-                    {
-                        if (--retryCount == 0)
-                        {
-                            Console.WriteLine("E: server seems to be offline, abandoning");
-                            break;
-                        }
-                        // Old socket is confused; close it and open a new one
-                        _requestSocket.Dispose();
-                        if (null == (_requestSocket = CreateSocket(out error)))
-                        {
-                            if (error == ZError.ETERM)
-                            {
-                                Logger.Error("ETERM!");
-                                break; // Interrupted
-                            }
-                            throw new ZException(error);
-                        }
+        //        if (!result)
+        //        {
+        //            Logger.Error("超时重试");
+        //            if (error == ZError.EAGAIN)
+        //            {
+        //                if (--retryCount == 0)
+        //                {
+        //                    Console.WriteLine("E: server seems to be offline, abandoning");
+        //                    break;
+        //                }
+        //                // Old socket is confused; close it and open a new one
+        //                _requestSocket.Dispose();
+        //                if (null == (_requestSocket = CreateSocket(out error)))
+        //                {
+        //                    if (error == ZError.ETERM)
+        //                    {
+        //                        Logger.Error("ETERM!");
+        //                        break; // Interrupted
+        //                    }
+        //                    throw new ZException(error);
+        //                }
 
-                        Console.WriteLine("I: reconnected");
+        //                Console.WriteLine("I: reconnected");
 
-                        continue;
-                    }
-                    if (error == ZError.ETERM)
-                    {
-                        Logger.Error("ETERM!!");
-                        break; // Interrupted
-                    }
-                    throw new ZException(error);
-                }
-                else
-                {
-                    using (incoming)
-                    {
-                        // We got a reply from the server
-                        //int incoming_sequence = incoming[0].ReadInt32();
-                        //var recvMessage = _requestSocket.ReceiveMessage();
-                        var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(incoming[0].Read());
-                        _responses[recvMsg.RequestToken] = recvMsg;
-                        SessionToken = recvMsg.SessionToken;
-                        if (string.IsNullOrEmpty(SessionToken))
-                            throw new Exception(string.Format("Error Session token when get response"));
+        //                continue;
+        //            }
+        //            if (error == ZError.ETERM)
+        //            {
+        //                Logger.Error("ETERM!!");
+        //                break; // Interrupted
+        //            }
+        //            throw new ZException(error);
+        //        }
+        //        else
+        //        {
+        //            using (incoming)
+        //            {
+        //                // We got a reply from the server
+        //                //int incoming_sequence = incoming[0].ReadInt32();
+        //                //var recvMessage = _requestSocket.ReceiveMessage();
+        //                var recvMsg = MsgPackTool.GetMsg<BaseResponseMsg>(incoming[0].Read());
+        //                _responses[recvMsg.RequestToken] = recvMsg;
+        //                SessionToken = recvMsg.SessionToken;
+        //                if (string.IsNullOrEmpty(SessionToken))
+        //                    throw new Exception(string.Format("Error Session token when get response"));
 
-                        yield return recvMsg.Data;
-                        yield break;
-                    }
-                }
-            }
+        //                yield return recvMsg.Data;
+        //                yield break;
+        //            }
+        //        }
+        //    }
 
-            yield return null;
-        }
+        //    yield return null;
+        //}
 
         protected async Task<byte[]> RequestAsync(byte[] obj)
         {

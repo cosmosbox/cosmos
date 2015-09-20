@@ -60,27 +60,12 @@ namespace Cosmos.Rpc
 
                 }
             }
+
+            if (_serviceFuncs.Count <= 0)
+            {
+                Logger.Error("RpcServcice(Type:{0}), has no funcs mark with ServiceFuncAttribute", rpcService.GetType());
+            }
         }
-
-        //public Type GetRequestType()
-        //{
-        //    var type = Type.GetType(RequestTypeName);
-        //    return type;
-        //}
-
-        //public void SetRequestType(Type type)
-        //{
-        //    RequestTypeName = type.AssemblyQualifiedName;
-        //}
-
-        //public object GetRequestObject()
-        //{
-        //    return MsgPackTool.GetMsg(GetRequestType(), RequestObjectData);
-        //}
-        //public void SetRequestObject(object obj)
-        //{
-        //    RequestObjectData = MsgPackTool.GetBytes(obj);
-        //}
 
         protected override async Task<byte[]> ProcessRequest(byte[] reqData)
         {
@@ -103,11 +88,8 @@ namespace Cosmos.Rpc
 
             if (method != null)
             {
-                //var arguments = MsgPackTool.ConvertMsgPackObjectArray(requestMsg.Arguments);
-
                 try
                 {
-                    //var result = method.Invoke(_rpcService, arguments);
                     var result = method.Invoke(_rpcService, new[] { requestObj });
                     if (result != null)
                         executeResult = MsgPackTool.GetBytes(method.ReturnType, result);
