@@ -8,10 +8,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MsgPack;
 using NetMQ;
 using NetMQ.Sockets;
 using NLog;
@@ -24,47 +27,106 @@ namespace Cosmos.Rpc
 
         private IRpcService _rpcService;
 
+        struct RpcServiceFuncInfo
+        {
+            public MethodInfo Method;
+            public Type ArgType;
+            public Type ReturnType;
+        }
+
+        private Dictionary<Type, RpcServiceFuncInfo> _serviceFuncs = new Dictionary<Type, RpcServiceFuncInfo>();
+
         public RpcServer(IRpcService rpcService, string host = "*", int responsePort = -1) : base(responsePort, 0, host)
         {
             _rpcService = rpcService;
+
+            foreach (var methodInfo in rpcService.GetType().GetMethods())
+            {
+                foreach (var attr in methodInfo.GetCustomAttributes(typeof(ServiceFuncAttribute)))
+                {
+                    var funcAttr = (ServiceFuncAttribute)attr;
+                    var args = methodInfo.GetParameters();
+                    var requestType = args[0].ParameterType;
+                    var retType = methodInfo.ReturnType;
+
+                    var info = new RpcServiceFuncInfo()
+                    {
+                        ArgType = requestType,
+                        ReturnType = retType,
+                        Method = methodInfo,
+                    };
+                    _serviceFuncs[requestType] = info;
+                    Logger.Info("Register Service Func, RequestType: {0}, ResponseType: {1}", requestType, info.ReturnType);
+
+                }
+            }
         }
+
+        //public Type GetRequestType()
+        //{
+        //    var type = Type.GetType(RequestTypeName);
+        //    return type;
+        //}
+
+        //public void SetRequestType(Type type)
+        //{
+        //    RequestTypeName = type.AssemblyQualifiedName;
+        //}
+
+        //public object GetRequestObject()
+        //{
+        //    return MsgPackTool.GetMsg(GetRequestType(), RequestObjectData);
+        //}
+        //public void SetRequestObject(object obj)
+        //{
+        //    RequestObjectData = MsgPackTool.GetBytes(obj);
+        //}
 
         protected override async Task<byte[]> ProcessRequest(byte[] reqData)
         {
             var t = new TaskCompletionSource<byte[]>();
             var requestMsg = MsgPackTool.GetMsg<RequestMsg>(reqData);
-
+            var requestType = requestMsg.RequestType;
+            var requestObj = MsgPackTool.GetMsg(requestType, requestMsg.RequestObjectData);
             var resMsg = new ResponseMsg();
             resMsg.IsError = false;
 
-            var method = _rpcService.GetType().GetMethod(requestMsg.FuncName);
+            RpcServiceFuncInfo funcInfo;
+            if (!_serviceFuncs.TryGetValue(requestType, out funcInfo))
+            {
+                Logger.Error("Not found RequestType func: {0}", requestType);
+                return await t.Task;
+            }
+            var info = _serviceFuncs[requestType];
+            var method = info.Method;
             byte[] executeResult = null;
 
             if (method != null)
             {
-                var arguments = MsgPackTool.ConvertMsgPackObjectArray(requestMsg.Arguments);
+                //var arguments = MsgPackTool.ConvertMsgPackObjectArray(requestMsg.Arguments);
 
                 try
                 {
-                    var result = method.Invoke(_rpcService, arguments);
+                    //var result = method.Invoke(_rpcService, arguments);
+                    var result = method.Invoke(_rpcService, new[] { requestObj });
                     if (result != null)
                         executeResult = MsgPackTool.GetBytes(method.ReturnType, result);
                 }
                 catch (Exception e)
                 {
                     resMsg.IsError = true;
-                    resMsg.ErrorMessage = string.Format("[ERROR]Method '{0}' Exception: {1}", requestMsg.FuncName, e);
+                    resMsg.ErrorMessage = string.Format("[ERROR]Method '{0}' Exception: {1}", requestObj, e);
                     Logger.Error(resMsg.ErrorMessage);
                 }
             }
             else
             {
                 resMsg.IsError = true;
-                resMsg.ErrorMessage = string.Format("[ERROR]Not found method: {0}", requestMsg.FuncName);
+                resMsg.ErrorMessage = string.Format("[ERROR]Not found method: {0}", requestObj);
                 Logger.Error(resMsg.ErrorMessage);
             }
 
-            resMsg.Value = executeResult;
+            resMsg.Data = executeResult;
             t.SetResult(MsgPackTool.GetBytes(resMsg));
 
             return await t.Task;
@@ -156,7 +218,7 @@ namespace Cosmos.Rpc
 
     //        var data = RpcShare.ResponseSerializer.PackSingleObject(new ResponseMsg {
     //            RequestId = requestMsg.RequestId,
-    //            Value = executeResult,
+    //            Data = executeResult,
     //        });
     //        _server.Send(data);
     //    }

@@ -17,4 +17,17 @@ namespace ExampleProjectLib
         public int SubcribePort;
         public int Id;
     }
+
+    public class LoginRequest
+    {
+        public int Id;
+    }
+
+    public class LoginResponse
+    {
+        public string GameServerHost;
+        public int GameServerPort;
+        public int SubcribePort;
+        public int Id;
+    }
 }

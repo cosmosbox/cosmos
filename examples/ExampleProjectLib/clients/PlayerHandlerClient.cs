@@ -53,23 +53,23 @@ namespace ExampleProjectLib
             return  resulter.Result;
         }
 
-        public class FinishLevelParam
+        public class FinishLevelRequest
         {
             public string SessionToken;
             public int LevelTypeId;
             public bool IsSuccess;
         }
 
-        public async Task<bool> FinishLevel(string sessionToken, int levelTypeId, bool isSuccess)
+        public async Task<bool> FinishLevel(FinishLevelRequest request)//string sessionToken, int levelTypeId, bool isSuccess)
         {
-            var task = await _handlerClient.CallAsync<bool>("FinishLevel", sessionToken, levelTypeId, isSuccess);
+            var task = await _handlerClient.CallAsync<FinishLevelRequest, bool>(request);
 
             return task;
         }
 
-        public IEnumerator FinishLevel(CoroutineResult<bool> result, FinishLevelParam param_)
+        public IEnumerator FinishLevel(CoroutineResult<bool> result, FinishLevelRequest request)
         {
-            var param = (PlayerHandlerClient.FinishLevelParam)param_;
+            var param = (PlayerHandlerClient.FinishLevelRequest)request;
             var resulter = new CoroutineResult<bool>();
             var task = Coroutine2.Start(_handlerClient.Call<bool>(resulter, "FinishLevel", param.SessionToken, param.LevelTypeId, param.IsSuccess));
             while (!task.IsFinished)

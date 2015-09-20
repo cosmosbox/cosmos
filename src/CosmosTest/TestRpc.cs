@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using Cosmos.Rpc;
 using System.Threading.Tasks;
@@ -68,6 +69,26 @@ namespace Cosmos.Test
 
         public class TestActorService : IActorService
         {
+            public struct Test1Request
+            {
+                public int A;
+                public int B;
+            }
+
+            public struct Test1Response
+            {
+                public int Result;
+            }
+
+            [ServiceFunc]
+            public Test1Response Test1Call(Test1Request request)
+            {
+                return new Test1Response
+                {
+                    Result = request.A + request.B,
+                };
+            }
+
             public string TestFunc(string arg1, string arg2)
             {
                 return arg1 + arg2;
@@ -88,14 +109,14 @@ namespace Cosmos.Test
         }
 
         [Test()]
-        public void TestCallRpc()
+        public async void TestCallRpc()
         {
-            var task = Coroutine<object>.Start(CoTestCallRpc());
-            while (!task.IsFinished)
-                Thread.Sleep(1);
+            await CoTestCallRpc();
+
+            Assert.Pass();
         }
 
-        public IEnumerator<object> CoTestCallRpc()
+        public async Task CoTestCallRpc()
         {
             using (var server = new RpcServer(new TestActorService()))
             {
@@ -108,26 +129,22 @@ namespace Cosmos.Test
 
                 using (var client = new RpcClient("127.0.0.1", server.ResponsePort))
                 {
-                    var resulter = new CoroutineResult<string>();
-                    var result = Coroutine2.Start(client.Call<string>(resulter, "TestFunc", "ABC", "DEFG"));
-                    while (!result.IsFinished)
-                        yield return null;
+                    var result = await client.CallAsync<TestActorService.Test1Request, TestActorService.Test1Response>(new TestActorService.Test1Request
+                    {
+                        A = 123,
+                        B = 321,
+                    }); // "TestFunc", "ABC", "DEFG"
 
-                    Assert.AreEqual(resulter.Result, "ABCDEFG");
+                    Assert.AreEqual(result.Result, 444);
 
                     // continue client 1
-                    var result2 = Coroutine<RpcCallResult<string>>.Start(client.CallResult<string>("TestFunc2", "ABC", 123));
-                    while (!result2.IsFinished)
-                        yield return null;
-                    Assert.AreEqual(result2.Result.Value, "ABC123");
+                    //var result2 = client.CallResultAsync<string>("TestFunc2", "ABC", 123);
+                    //Assert.AreEqual(result2, "ABC123");
 
-                    var resulter3 = new CoroutineResult<string>();
-                    var result3 = Coroutine2.Start(client.Call<string>(resulter, "TestFunc3"));
-                    while (!result3.IsFinished)
-                        yield return null;
-                    //Assert.AreEqual(result3.IsCanceled, false);
-                    //Assert.AreEqual(result3.IsFaulted, false);
-                    Assert.AreEqual(resulter.Result, null);
+                    //var result3 = client.CallAsync<string>("TestFunc3");
+                    ////Assert.AreEqual(result3.IsCanceled, false);
+                    ////Assert.AreEqual(result3.IsFaulted, false);
+                    //Assert.AreEqual(result3, null);
 
 
                     // client 2

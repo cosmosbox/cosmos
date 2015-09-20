@@ -24,22 +24,22 @@ namespace Cosmos.Rpc
         {
         }
 
-        public async Task<RpcCallResult<T>> CallResultAsync<T>(string funcName, params object[] arguments)
+        public async Task<RES> CallResultAsync<REQ, RES>(REQ request)
         {
             var startTime = DateTime.UtcNow;
 
-            Logger.Trace("[Start]CallResult: {0}, Arguments: {1}", funcName, arguments);
+            Logger.Trace("[Start]Request: {0}, Response: {1}", request, typeof(RES));
 
-            var proto = new RequestMsg
-            {
-                FuncName = funcName,
-                Arguments = arguments,
-            };
-            var responseMsg = await RequestAsync<RequestMsg, ResponseMsg>(proto);
+            //var proto = new RequestMsg
+            //{
+            //    FuncName = funcName,
+            //    Arguments = arguments,
+            //};
+            var responseMsg = await RequestAsync<REQ, RES>(request);
 
-            Logger.Trace("[Finish]CallResult: {0} used time: {1:F5}s", funcName, (DateTime.UtcNow - startTime).TotalSeconds);
+            Logger.Trace("[Finish]CallResult: {0} used time: {1:F5}s", request, (DateTime.UtcNow - startTime).TotalSeconds);
 
-            return new RpcCallResult<T>(responseMsg);
+            return responseMsg;
         }
 
         public IEnumerator<RpcCallResult<T>> CallResult<T>(string funcName, params object[] arguments)
@@ -70,13 +70,13 @@ namespace Cosmos.Rpc
                 yield return default(T);
 
             resulter.Result = result.Result.Value;
-            //yield return result.Result.Value;
+            //yield return result.Result.Data;
         }
 
-        public async Task<T> CallAsync<T>(string funcName, params object[] arguments)
+        public async Task<RES> CallAsync<T, RES>(T request)
         {
-            var result = await CallResultAsync<T>(funcName, arguments);
-            return result.Value;
+            var result = await CallResultAsync<T, RES>(request);
+            return result;
         }
     }
 }

@@ -43,16 +43,18 @@ namespace ExampleProjectLib
         {
             //ActorRunner.Run()
         }
-        public LoginResProto Login(int id)
+
+        [ServiceFunc]
+        public LoginResponse Login(LoginRequest req)
         {
             var cfg = ExampleServerApp.Instance.ProjectConf.TheActorConfigs[2];
 
-            return new LoginResProto()
+            return new LoginResponse()
             {
                 GameServerHost = cfg.Host,
                 GameServerPort = cfg.ResponsePort,
                 SubcribePort = cfg.PublishPort,
-                Id = id,
+                Id = req.Id,
             };
         }
     }

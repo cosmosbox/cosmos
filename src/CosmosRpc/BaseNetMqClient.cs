@@ -86,27 +86,31 @@ namespace Cosmos.Rpc
             SessionToken = null;
 
             _requestSocket.Dispose();
-            //_requestSocket.Close();
         }
 
-        //private void OnSubscriberReceiveReady(object sender, NetMQSocketEventArgs e)
-        //{
-        //    string messageTopicReceived = _subSocket.ReceiveString();
-        //    byte[] messageReceived = _subSocket.Receive();
-
-        //    Console.WriteLine("Topic: {0}", messageTopicReceived);
-        //    Console.WriteLine("Message: {0}", messageReceived);
-        //}
         protected async Task<TResponse> RequestAsync<TRequest, TResponse>(TRequest obj)
         {
-            var reqData = MsgPackTool.GetBytes(obj);
-            var resData = await RequestAsync(reqData);
+            var requestMsg = new RequestMsg()
+            {
+                RequestTypeName = typeof(TRequest).AssemblyQualifiedName,
+                RequestObjectData = MsgPackTool.GetBytes(obj)
+            };
 
+            var reqData = MsgPackTool.GetBytes(requestMsg);
+
+            var resData = await RequestAsync(reqData);
             if (resData == null)
             {
                 return default(TResponse);
             }
-            return MsgPackTool.GetMsg<TResponse>(resData);
+            var resMsg = MsgPackTool.GetMsg<ResponseMsg>(resData);
+            if (resMsg.IsError)
+            {
+                Logger.Error("Error on Request: {0}", resMsg.ErrorMessage);
+                return default(TResponse);
+            }
+
+            return MsgPackTool.GetMsg<TResponse>(resMsg.Data);
         }
         protected IEnumerator<TResponse> Request<TRequest, TResponse>(TRequest obj)
         {

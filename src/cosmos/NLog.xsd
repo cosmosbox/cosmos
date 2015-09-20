@@ -920,7 +920,7 @@
         </xs:attribute>
         <xs:attribute name="source" type="SimpleLayoutAttribute">
           <xs:annotation>
-            <xs:documentation>Value to be used as the event Source.</xs:documentation>
+            <xs:documentation>Data to be used as the event Source.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="entryType" type="SimpleLayoutAttribute">
@@ -1069,7 +1069,7 @@
         </xs:attribute>
         <xs:attribute name="archiveDateFormat" type="xs:string">
           <xs:annotation>
-            <xs:documentation>Value specifying the date format to use when archving files.</xs:documentation>
+            <xs:documentation>Data specifying the date format to use when archving files.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="archiveOldFileOnStartup" type="xs:boolean">

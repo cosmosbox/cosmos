@@ -58,7 +58,7 @@ namespace ExampleProjectLib
             Logger.Warn("Now Start Client: {0}", id);
             // Login
             string host;
-            LoginResProto loginRes;
+            LoginResponse loginRes;
             using (var client = new GateClient("127.0.0.1", 14002))
             {
                 var t = client.Login(id);
@@ -99,7 +99,12 @@ namespace ExampleProjectLib
                 // 5s in level 
                 //await Task.Delay(1);
                 Thread.Sleep(1);
-                gameClient.FinishLevel(sessionToken, randLevelId, true).Wait();
+                gameClient.FinishLevel(new PlayerHandlerClient.FinishLevelRequest()
+                {
+                    SessionToken = sessionToken,
+                    LevelTypeId = randLevelId,
+                    IsSuccess = true
+                }).Wait();
 
                 //var co2 = Coroutine2.Start<bool>(gameClient.FinishLevel,
                 //        );
@@ -119,7 +124,7 @@ namespace ExampleProjectLib
             Logger.Warn("Now Start Client: {0}", id);
             // Login
             string host;
-            LoginResProto loginRes;
+            LoginResponse loginRes;
             using (var client = new GateClient("127.0.0.1", 14002))
             {
                 while (true)
@@ -146,7 +151,7 @@ namespace ExampleProjectLib
             Logger.Warn("Now Start Client: {0}", id);
             // Login
             string host;
-            LoginResProto loginRes;
+            LoginResponse loginRes;
             using (var client = new GateClient("127.0.0.1", 14002))
             {
                 loginRes = await client.Login(id);
@@ -184,7 +189,12 @@ namespace ExampleProjectLib
 
                 // 5s in level 
                 await Task.Delay(1);
-                await gameClient.FinishLevel(sessionToken, randLevelId, true);
+                await gameClient.FinishLevel(new PlayerHandlerClient.FinishLevelRequest()
+                {
+                    SessionToken = sessionToken,
+                    LevelTypeId = randLevelId,
+                    IsSuccess = true
+                });
 
                 //var co2 = Coroutine2.Start<bool>(gameClient.FinishLevel,
                 //        );
@@ -277,7 +287,7 @@ namespace ExampleProjectLib
                 // 5s in level 
                 yield return null;
 
-                yield return Coroutine2.Start(gameClient.FinishLevel(result, new PlayerHandlerClient.FinishLevelParam
+                yield return Coroutine2.Start(gameClient.FinishLevel(result, new PlayerHandlerClient.FinishLevelRequest
                 {
                     SessionToken = sessionToken,
                     LevelTypeId = randLevelId,
