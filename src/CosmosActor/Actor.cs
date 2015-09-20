@@ -51,29 +51,25 @@ namespace Cosmos.Actor
         #region Router Call RPC
 
         // TODO:CallByClass
-        //public IEnumerator<TReturn> CallByClass<TActor, TReturn>(string funcName, params object[] arguments) where TActor : Actor
-        //{
-        //    ActorClassFilterRouteFunc routeFunc;
-        //    if (!FilterRoutes.TryGetValue(typeof (TActor), out routeFunc))
-        //    {
-        //        Logger.Error("Not yet set the Route Rule of actor type: {0}", typeof(TActor));
-        //        yield return default(TReturn);
-        //        yield break;
-        //    }
+        public async Task<TRes> CallByClass<TActor, TReq, TRes>(TReq request) where TActor : Actor
+        {
+            ActorClassFilterRouteFunc routeFunc;
+            if (!FilterRoutes.TryGetValue(typeof(TActor), out routeFunc))
+            {
+                Logger.Error("Not yet set the Route Rule of actor type: {0}", typeof(TActor));
+                return default(TRes);
+            }
 
-        //    var actorConfig = routeFunc(FriendActors);
-        //    if (actorConfig == null)
-        //    {
-        //        Logger.Error("Router get actor config is Null of actor type: {0}", typeof(TActor));
-        //        yield return default(TReturn);
-        //        yield break;
-        //    }
-        //    var co = Coroutine<TReturn>.Start(Call<TReturn>(actorConfig.Name, funcName, arguments));
-        //    while (!co.IsFinished)
-        //        yield return default(TReturn);
+            var actorConfig = routeFunc(FriendActors);
+            if (actorConfig == null)
+            {
+                Logger.Error("Router get actor config is Null of actor type: {0}", typeof(TActor));
+                return default(TRes);
+            }
+            var callResult = await Call<TReq, TRes>(actorConfig.Name, request);
 
-        //    yield return co.Result;
-        //}
+            return callResult;
+        }
 
         public ActorNodeConfig SetRouteRule<T>(ActorClassFilterRouteFunc route) where T : Actor
         {
@@ -88,32 +84,25 @@ namespace Cosmos.Actor
         }
         #endregion
 
-        //public IEnumerator<T> Call<T>(string actorName, string funcName, params object[] arguments)
-        //{
-        //    RpcClient client;
-        //    if (RpcClients.TryGetValue(actorName, out client))
-        //    {
-        //        var resultCo = Coroutine<RpcCallResult<T>>.Start(client.CallResult<T>("Add", 1, 2));
-        //        while (!resultCo.IsFinished)
-        //            yield return default(T);
+        public async Task<TRes> Call<TReq, TRes>(string actorName, TReq request)
+        {
+            RpcClient client;
+            if (RpcClients.TryGetValue(actorName, out client))
+            {
+                var resultCo = client.CallResultAsync<TReq, TRes>(request);
 
-        //        var result = resultCo.Result;
-        //        if (result.IsError)
-        //        {
-        //            Logger.Error("RPC Call Error: {0}", result.ErrorMessage);
-        //        }
+                var result = await resultCo;
 
-        //        yield return result.Value;
-                
-        //    }
-        //    else
-        //    {
-        //        Logger.Error("Not Found Actor By Name: '{0}'", actorName);
+                return result;
+            }
+            else
+            {
+                Logger.Error("Not Found Actor By Name: '{0}'", actorName);
 
-        //        yield return default(T);
-        //    }
+                return default(TRes);
+            }
 
-        //}
+        }
         abstract public IActorService NewRpcCaller();
     }
 }

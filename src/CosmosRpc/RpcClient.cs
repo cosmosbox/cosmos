@@ -38,8 +38,8 @@ namespace Cosmos.Rpc
             var responseMsg = await RequestAsync<TReq, TRes>(request);
 
             Logger.Trace("[Finish]CallResult: {0} used time: {1:F5}s", request, (DateTime.UtcNow - startTime).TotalSeconds);
-
-            return responseMsg;
+            
+            return MsgPackTool.GetMsg<TRes>(responseMsg.Data);
         }
 
         //public IEnumerator<RpcCallResult<T>> CallResult<T>(string funcName, params object[] arguments)

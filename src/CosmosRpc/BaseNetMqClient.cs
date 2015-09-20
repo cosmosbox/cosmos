@@ -88,7 +88,7 @@ namespace Cosmos.Rpc
             _requestSocket.Dispose();
         }
 
-        protected async Task<TResponse> RequestAsync<TRequest, TResponse>(TRequest obj)
+        protected async Task<ResponseMsg> RequestAsync<TRequest, TResponse>(TRequest obj)
         {
             var requestMsg = new RequestMsg()
             {
@@ -101,16 +101,15 @@ namespace Cosmos.Rpc
             var resData = await RequestAsync(reqData);
             if (resData == null)
             {
-                return default(TResponse);
+                return default(ResponseMsg);
             }
             var resMsg = MsgPackTool.GetMsg<ResponseMsg>(resData);
             if (resMsg.IsError)
             {
                 Logger.Error("Error on Request: {0}", resMsg.ErrorMessage);
-                return default(TResponse);
             }
 
-            return MsgPackTool.GetMsg<TResponse>(resMsg.Data);
+            return resMsg;
         }
         //protected IEnumerator<TResponse> Request<TRequest, TResponse>(TRequest obj)
         //{

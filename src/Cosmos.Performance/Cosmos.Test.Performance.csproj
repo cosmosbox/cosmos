@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>12.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{540C5C3B-C50B-478C-B2FE-B6AD4DC4F238}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Cosmos.Test.Performance</RootNamespace>
+    <AssemblyName>Cosmos.Test.Performance</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>True</Externalconsole>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>True</Externalconsole>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ActorA.cs" />
+    <Compile Include="ActorB.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cosmos.Framework.Components\Cosmos.Framework.Components.csproj">
+      <Project>{3689ed7b-d457-4e8c-ad19-5afad297f6aa}</Project>
+      <Name>Cosmos.Framework.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CosmosActor\Cosmos.Actor.csproj">
+      <Project>{501deec1-5738-465f-9ab2-4a9ff95a34e9}</Project>
+      <Name>Cosmos.Actor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CosmosFramework\Cosmos.Framework.csproj">
+      <Project>{6de61dc4-0243-4a7f-b0bb-753ea850d3c8}</Project>
+      <Name>Cosmos.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CosmosRpc\Cosmos.Rpc.csproj">
+      <Project>{7341e7ea-168c-4688-8b8c-4e697540fbaa}</Project>
+      <Name>Cosmos.Rpc</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="discovery.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,11 +1,11 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="d:\workspace\cosmos\src\CosmosRpc\BaseNetMqClient.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Cosmos.Performance\Main.cs">
     <Files>
       <File FileName="cosmos\NLog.config" Line="32" Column="45" />
-      <File FileName="cosmos\NLog.xsd" Line="11" Column="13" />
+      <File FileName="cosmos\NLog.xsd" Line="1" Column="1" />
       <File FileName="cosmos\packages.config" Line="1" Column="1" />
-      <File FileName="d:\workspace\cosmos\src\CosmosRpc\BaseNetMqClient.cs" Line="32" Column="41" />
+      <File FileName="Cosmos.Performance\Main.cs" Line="9" Column="39" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -36,9 +36,9 @@ namespace Cosmos.Actor
             
         }
 
-        public ActorNodeConfig[] GetActorNodes()
+        public async Task<IDictionary<string, ActorNodeConfig>> GetActorNodes()
         {
-            return null;
+            return await _mode.GetNodes();
         }
 
         public void BeginWatch()

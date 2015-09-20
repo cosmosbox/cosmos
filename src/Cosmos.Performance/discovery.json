@@ -1,0 +1,16 @@
+﻿[
+  {
+    "Name": "TestActorA",
+    "ActorClass": "Cosmos.Test.Performance.ActorA, Cosmos.Test.Performance",
+    "RpcPort": 13001,
+    "ResponsePort": 13002,
+    "PublishPort": 13003
+  },
+  {
+    "Name": "TestActorB",
+    "ActorClass": "Cosmos.Test.Performance.ActorB, Cosmos.Test.Performance",
+    "RpcPort": 14001,
+    "ResponsePort": 14002,
+    "PublishPort": 14003
+  }
+]
